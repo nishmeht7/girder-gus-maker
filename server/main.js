@@ -2,6 +2,8 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const path       = require('path');
 
+require('./models');
+
 const app = express();
 
 // PARSING MIDDLEWARE

@@ -1,6 +1,6 @@
 /**
  * MIDDLEWARE-RETURNING FUNCTIONS:
- * createDoc(ModelStr, tieToUser = false)
+ * createDoc(ModelStr, tieToUser = false // tieToUser = property to reference user)
  * getDocsAndSend(ModelStr, refPropName = false)
  * getDocAndSend(ModelStr) // requires req.params.id
  * getDocAndUpdate(ModelStr) // requires req.params.id
@@ -13,7 +13,6 @@
 
 
 const mongoose = require('mongoose')
-
 
 /**
  * INTERNAL HELPERS
@@ -34,7 +33,7 @@ const sendDocIfOwnerOrAdmin = (doc, user, res) => {
 
 export const createDoc = (ModelStr, tieToUser = false) => (req, res, next) => {
   const Model = mongoose.model(ModelStr);
-  if (tieToUser) req.body.user = req.user._id;
+  if (tieToUser) req.body[tieToUser] = req.user._id;
 
   Model.create(req.body)
     .then(document => res.status(201).json(document))
