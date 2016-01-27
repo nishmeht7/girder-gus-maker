@@ -2,16 +2,14 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const path       = require('path');
 
-require('./db'); // start DB
+require('./db');
 
 const app = express();
 
-// PARSING MIDDLEWARE
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+require('./configure')(app);
 
 app.get('/*', function (req, res) {
-    res.sendFile(app.get('indexHTMLPath'));
+    res.sendFile(app.get('indexPath'));
 });
 
 app.use('/api', require('./routes'))
