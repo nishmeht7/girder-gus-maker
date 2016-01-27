@@ -2,7 +2,7 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const path       = require('path');
 
-require('./models');
+require('./db'); // start DB
 
 const app = express();
 
