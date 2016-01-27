@@ -1,0 +1,23 @@
+{
+  "name": "girder-gus-maker",
+  "version": "1.0.0",
+  "description": "[![Built at Fullstack Academy](https://img.shields.io/badge/Built%20at-Fullstack%20Academy-red.svg?style=round-square)](http://fullstackacademy.com)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lancey6/girder-gus-maker.git"
+  },
+  "author": "Brian Dunn <briancollierdunn@gmail.com> (https://github.com/briancdunn/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lancey6/girder-gus-maker/issues"
+  },
+  "homepage": "https://github.com/Lancey6/girder-gus-maker#readme",
+  "dependencies": {
+    "phaser": "^2.4.4",
+    "phaser-debug": "^1.1.8"
+  }
+}
