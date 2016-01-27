@@ -42,7 +42,7 @@ gulp.task('lintJS', function () {
 });
 
 gulp.task('buildJS', ['lintJS'], function () {
-    return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
+    return gulp.src(['../browser/js/app.js', '../browser/js/**/*.js'])
         .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(concat('main.js'))
@@ -87,7 +87,7 @@ gulp.task('buildCSS', function () {
     var sassCompilation = sass();
     sassCompilation.on('error', console.error.bind(console));
 
-    return gulp.src('./browser/scss/main.scss')
+    return gulp.src('./browser/sass/main.sass')
         .pipe(plumber({
             errorHandler: notify.onError('SASS processing failed! Check your gulp process.')
         }))
