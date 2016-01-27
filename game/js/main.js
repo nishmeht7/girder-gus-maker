@@ -7,8 +7,8 @@ var   WIDTH   = FULLSCREEN ? window.innerWidth * window.devicePixelRatio : 800,
 var   game    = new Phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'gameContainer' );
 
 // add states
-game.state.add( "boot", STATE_BOOT );
-game.state.add( "load", STATE_LOAD );
-game.state.add( "game", STATE_GAME );
+game.state.add( "boot", initBootState() );
+game.state.add( "load", initLoadState() );
+game.state.add( "game", initGameState() );
 
 game.state.start( "boot" );

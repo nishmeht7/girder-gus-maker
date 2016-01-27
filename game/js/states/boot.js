@@ -1,11 +1,16 @@
-var STATE_BOOT = {};
+function initBootState() {
 
-STATE_BOOT.create = function() {
+  var state = {};
 
-    console.log('boot');
-  // start game physics
-  game.physics.startSystem( Phaser.Physics.ARCADE );
+  state.create = function() {
 
-  game.state.start( "load" );
+    // start game physics
+    game.physics.startSystem( Phaser.Physics.ARCADE );
+
+    game.state.start( "load" );
+
+  }
+
+  return state;
 
 }
