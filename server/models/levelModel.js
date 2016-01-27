@@ -1,7 +1,7 @@
 'use strict';
 const mongoose = require('mongoose');
 
-var schema = new mongoose.schema({
+const schema = new mongoose.schema({
 	title: {type: String, required: true},
 	creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
 	map: {required: true},
@@ -13,4 +13,4 @@ var schema = new mongoose.schema({
 });
 //difficulty was mentioned, but not part of MVP imo
 
-var Level = mongoose.model('Level', schema);
+mongoose.model('Level', schema);
