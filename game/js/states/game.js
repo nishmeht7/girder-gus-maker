@@ -23,7 +23,7 @@ function initGameState() {
     console.log( "Creating blocks..." );
 
     for ( var i = 0; i < 10; ++i ) {
-      new RedBrickBlock( -128 + (32 * i), 128 );
+      var block = new RedBrickBlock( -128 + (32 * i), 128 );
     }
 
     console.log( "Binding to keys..." );
