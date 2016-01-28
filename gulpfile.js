@@ -107,8 +107,10 @@ gulp.task('buildCSS', function () {
         .pipe(plumber({
             errorHandler: notify.onError('SASS processing failed! Check your gulp process.')
         }))
+        .pipe(sourcemaps.init())
         .pipe(sassCompilation)
         .pipe(rename('style.css'))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest('./public'));
 });
 
@@ -155,7 +157,7 @@ gulp.task('default', function () {
     });
 
     // Run when anything inside of browser/scss changes.
-    gulp.watch('browser/scss/**', function () {
+    gulp.watch('browser/sass/**', function () {
         runSeq('buildCSS', 'reloadCSS');
     });
 

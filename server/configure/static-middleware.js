@@ -1,14 +1,14 @@
 "use strict";
-var path = require('path');
-var express = require('express');
+const path = require('path');
+const express = require('express');
 
 module.exports = function (app) {
 
-    var root = app.getValue('projectRoot');
+    const root = app.getValue('projectRoot');
 
-    var npmPath = path.join(root, './node_modules');
+    const npmPath = path.join(root, './node_modules');
     var publicPath = path.join(root, './public');
-    var browserPath = path.join(root, './browser');
+    const browserPath = path.join(root, './browser');
 
     app.use(express.static(npmPath));
     app.use(express.static(publicPath));
