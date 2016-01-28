@@ -3,9 +3,8 @@ const path = require('path');
 const chalk = require('chalk');
 const util = require('util');
 
-const rootPath = path.join(__dirname, '../');
+const rootPath = path.join(__dirname, '../../');
 const indexPath = path.join(rootPath, './server/views/index.html');
-
 const env = require(path.join(rootPath, './server/env'));
 
 const logMiddleware = function (req, res, next) {
