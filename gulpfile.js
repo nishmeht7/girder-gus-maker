@@ -31,7 +31,7 @@ gulp.task('reloadCSS', function () {
 
 gulp.task('lintJS', function () {
 
-    return gulp.src(['./browser/js/**/*.js', './server/**/*.js'])
+    return gulp.src(['./browser/js/**/*.js', './game/js/**', './server/**/*.js'])
         .pipe(plumber({
             errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
         }))
@@ -41,7 +41,7 @@ gulp.task('lintJS', function () {
 
 });
 
-gulp.task('buildJS', ['lintJS'], function () {
+gulp.task('buildBrowserJS', ['lintJS'], function () {
     return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
         .pipe(plumber())
         .pipe(sourcemaps.init())
@@ -49,6 +49,22 @@ gulp.task('buildJS', ['lintJS'], function () {
         .pipe(babel())
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('./public'));
+});
+
+gulp.task('buildGameJS', ['lintJS'], function() {
+    return gulp.src(['./game/js/main.js', './game/js/**/*.js'])
+        .pipe(plumber())
+        .pipe(sourcemaps.init())
+        .pipe(concat('girder-gus.js'))
+        .pipe(babel())
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('./public'));
+});
+
+gulp.task('copyAssets', function() {
+    return gulp.src(['./game/assets/**'])
+        .pipe(plumber())
+        .pipe(gulp.dest('./public/assets'));
 });
 
 gulp.task('testServerJS', function () {
@@ -127,7 +143,7 @@ gulp.task('build', function () {
     if (process.env.NODE_ENV === 'production') {
         runSeq(['buildJSProduction', 'buildCSSProduction']);
     } else {
-        runSeq(['buildJS', 'buildCSS']);
+        runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets']);
     }
 });
 
