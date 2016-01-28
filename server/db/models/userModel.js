@@ -46,16 +46,6 @@ schema.methods.setStars = function() {
 		}, 0);
 		return that.save();
 	});
-	/*
-    this.populate('createdLevels', 'starCount')
-        .then(function(user) {
-            user.totalStars = user.createdLevels.reduce(function(previousValue, currentLevel) {
-                return previousValue + currentLevel.starCount;
-            }, 0);
-
-            return user.save();
-      	});
-		*/
 }
 
 // adds levelId to user's createdLevels array
