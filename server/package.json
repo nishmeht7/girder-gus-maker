@@ -53,6 +53,6 @@
     "karma-chai": "^0.1.0",
     "karma-mocha": "^0.2.1",
     "morgan": "^1.6.1",
-    "run-sequence": "^1.1.5"
+    "run-sequence": "^1.0.2"
   }
 }
