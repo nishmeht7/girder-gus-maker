@@ -7,12 +7,12 @@ function initLoadState() {
 
     console.log( "Loading assets..." );
 
-    game.load.image('BrickBlack', 'public/assets/images/brick_black.png');
-    game.load.image('BrickBreak', 'public/assets/images/brick_break.png');
-    game.load.image('BrickRed', 'public/assets/images/brick_red.png');
-    game.load.image('Girder', 'public/assets/images/girder.png');
-    game.load.image('Tool', 'public/assets/images/tool.png');
-    game.load.spritesheet('Gus', 'public/assets/images/gus.png', 32, 32);
+    game.load.image('BrickBlack', '/assets/images/brick_black.png');
+    game.load.image('BrickBreak', '/assets/images/brick_break.png');
+    game.load.image('BrickRed', '/assets/images/brick_red.png');
+    game.load.image('Girder', '/assets/images/girder.png');
+    game.load.image('Tool', '/assets/images/tool.png');
+    game.load.spritesheet('Gus', '/assets/images/gus.png', 32, 32);
 
     console.log( "Done loading" );
 
