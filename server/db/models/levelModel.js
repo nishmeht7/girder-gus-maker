@@ -26,12 +26,36 @@ const schema = new mongoose.Schema({
 });
 //difficulty was mentioned, but not part of MVP imo
 
+// note whether level is new before saving
+schema.pre('save', function(next) {
+    this.wasNew = this.isNew;
+    next();
+})
+
+// add level to creator's createdLevels if level is new
+schema.post('save', function(doc, next) {
+    if(doc.isNew) {
+        User.findById(doc.creator)
+            .then(function(user) {
+                retun user.addLevel(doc._id);
+            })
+            .then(function(user) {
+                next();
+            })
+    } else {
+        next();
+    }
+})
+
 // post-save hook to set total star count of associated user
-schema.post('save', function(doc) {
+schema.post('save', function(doc, next) {
     User.findById(doc.creator)
         .populate('createdLevels', 'starCount')
         .then(function(user) {
             return user.setStars();
+        })
+        .then(function(user) {
+            next();
         })
 })
 

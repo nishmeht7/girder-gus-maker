@@ -48,7 +48,15 @@ schema.methods.setStars = function() {
         });
 }
 
-// removes levelId passed into function from user's createdLevels array
+// adds levelId to user's createdLevels array
+schema.methods.addLevel = function(levelId) {
+    if(this.createdLevels.indexOf(levelId) === -1){
+        this.createdLevels.push(levelId);
+        return this.save();
+    }
+}
+
+// removes levelId from user's createdLevels array
 schema.methods.removeLevel = function(levelId) {
     this.createdLevels = this.createdLevels.filter(function(level) {
         return level !== levelId;
