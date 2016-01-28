@@ -1,5 +1,3 @@
-var COLORS = {
 
-  BACKGROUND_SKY : "#4428BC",
-
-}
+var COLORS = {};
+COLORS.BACKGROUND_SKY = "#4428BC";
