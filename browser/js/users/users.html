@@ -1,0 +1,17 @@
+<div id="users-list">
+    <div class="row" ng-repeat="user in users">
+        <div class="col-xs-3">
+            <a ui-sref="user({ userId: user._id })">
+                <img ng-src="{{ user.profilePic }}">
+                <div class="caption">
+                    <h5>
+                        <span>{{ user.name }}</span>
+                    </h5>
+                </div>
+            </a>
+        </div>
+        <div class="col-xs-9">
+            <userlevels levels="user.createdLevels"></userlevels>
+        </div>
+    </div>
+</div>

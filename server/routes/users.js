@@ -17,6 +17,9 @@ router.post('/', createDoc('User'));
 // guest can see all users
 router.get('/', getDocsAndSend('User'));
 
+// guest can see all users with associated created levels
+router.get('/levels', getDocsAndSend('User', null, ['createdLevels']));
+
 // guest can see user
 router.get('/:id', getDocAndSend('User'));
 
