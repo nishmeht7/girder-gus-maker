@@ -16,7 +16,7 @@ app.directive('ggHeader', ($rootScope, AuthService, AUTH_EVENTS, $state) => {
 
       scope.logout = () => (
         AuthService.logout()
-        .then(() => { state.go('home') })
+        .then(() => { $state.go('home') })
       );
 
       const setUser = () => {
