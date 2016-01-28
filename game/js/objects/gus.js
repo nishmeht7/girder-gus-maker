@@ -2,11 +2,14 @@ function Gus(x, y) {
 
     this.speed = 250;         // walk speed
     this.gravity = 1000;      // gravity speed
-    this.hopStrength = 60;   // strength of gus's walk cycle hops
+    this.hopStrength = 0;   // strength of gus's walk cycle hops
+    this.dancingTime = 20000; // how long gus has to hold still to start dancing
 
     this.rotation = 0;        // internal rotation counter
     this.prevRotation = 0;    // previous rotation
+    this.idleTime = 0;        // how long gus has been holding still
 
+    this.facingRight = true;  // is gus facing right?
     this.rotating = false;    // is gus rotating?
     this.canRotate = true;    // can gus rotate?
     this.targetRotation = 0;  // target rotation of this flip
@@ -15,7 +18,7 @@ function Gus(x, y) {
     this.sprite = game.add.sprite(x, y, 'Gus');
 
     // attach our sprite to the physics engine
-    game.physics.p2.enable( this.sprite, true );
+    game.physics.p2.enable( this.sprite, false );
     this.sprite.body.fixedRotation = true;
     this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SOLID );
     this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE ] );
@@ -29,6 +32,7 @@ function Gus(x, y) {
     // add animations
     this.sprite.animations.add('stand', [0], 10, true);
     this.sprite.animations.add('walk', [1,2], 10, true);
+    this.sprite.animations.add('dance', [3,4,5,6,7], 10, true);
     
 }
 
@@ -53,6 +57,16 @@ Gus.prototype.touchesWall = function( gus, other, sensor, shape, contact ) {
 
   if ( d > 1 - EPSILON ) this.rotate( "left" );
   else if ( d < -1 + EPSILON ) this.rotate( "right" );
+
+}
+
+Gus.prototype.checkForRotation = function( side ) {
+
+  if ( side === "left" && this.isTouching( "left" ) ) {
+    this.rotate( "left" );
+  } else if ( side === "right" && this.isTouching( "right" ) ) {
+    this.rotate( "right" );
+  }
 
 }
 
@@ -135,14 +149,20 @@ Gus.prototype.applyGravity = function() {
 
 Gus.prototype.walk = function( dir ) {
 
+  this.idleTime = 0;
+
+  // determine speed and flip the sprite if necessary
   if ( dir === "left" ) {
     var intendedVelocity = -this.speed;
     this.sprite.scale.x = -1;
+    this.facingRight = false;
   } else {
     var intendedVelocity = this.speed;
     this.sprite.scale.x = 1;
+    this.facingRight = true;
   }
 
+  // see if we're walking horizontally or vertically
   var cosine = Math.cos( this.rotation );
   if ( Math.abs( cosine ) > EPSILON ) {
     this.sprite.body.velocity.x = cosine * intendedVelocity;
@@ -153,14 +173,29 @@ Gus.prototype.walk = function( dir ) {
     if ( this.isTouching( "down" ) ) this.sprite.body.velocity.x = sine * this.hopStrength;
   }
 
+  // play animations
   this.sprite.animations.play( 'walk' );
-  this.canRotate = true;
+  if ( this.canRotate === false ) {
+    this.canRotate = true;
+    this.sprite.body.clearCollision();
+    this.rotationSensor.needsCollisionData = true;
+  }
+  //this.checkForRotation( dir );
 
 }
 
 Gus.prototype.stop = function() {
 
-  this.sprite.animations.play( 'stand' );
+  if ( this.idleTime < this.dancingTime ) {
+
+    this.sprite.animations.play( 'stand' );
+    if ( this.isTouching( "down" ) ) this.idleTime += game.time.elapsed;
+
+  } else {
+
+    this.sprite.animations.play( 'dance' );
+
+  }
 
 }
 
@@ -191,6 +226,12 @@ Gus.prototype.update = function() {
 
     // do gravity
     this.applyGravity();
+
+    if ( this.rotationSensor.needsCollisionData ) {
+      this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SOLID );
+      this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE ] );
+      this.rotationSensor.needsCollisionData = false;
+    }
 
     // check for input
     if ( cursors.left.isDown ) {
