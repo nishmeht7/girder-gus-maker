@@ -354,22 +354,28 @@ var fakeLevels = [{"title":"odio","map":"ZOWYBoZ21VGs"},
 //fake data at top because of hoisting issues
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
-const User = Promise.promisifyAll(mongoose.model('User'));
-const Level = Promise.promisifyAll(mongoose.model('Level'));
-var connectToDb = require('./index.js');
+const connectToDb = require('./index.js');
+const User = mongoose.model('User');
+const Level = mongoose.model('Level');
 
 connectToDb.then(function() {
 	var before = Date.now();
-	User.createSync(fakeUsers);
-	console.log(Date.now() - before);
-	var matchedGamesToUsers = fakeLevels.map(function(level) {
-		return User.find({name: fakeUsers[Math.floor(Math.random() * fakeUsers.length)]})
+	User.create(fakeUsers).then(function() {
+		console.log(Date.now() - before);
+		var matchedGamesToUsers = fakeLevels.map(function(level) {
+			return User.findOne({name: fakeUsers[Math.floor(Math.random() * fakeUsers.length)].name})
 			.then(function(foundUser) {
 				level.creator = foundUser._id;
 				return level;
 			});
+		})
+		return Promise.all(matchedGamesToUsers);
 	})
-	Promise.all(matchedGamesToUsers).then(function(levelArr) {
-		Level.createSync(levelArr);
+	.then(function(levelArr) {
+		return Level.create(levelArr);
+	}).then(function() {
+		console.log('seeded');
+		console.log(Date.now() - before);
+		process.kill(0);
 	});
 });
