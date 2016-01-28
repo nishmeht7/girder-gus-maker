@@ -174,6 +174,11 @@ gulp.task('build', function () {
     }
 });
 
+// todo: add tests
+gulp.task('travis', ['lintServerJS','buildBrowserJS','buildGameJS','buildCSS','copyAssets'], function () {
+    process.exit( 0 );
+});
+
 gulp.task('default', function () {
 
     gulp.start('build');
