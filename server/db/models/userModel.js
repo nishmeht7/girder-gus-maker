@@ -29,4 +29,4 @@ var schema = new mongoose.Schema({
     }]
 });
 
-var User = mongoose.model('User', schema);
+mongoose.model('User', schema);

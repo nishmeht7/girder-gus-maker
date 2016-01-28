@@ -1,0 +1,11 @@
+<header>
+  <a id='logo'>
+    <img src=''>The Girder Gus Game Game Game Game</a>
+  <nav>
+    <ul>
+      <li ng-repeat='item in menuItems'><a>{{item.title}}</a></li>
+    </ul>
+  </nav>
+  <p ng-show='user'>Hello, {{ user.name }} <a ng-click='logout()'>Logout</a></p>
+  <a ng-href='/auth/google' ng-hide='user'>Log in with Google</a>
+</header>
