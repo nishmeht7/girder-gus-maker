@@ -1,6 +1,7 @@
 // All used modules.
 var gulp = require('gulp');
 var babel = require('gulp-babel');
+var browserify = require('gulp-browserify');
 var runSeq = require('run-sequence');
 var plumber = require('gulp-plumber');
 var concat = require('gulp-concat');
@@ -52,12 +53,14 @@ gulp.task('buildBrowserJS', ['lintJS'], function () {
 });
 
 gulp.task('buildGameJS', ['lintJS'], function() {
-    return gulp.src(['./game/js/main.js', './game/js/**/*.js'])
+    return gulp.src(['./game/js/main.js'])
         .pipe(plumber())
-        .pipe(sourcemaps.init())
-        .pipe(concat('girder-gus.js'))
         .pipe(babel())
-        .pipe(sourcemaps.write())
+        .pipe(browserify({
+            insertGlobals : true,
+            debug : !gulp.env.production
+        }))
+        .pipe(rename('girder-gus.js'))
         .pipe(gulp.dest('./public'));
 });
 
@@ -151,7 +154,11 @@ gulp.task('default', function () {
 
     // Run when anything inside of browser/js changes.
     gulp.watch('browser/js/**', function () {
-        runSeq('buildJS', 'reload');
+        runSeq('buildBrowserJS', 'reload');
+    });
+
+    gulp.watch('game/js/**', function() {
+        runSeq('buildGameJS', 'reload');
     });
 
     // Run when anything inside of browser/scss changes.
