@@ -1,6 +1,7 @@
 // All used modules.
 var gulp = require('gulp');
 var babel = require('gulp-babel');
+var browserify = require('gulp-browserify');
 var runSeq = require('run-sequence');
 var plumber = require('gulp-plumber');
 var concat = require('gulp-concat');
@@ -29,9 +30,9 @@ gulp.task('reloadCSS', function () {
     return gulp.src('./public/style.css').pipe(livereload());
 });
 
-gulp.task('lintJS', function () {
+gulp.task('lintBrowserJS', function () {
 
-    return gulp.src(['./browser/js/**/*.js', './game/js/**', './server/**/*.js'])
+    return gulp.src(['./browser/js/**/*.js'])
         .pipe(plumber({
             errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
         }))
@@ -41,7 +42,31 @@ gulp.task('lintJS', function () {
 
 });
 
-gulp.task('buildBrowserJS', ['lintJS'], function () {
+gulp.task('lintGameJS', function () {
+
+    return gulp.src(['./game/js/**'])
+        .pipe(plumber({
+            errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
+        }))
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failOnError());
+
+});
+
+gulp.task('lintServerJS', function () {
+
+    return gulp.src(['./server/**/*.js'])
+        .pipe(plumber({
+            errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
+        }))
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failOnError());
+
+});
+
+gulp.task('buildBrowserJS', ['lintBrowserJS'], function () {
     return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
         .pipe(plumber())
         .pipe(sourcemaps.init())
@@ -51,13 +76,15 @@ gulp.task('buildBrowserJS', ['lintJS'], function () {
         .pipe(gulp.dest('./public'));
 });
 
-gulp.task('buildGameJS', ['lintJS'], function() {
-    return gulp.src(['./game/js/main.js', './game/js/**/*.js'])
+gulp.task('buildGameJS', ['lintGameJS'], function() {
+    return gulp.src(['./game/js/main.js'])
         .pipe(plumber())
-        .pipe(sourcemaps.init())
-        .pipe(concat('girder-gus.js'))
         .pipe(babel())
-        .pipe(sourcemaps.write())
+        .pipe(browserify({
+            insertGlobals : true,
+            debug : !gulp.env.production
+        }))
+        .pipe(rename('girder-gus.js'))
         .pipe(gulp.dest('./public'));
 });
 
@@ -153,7 +180,11 @@ gulp.task('default', function () {
 
     // Run when anything inside of browser/js changes.
     gulp.watch('browser/js/**', function () {
-        runSeq('buildJS', 'reload');
+        runSeq('buildBrowserJS', 'reload');
+    });
+
+    gulp.watch('game/js/**', function() {
+        runSeq('buildGameJS', 'reload');
     });
 
     // Run when anything inside of browser/scss changes.
@@ -161,7 +192,7 @@ gulp.task('default', function () {
         runSeq('buildCSS', 'reloadCSS');
     });
 
-    gulp.watch('server/**/*.js', ['lintJS']);
+    gulp.watch('server/**/*.js', ['lintServerJS']);
 
     // Reload when a template (.html) file changes.
     gulp.watch(['browser/**/*.html', 'server/app/views/*.html'], ['reload']);
