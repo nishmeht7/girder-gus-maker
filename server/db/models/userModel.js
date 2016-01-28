@@ -38,13 +38,13 @@ var schema = new mongoose.Schema({
 
 // sets user's totalStars based on sum of stars for user's createdLevels
 schema.methods.setStars = function() {
+	var that = this;
 	var Level = mongoose.model('Level');
-	Level.find({_id: {$in: this.createdLevels}}).then(function(usersLevels) {
-		this.totalStars = usersLevels.reduce(function(prev, level) {
+	return Level.find({_id: {$in: that.createdLevels}}).then(function(usersLevels) {
+		that.totalStars = usersLevels.reduce(function(prev, level) {
 			return prev + level.starCount;
 		}, 0);
-		console.log('did a reduce');
-		return this.save();
+		return that.save();
 	});
 	/*
     this.populate('createdLevels', 'starCount')
@@ -60,9 +60,7 @@ schema.methods.setStars = function() {
 
 // adds levelId to user's createdLevels array
 schema.methods.addLevel = function(levelId) {
-	console.log('attempting to add a level');
     if(this.createdLevels.indexOf(levelId) === -1){
-		console.log('pushing id to user');
         this.createdLevels.push(levelId);
         return this.save();
     }
