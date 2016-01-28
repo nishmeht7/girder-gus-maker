@@ -1,7 +1,7 @@
-
 function initLoadState() {
 
   var state = {};
+  var game = window.game;
 
   state.preload = function () {
 
@@ -40,3 +40,5 @@ function initLoadState() {
   return state;
 
 }
+
+module.exports = initLoadState;

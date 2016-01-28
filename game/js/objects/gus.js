@@ -1,4 +1,12 @@
+var COLLISION_GROUPS = require( "../consts/collisionGroups" );
+var EPSILON = require( "../consts" ).EPSILON;
+var TAU = require( "../consts" ).TAU;
+
+var game = window.game;
+
 function Gus(x, y) {
+
+    if ( game === undefined ) game = window.game;
 
     this.speed = 250;         // walk speed
     this.gravity = 1000;      // gravity speed
@@ -101,11 +109,12 @@ Gus.prototype.rotate = function( dir ) {
   if ( this.rotating ) return;
 
   // find the angle to rotate by
+  var rot = 0;
   if ( dir === "left" ) {
-    var rot = -Math.PI / 2;
+    rot = -Math.PI / 2;
     this.sprite.rotation -= TAU;
-  } else {
-    var rot = Math.PI / 2;
+  } else if ( dir === "right" ) {
+    rot = Math.PI / 2;
   }
 
   // change values
@@ -152,12 +161,13 @@ Gus.prototype.walk = function( dir ) {
   this.idleTime = 0;
 
   // determine speed and flip the sprite if necessary
+  var intendedVelocity = 0;
   if ( dir === "left" ) {
-    var intendedVelocity = -this.speed;
+    intendedVelocity = -this.speed;
     this.sprite.scale.x = -1;
     this.facingRight = false;
-  } else {
-    var intendedVelocity = this.speed;
+  } else if ( dir === "right" ) {
+    intendedVelocity = this.speed;
     this.sprite.scale.x = 1;
     this.facingRight = true;
   }
@@ -216,7 +226,7 @@ Gus.prototype.update = function() {
     // create a rotate tween
     if ( this.rotateTween === undefined ) {
       this.rotateTween = game.add.tween( this.sprite ).to( { rotation: this.targetRotation }, 300, Phaser.Easing.Default, true )
-      .onComplete.add( function( gus, tween ) {
+      .onComplete.add( function() {
         this.rotation = this.targetRotation % ( TAU );  // keep angle within 0-2pi
         this.finishRotation();
       }, this );
@@ -235,9 +245,9 @@ Gus.prototype.update = function() {
     }
 
     // check for input
-    if ( cursors.left.isDown ) {
+    if ( game.cursors.left.isDown ) {
       this.walk( "left" );
-    } else if ( cursors.right.isDown ) {
+    } else if ( game.cursors.right.isDown ) {
       this.walk( "right" );
     } else {
       this.stop();
@@ -246,3 +256,5 @@ Gus.prototype.update = function() {
   }
 
 }
+
+module.exports = Gus;
