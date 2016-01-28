@@ -3,9 +3,11 @@ function Gus(x, y) {
     this.speed = 250;         // walk speed
     this.gravity = 1000;      // gravity speed
     this.hopStrength = 60;   // strength of gus's walk cycle hops
+    this.dancingTime = 10000; // how long gus has to hold still to start dancing
 
     this.rotation = 0;        // internal rotation counter
     this.prevRotation = 0;    // previous rotation
+    this.idleTime = 0;        // how long gus has been holding still
 
     this.rotating = false;    // is gus rotating?
     this.canRotate = true;    // can gus rotate?
@@ -29,6 +31,7 @@ function Gus(x, y) {
     // add animations
     this.sprite.animations.add('stand', [0], 10, true);
     this.sprite.animations.add('walk', [1,2], 10, true);
+    this.sprite.animations.add('dance', [3,4,5,6,7], 10, true);
     
 }
 
@@ -135,6 +138,9 @@ Gus.prototype.applyGravity = function() {
 
 Gus.prototype.walk = function( dir ) {
 
+  this.idleTime = 0;
+
+  // determine speed and flip the sprite if necessary
   if ( dir === "left" ) {
     var intendedVelocity = -this.speed;
     this.sprite.scale.x = -1;
@@ -143,6 +149,7 @@ Gus.prototype.walk = function( dir ) {
     this.sprite.scale.x = 1;
   }
 
+  // see if we're walking horizontally or vertically
   var cosine = Math.cos( this.rotation );
   if ( Math.abs( cosine ) > EPSILON ) {
     this.sprite.body.velocity.x = cosine * intendedVelocity;
@@ -153,6 +160,7 @@ Gus.prototype.walk = function( dir ) {
     if ( this.isTouching( "down" ) ) this.sprite.body.velocity.x = sine * this.hopStrength;
   }
 
+  // play animations
   this.sprite.animations.play( 'walk' );
   this.canRotate = true;
 
@@ -160,7 +168,16 @@ Gus.prototype.walk = function( dir ) {
 
 Gus.prototype.stop = function() {
 
-  this.sprite.animations.play( 'stand' );
+  if ( this.idleTime < this.dancingTime ) {
+
+    this.sprite.animations.play( 'stand' );
+    if ( this.isTouching( "down" ) ) this.idleTime += game.time.elapsed;
+
+  } else {
+
+    this.sprite.animations.play( 'dance' );
+
+  }
 
 }
 
