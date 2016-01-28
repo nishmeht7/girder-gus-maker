@@ -6,7 +6,8 @@ var BlackBrickBlock = require( "../objects/blackbrick" );
 function initGameState() {
 
   var state = {};
-  var gus, blocks, marker;
+  var blocks = [];
+  var gus, marker;
   var game = window.game;
 
   state.preload = function () {
@@ -28,11 +29,12 @@ function initGameState() {
 
     console.log( "Creating blocks..." );
 
-    for ( let i = 0; i < 10; ++i ) {
+    var i;
+    for ( i = 0; i < 10; ++i ) {
       blocks.push( new RedBrickBlock( -128 + (32 * i), 128 ) );
     }
 
-    for ( let i = 0; i < 10; ++i ) {
+    for ( i = 0; i < 10; ++i ) {
       blocks.push( new BlackBrickBlock( 64, 96 - ( 32 * i ) ) );
     }
 
