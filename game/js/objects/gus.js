@@ -21,11 +21,10 @@ function Gus(x, y) {
     this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE ] );
 
     // create gus's rotation sensor
-    this.rotationSensor = this.sprite.body.addRectangle( this.sprite.width + 2, 24 );
+    this.rotationSensor = this.sprite.body.addRectangle( this.sprite.width + 2, 20 );
     this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SENSOR, this.rotationSensor );
     this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_ROTATE ], Gus.prototype.touchesWall, this, this.rotationSensor );
     this.sprite.body.onBeginContact.add( Gus.prototype.touchesWall, this );
-    //this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_ROTATE ], Gus.prototype.touchesWall, this );
 
     // add animations
     this.sprite.animations.add('stand', [0], 10, true);
@@ -41,25 +40,6 @@ function saneVec( vec ) {
 
 function dot( vec1, vec2 ) {
   return (vec1[0] * vec2[0]) + (vec1[1] * vec2[1]);
-}
-
-function clampAngleToTau( ang ) {
-
-  ang = ang % TAU;
-  if ( ang < 0 ) ang = TAU - ang;
-  return ang;
-
-}
-
-function angWithin( ang, min, max ) {
-
-  ang = clampAngleToTau( ang );
-  min = clampAngleToTau( min );
-  max = clampAngleToTau( max );
-
-  if ( min > max ) return ang >= min || ang <= max;
-  else return ang >= min && ang <= max;
-
 }
 
 Gus.prototype.touchesWall = function( gus, other, sensor, shape, contact ) {
@@ -102,16 +82,6 @@ Gus.prototype.isTouching = function( side ) {
   }
 }
 
-Gus.prototype.checkForRotation = function( dir ) {
-
-  if ( dir === "left" && this.isTouching( "left" ) ) {
-    this.rotate( "left" );
-  } else if ( dir === "right" && this.isTouching( "right" ) ) {
-    this.rotate( "right" );
-  }
-
-}
-
 Gus.prototype.rotate = function( dir ) {
 
   if ( this.rotating ) return;
@@ -119,6 +89,7 @@ Gus.prototype.rotate = function( dir ) {
   // find the angle to rotate by
   if ( dir === "left" ) {
     var rot = -Math.PI / 2;
+    this.sprite.rotation -= TAU;
   } else {
     var rot = Math.PI / 2;
   }
@@ -211,13 +182,11 @@ Gus.prototype.update = function() {
     if ( this.rotateTween === undefined ) {
       this.rotateTween = game.add.tween( this.sprite ).to( { rotation: this.targetRotation }, 300, Phaser.Easing.Default, true )
       .onComplete.add( function( gus, tween ) {
-        this.rotation = this.targetRotation % ( TAU );
+        this.rotation = this.targetRotation % ( TAU );  // keep angle within 0-2pi
         this.finishRotation();
-          // set gravity relative to our new axis
       }, this );
     }
 
-    // change rotation
   } else {
 
     // do gravity
@@ -225,10 +194,8 @@ Gus.prototype.update = function() {
 
     // check for input
     if ( cursors.left.isDown ) {
-      //if ( this.canRotate ) this.checkForRotation( "left" );
       this.walk( "left" );
     } else if ( cursors.right.isDown ) {
-      //if ( this.canRotate ) this.checkForRotation( "right" );
       this.walk( "right" );
     } else {
       this.stop();
