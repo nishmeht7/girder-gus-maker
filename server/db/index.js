@@ -3,10 +3,8 @@ const Promise = require('bluebird');
 const path = require('path');
 const chalk = require('chalk');
 
-const DATABASE_URI = require(path.join(__dirname, '../env')).DATABASE_URI;
-
 var mongoose = require('mongoose');
-const db = mongoose.connect(DATABASE_URI).connection;
+const db = mongoose.connect('mongodb://gus:gusIsGreat@ds051655.mongolab.com:51655/ggmng').connection;
 
 // Require our models -- these should register the model into mongoose
 // so the rest of the application can simply call mongoose.model('User')
