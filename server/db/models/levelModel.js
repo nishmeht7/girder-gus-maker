@@ -37,7 +37,7 @@ schema.post('save', function(doc, next) {
     if(doc.isNew) {
         User.findById(doc.creator)
             .then(function(user) {
-                retun user.addLevel(doc._id);
+                return user.addLevel(doc._id);
             })
             .then(function(user) {
                 next();
