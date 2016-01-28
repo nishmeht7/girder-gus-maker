@@ -17,7 +17,7 @@ function Gus(x, y) {
     this.sprite = game.add.sprite(x, y, 'Gus');
 
     // attach our sprite to the physics engine
-    game.physics.p2.enable( this.sprite, true );
+    game.physics.p2.enable( this.sprite, false );
     this.sprite.body.fixedRotation = true;
     this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SOLID );
     this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE ] );
