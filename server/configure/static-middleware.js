@@ -6,8 +6,8 @@ module.exports = function (app) {
 
     var root = app.getValue('projectRoot');
 
-    var npmPath = path.join(root, './server/node_modules');
-    var publicPath = path.join(root, './server/public');
+    var npmPath = path.join(root, './node_modules');
+    var publicPath = path.join(root, './public');
     var browserPath = path.join(root, './browser');
 
     app.use(express.static(npmPath));
