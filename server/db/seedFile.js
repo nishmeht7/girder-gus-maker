@@ -48,7 +48,7 @@ var fakeUsers = [{"name":"Andrew Day","email":"aday0@nasa.gov"},
 {"name":"Harold Wells","email":"hwells1b@toplist.cz"},
 {"name":"Nicole Boyd","email":"nboyd1c@hc360.com"},
 {"name":"Eugene Hunt","email":"ehunt1d@wired.com"}]
-var fakeLevels = [{"title":"odio","map":"ZOWYBoZ21VGs"},
+var fakeLevels = [{"title":"odio","map":"ZOWYBoZ21VGs"}] /*,
 {"title":"enim blandit mi","map":"aQ5Y5iHGWU"},
 {"title":"purus","map":"KKNiDC9ZZF"},
 {"title":"ut massa volutpat convallis","map":"EVl4fIScsjLf"},
@@ -348,7 +348,7 @@ var fakeLevels = [{"title":"odio","map":"ZOWYBoZ21VGs"},
 {"title":"metus","map":"IrkGQJEPMkY"},
 {"title":"at vulputate","map":"IdZIKD"},
 {"title":"lacus","map":"7GTZvn"}];
-
+*/
 
 
 //fake data at top because of hoisting issues
@@ -376,6 +376,9 @@ connectToDb.then(function() {
 	}).then(function() {
 		console.log('seeded');
 		console.log(Date.now() - before);
+		process.kill(0);
+	}).then(null, function(e) {
+		console.error(e);
 		process.kill(0);
 	});
 });
