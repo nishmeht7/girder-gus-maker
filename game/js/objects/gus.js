@@ -2,13 +2,14 @@ function Gus(x, y) {
 
     this.speed = 250;         // walk speed
     this.gravity = 1000;      // gravity speed
-    this.hopStrength = 60;   // strength of gus's walk cycle hops
-    this.dancingTime = 10000; // how long gus has to hold still to start dancing
+    this.hopStrength = 0;   // strength of gus's walk cycle hops
+    this.dancingTime = 20000; // how long gus has to hold still to start dancing
 
     this.rotation = 0;        // internal rotation counter
     this.prevRotation = 0;    // previous rotation
     this.idleTime = 0;        // how long gus has been holding still
 
+    this.facingRight = true;  // is gus facing right?
     this.rotating = false;    // is gus rotating?
     this.canRotate = true;    // can gus rotate?
     this.targetRotation = 0;  // target rotation of this flip
@@ -56,6 +57,16 @@ Gus.prototype.touchesWall = function( gus, other, sensor, shape, contact ) {
 
   if ( d > 1 - EPSILON ) this.rotate( "left" );
   else if ( d < -1 + EPSILON ) this.rotate( "right" );
+
+}
+
+Gus.prototype.checkForRotation = function( side ) {
+
+  if ( side === "left" && this.isTouching( "left" ) ) {
+    this.rotate( "left" );
+  } else if ( side === "right" && this.isTouching( "right" ) ) {
+    this.rotate( "right" );
+  }
 
 }
 
@@ -144,9 +155,11 @@ Gus.prototype.walk = function( dir ) {
   if ( dir === "left" ) {
     var intendedVelocity = -this.speed;
     this.sprite.scale.x = -1;
+    this.facingRight = false;
   } else {
     var intendedVelocity = this.speed;
     this.sprite.scale.x = 1;
+    this.facingRight = true;
   }
 
   // see if we're walking horizontally or vertically
@@ -162,7 +175,12 @@ Gus.prototype.walk = function( dir ) {
 
   // play animations
   this.sprite.animations.play( 'walk' );
-  this.canRotate = true;
+  if ( this.canRotate === false ) {
+    this.canRotate = true;
+    this.sprite.body.clearCollision();
+    this.rotationSensor.needsCollisionData = true;
+  }
+  //this.checkForRotation( dir );
 
 }
 
@@ -208,6 +226,12 @@ Gus.prototype.update = function() {
 
     // do gravity
     this.applyGravity();
+
+    if ( this.rotationSensor.needsCollisionData ) {
+      this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SOLID );
+      this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE ] );
+      this.rotationSensor.needsCollisionData = false;
+    }
 
     // check for input
     if ( cursors.left.isDown ) {
