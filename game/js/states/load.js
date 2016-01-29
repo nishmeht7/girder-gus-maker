@@ -20,7 +20,7 @@ function initLoadState() {
 
   state.create = function () {
 
-      game.world.setBounds( -400, -300, 800, 600 );
+      game.world.setBounds( -400, -300, 800, 600 ); // fullscreen???
 
       // set background color
       game.stage.setBackgroundColor( "#4428BC" );
