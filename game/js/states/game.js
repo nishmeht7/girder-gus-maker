@@ -1,7 +1,7 @@
 var Gus = require( "../objects/gus" );
 var GirderMarker = require( "../objects/girderMarker" );
-var RedBrickBlock = require( "../objects/redbrick" );
-var BlackBrickBlock = require( "../objects/blackbrick" );
+var RedBrickBlock = require( "../objects/blocks" ).RedBrickBlock;
+var BlackBrickBlock = require( "../objects/blocks" ).BlackBrickBlock;
 
 function initGameState() {
 
@@ -47,16 +47,14 @@ function initGameState() {
 
   state.update = function () {
 
-    //game.physics.arcade.collide( gus.sprite, blocks );
-
+    // update actors
     gus.update();
     marker.update();
 
+    // lock camera to player
     game.camera.displayObject.pivot.x = gus.sprite.position.x;
     game.camera.displayObject.pivot.y = gus.sprite.position.y;
     game.camera.displayObject.rotation = (Math.PI * 2) - gus.sprite.rotation;
-    //game.world.rotation = (Math.PI * 2) - gus.rotation;
-    //game.physics.arcade.collide( gus.sprite, blocks );
 
   }
 
