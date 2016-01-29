@@ -3,6 +3,8 @@ var defaultSkyColor = require( "../consts/colors" ).DEFAULT_SKY;
 
 function LevelGenerator( levelData ) {
 
+  if ( blockIds === undefined ) console.error( "blockIds are undefined (wtf!!)")
+
   this.blockIds = blockIds;
   this.levelData = levelData;
 
@@ -15,14 +17,15 @@ LevelGenerator.prototype.getSkyColor = function() {
 LevelGenerator.prototype.parseObjects = function() {
 
   var levelObjects = [];
-  var objDefList = levelData.objects;
+  var objDefList = this.levelData.objects;
+  var blocks = this.blockIds;
 
   objDefList.forEach( function( objDef ) {
 
     // find the object definition function for this id
     var createFunction = undefined;
-    if ( objDef.tile !== undefined && this.blockIds[ objDef.tile ] !== undefined ) {
-      createFunction = this.blockIds[ objDef.tile ].onLoad;
+    if ( objDef.tile !== undefined && blocks[ objDef.tile ] !== undefined ) {
+      createFunction = blocks[ objDef.tile ].onLoad;
     }
 
     if ( typeof createFunction !== "function" ) {

@@ -1,5 +1,3 @@
-var LevelGenerator = require( "../generator" );
-
 function initLoadState() {
 
   var state = {};
@@ -17,25 +15,15 @@ function initLoadState() {
     game.load.image('Tool', '/assets/images/tool.png');
     game.load.spritesheet('Gus', '/assets/images/gus.png', 32, 32);
 
-    console.log( "Loading level data..." );
-
-    var level = {};
-
-    generator = new LevelGenerator( level );
-
     console.log( "Done loading" );
 
   }
 
   state.create = function () {
 
-      game.world.setBounds( -400, -300, 800, 600 );
-
-      // set background color
-      game.stage.setBackgroundColor( generator.getSkyColor() );
-
-      // generate the rest of the fucking level
-      generator.parseObjects();
+      console.log( "Starting world..." );
+      game.world.setBounds( -400, -300, 800, 600 ); // fullscreen???
+      game.physics.p2.setBoundsToWorld();
 
       // start game state
       game.state.start( "game" );

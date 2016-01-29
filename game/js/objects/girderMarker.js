@@ -1,5 +1,8 @@
 var game = window.game;
 
+var Girder = require( "./blocks" ).Girder;
+
+var COLLISION_GROUPS = require( "../consts/collisionGroups" );
 var EPSILON = require( "../consts" ).EPSILON;
 
 function GirderMarker() {
@@ -73,7 +76,15 @@ GirderMarker.prototype.getTargetPos = function () {
 
   var bottom = posFactory.bottom();
 
-  if ( game.physics.p2.hitTest( bottom ).length ) {
+  var hitBoxes = game.physics.p2.hitTest( bottom );
+  if ( hitBoxes.length ) {
+
+    var hitUnplaceable = false;
+    hitBoxes.forEach( function( box ) {
+      if ( box.parent.collidesWith.indexOf( COLLISION_GROUPS.PLAYER_SENSOR ) === -1 ) hitUnplaceable = true;
+    });
+    if ( hitUnplaceable ) return undefined;
+
     var front = posFactory.front();
 
     if ( game.physics.p2.hitTest( front ).length ) {
@@ -98,7 +109,7 @@ GirderMarker.prototype.placeGirder = function () {
 
   if ( this.placeable ) {
     var newGirder = new Girder( this.sprite.position.x, this.sprite.position.y ); 
-    newGirder.sprite.rotation = this.master.rotation;
+    newGirder.sprite.rotation = this.master.sprite.rotation;
     this.master.canRotate = false;
   }
 
