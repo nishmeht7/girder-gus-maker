@@ -2,6 +2,7 @@ function initLoadState() {
 
   var state = {};
   var game = window.game;
+  var generator;
 
   state.preload = function () {
 
@@ -20,10 +21,9 @@ function initLoadState() {
 
   state.create = function () {
 
+      console.log( "Starting world..." );
       game.world.setBounds( -400, -300, 800, 600 ); // fullscreen???
-
-      // set background color
-      game.stage.setBackgroundColor( "#4428BC" );
+      game.physics.p2.setBoundsToWorld();
 
       // start game state
       game.state.start( "game" );
