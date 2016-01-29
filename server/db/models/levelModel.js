@@ -34,7 +34,7 @@ schema.pre('save', function(next) {
 
 // add level to creator's createdLevels if level is new
 schema.post('save', function(doc, next) {
-    if(doc.isNew) {
+    if(doc.wasNew) {
         User.findById(doc.creator)
             .then(function(user) {
                 return user.addLevel(doc._id);
@@ -56,7 +56,10 @@ schema.post('save', function(doc, next) {
         })
         .then(function(user) {
             next();
-        })
+        }).then(null, function(error) {
+			console.error(error);
+			next();
+		});
 })
 
 // hook to remove deleted level from creator's level list and

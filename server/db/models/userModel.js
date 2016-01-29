@@ -38,14 +38,14 @@ var schema = new mongoose.Schema({
 
 // sets user's totalStars based on sum of stars for user's createdLevels
 schema.methods.setStars = function() {
-    this.populate('createdLevels', 'starCount')
-        .then(function(user) {
-            user.totalStars = user.createdLevels.reduce(function(previousValue, currentLevel) {
-                return previousValue + currentLevel.starCount;
-            }, 0);
-
-            return user.save();
-        });
+	var that = this;
+	var Level = mongoose.model('Level');
+	return Level.find({_id: {$in: that.createdLevels}}).then(function(usersLevels) {
+		that.totalStars = usersLevels.reduce(function(prev, level) {
+			return prev + level.starCount;
+		}, 0);
+		return that.save();
+	});
 }
 
 // adds levelId to user's createdLevels array
