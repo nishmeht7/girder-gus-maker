@@ -5,6 +5,9 @@ app.directive('userlevels', function() {
         controller: 'UserLevelsCtrl',
         scope: {
             levels: '='
+        },
+        link: function(scope) {
+            
         }
     }
 })
