@@ -19,7 +19,7 @@ function Gus(x, y) {
 
     this.facingRight = true;  // is gus facing right?
     this.rotating = false;    // is gus rotating?
-    this.canRotate = true;    // can gus rotate?
+    this.canRotate = false;   // can gus rotate?
     this.targetRotation = 0;  // target rotation of this flip
 
     // create a sprite object and set its anchor
@@ -52,6 +52,20 @@ function saneVec( vec ) {
 
 function dot( vec1, vec2 ) {
   return (vec1[0] * vec2[0]) + (vec1[1] * vec2[1]);
+}
+
+Gus.prototype.respawn = function() {
+
+  this.rotation = 0;
+  this.prevRotation = 0;
+  this.targetRotation = 0;
+  this.rotating = false;
+  this.canRotate = false;
+  this.idleTime = 0;
+
+  this.sprite.position.x = game.gusStartPos.x;
+  this.sprite.position.y = game.gusStartPos.y;
+
 }
 
 Gus.prototype.touchesWall = function( gus, other, sensor, shape, contact ) {
