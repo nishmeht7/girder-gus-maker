@@ -2,7 +2,6 @@ function initLoadState() {
 
   var state = {};
   var game = window.game;
-  var generator;
 
   state.preload = function () {
 

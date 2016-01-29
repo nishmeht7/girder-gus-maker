@@ -11,21 +11,21 @@ function LevelGenerator( levelData ) {
 }
 
 LevelGenerator.prototype.getSkyColor = function() {
-  return this.levelData.skyColor || defaultSkyColor;
+  return this.levelData.sky || defaultSkyColor;
 }
 
 LevelGenerator.prototype.parseObjects = function() {
 
   var levelObjects = [];
-  var objDefList = this.levelData.objects;
+  var objDefList = this.levelData.objs;
   var blocks = this.blockIds;
 
   objDefList.forEach( function( objDef ) {
 
     // find the object definition function for this id
     var createFunction = undefined;
-    if ( objDef.tile !== undefined && blocks[ objDef.tile ] !== undefined ) {
-      createFunction = blocks[ objDef.tile ].onLoad;
+    if ( objDef.t !== undefined && blocks[ objDef.t ] !== undefined ) {
+      createFunction = blocks[ objDef.t ].onLoad;
     }
 
     if ( typeof createFunction !== "function" ) {
