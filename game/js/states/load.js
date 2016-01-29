@@ -25,13 +25,6 @@ function initLoadState() {
       // set background color
       game.stage.setBackgroundColor( "#4428BC" );
 
-      game.map = game.add.tilemap( null, 32, 32, 60, 60 );
-      game.map.addTilesetImage( "BrickRed", "BrickRed" );
-      game.map.layer1 = game.map.create( "Blocks", 60, 60, 32, 32 );
-      game.map.layer1.debug = true;
-      game.map.random( 0, 0, 60, 60, game.map.layer1 );
-      //game.map.layer1.resizeWorld();
-
       // start game state
       game.state.start( "game" );
 
