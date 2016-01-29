@@ -49,6 +49,7 @@
             var code = elem.text();
             s.text = code;
           }
+          s.defer = true; // added by David
           document.head.appendChild(s);
           elem.remove();
         }
