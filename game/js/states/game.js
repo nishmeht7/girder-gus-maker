@@ -8,7 +8,7 @@ function initGameState() {
 
   var state = {};
   var blocks = [];
-  var gus, marker;
+  var gus, marker, generator,restartTimeout;
   var game = window.game;
 
   state.preload = function () {
@@ -16,27 +16,28 @@ function initGameState() {
     console.log( "Loading level data..." );
 
     var level = {
-      skyColor: "#AA4404",
-      objects: [
-        { tile: 'a', x: -96, y: 128 },
-        { tile: 'a', x: -64, y: 128 },
-        { tile: 'a', x: -32, y: 128 },
-        { tile: 'a', x: 0, y: 128 },
-        { tile: 'a', x: 32, y: 128 },
-        { tile: 'a', x: 64, y: 128 },
-        { tile: 'a', x: 96, y: 128 },
-        { tile: 'a', x: 128, y: 128 },
-        { tile: 'a', x: -96, y: 160 },
-        { tile: 'a', x: -64, y: 160 },
-        { tile: 'a', x: -32, y: 160 },
-        { tile: 'a', x: 0, y: 160 },
-        { tile: 'a', x: 32, y: 160 },
-        { tile: 'a', x: 64, y: 160 },
-        { tile: 'a', x: 96, y: 160 },
-        { tile: 'a', x: 128, y: 160 },
-        { tile: 'b', x: 64, y: 96 },
-        { tile: 'b', x: 64, y: 64 },
-        { tile: 'G', x: 96, y: 96 }
+      sky: "#4499FF",
+      objs: [
+        { t: 'a', x: -288, y: -160 },{ t: 'a', x: -288, y: -128 },{ t: 'a', x: -288, y: -96 },{ t: 'a', x: -288, y: -64 },{ t: 'a', x: -288, y: -32 },{ t: 'a', x: -288, y: 0 },{ t: 'a', x: -288, y: 32 },{ t: 'a', x: -288, y: 64 },{ t: 'a', x: -288, y: 96 },{ t: 'a', x: -288, y: 128 },{ t: 'a', x: -288, y: 160 },
+        { t: 'a', x: -256, y: -160 },{ t: 'a', x: -256, y: -128 },{ t: 'a', x: -256, y: -96 },{ t: 'a', x: -256, y: -64 },{ t: 'a', x: -256, y: -32 },{ t: 'a', x: -256, y: 0 },{ t: 'a', x: -256, y: 32 },{ t: 'a', x: -256, y: 64 },{ t: 'a', x: -256, y: 96 },{ t: 'a', x: -256, y: 128 },{ t: 'a', x: -256, y: 160 },
+        { t: 'a', x: -224, y: 128 },{ t: 'a', x: -224, y: 160 },{ t: 'a', x: -224, y: -128 },{ t: 'a', x: -224, y: -160 },
+        { t: 'a', x: -192, y: 128 },{ t: 'a', x: -192, y: 160 },{ t: 'a', x: -192, y: -128 },{ t: 'a', x: -192, y: -160 },
+        { t: 'a', x: -160, y: 128 },{ t: 'a', x: -160, y: 160 },{ t: 'a', x: -160, y: -128 },{ t: 'a', x: -160, y: -160 },
+        { t: 'a', x: -128, y: 128 },{ t: 'a', x: -128, y: 160 },{ t: 'a', x: -128, y: -128 },{ t: 'a', x: -128, y: -160 },
+        { t: 'a', x: -96, y: -128 },{ t: 'a', x: -96, y: -160 },
+        { t: 'a', x: -64, y: -128 },{ t: 'a', x: -64, y: -160 },
+        { t: 'a', x: -32, y: -128 },{ t: 'a', x: -32, y: -160 },
+        { t: 'a', x: 0, y: -128 },{ t: 'a', x: 0, y: -160 },
+        { t: 'a', x: 32, y: -128 },{ t: 'a', x: 32, y: -160 },
+        { t: 'a', x: 64, y: -128 },{ t: 'a', x: 64, y: -160 },
+        { t: 'a', x: 96, y: 128 },{ t: 'a', x: 96, y: 160 },{ t: 'a', x: 96, y: -128 },{ t: 'a', x: 96, y: -160 },
+        { t: 'a', x: 128, y: 128 },{ t: 'a', x: 128, y: 160 },{ t: 'a', x: 128, y: -128 },{ t: 'a', x: 128, y: -160 },
+        { t: 'a', x: 160, y: 128 },{ t: 'a', x: 160, y: 160 },{ t: 'a', x: 160, y: -128 },{ t: 'a', x: 160, y: -160 },
+        { t: 'a', x: 192, y: 128 },{ t: 'a', x: 192, y: 160 },{ t: 'a', x: 192, y: -128 },{ t: 'a', x: 192, y: -160 },
+        { t: 'a', x: 224, y: -160 },{ t: 'a', x: 224, y: -128 },{ t: 'a', x: 224, y: -96 },{ t: 'a', x: 224, y: -64 },{ t: 'a', x: 224, y: -32 },{ t: 'a', x: 224, y: 0 },{ t: 'a', x: 224, y: 32 },{ t: 'a', x: 224, y: 64 },{ t: 'a', x: 224, y: 96 },{ t: 'a', x: 224, y: 128 },{ t: 'a', x: 224, y: 160 },
+        { t: 'a', x: 256, y: -160 },{ t: 'a', x: 256, y: -128 },{ t: 'a', x: 256, y: -96 },{ t: 'a', x: 256, y: -64 },{ t: 'a', x: 256, y: -32 },{ t: 'a', x: 256, y: 0 },{ t: 'a', x: 256, y: 32 },{ t: 'a', x: 256, y: 64 },{ t: 'a', x: 256, y: 96 },{ t: 'a', x: 256, y: 128 },{ t: 'a', x: 256, y: 160 },
+        { t: '+', x: 128, y: 96 },{ t: '+', x: 128, y: -96 },{ t: '+', x: -160, y: -96 },
+        { t: 'G', x: -160, y: 96 }
       ]
     };
 
@@ -52,6 +53,13 @@ function initGameState() {
     // generate the rest of the fucking level
     console.log( "Generating level from level data..." );
     generator.parseObjects();
+
+    if ( game.toolsToCollect !== undefined ) {
+      game.toolsRemaining = game.toolsToCollect.length;
+    } else {
+      game.toolsRemaining = 1;
+      console.error( "No tools were included in this level" );
+    }
 
     console.log( "Creating Gus..." );
 
@@ -77,6 +85,7 @@ function initGameState() {
 
     game.cursors = game.input.keyboard.createCursorKeys();
     marker.setPlaceGirderButton( game.input.keyboard.addKey( Phaser.KeyCode.SPACEBAR ) );
+    game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( function() { gus.doom() }, this, 0 );
 
   }
 
@@ -85,11 +94,36 @@ function initGameState() {
     // update actors
     gus.update();
     marker.update();
+    game.toolsToCollect.forEach( function( tool ) { tool.update() });
+
+    if ( game.toolsRemaining === 0 ) {
+      if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel() }, 10000 );
+
+      game.camera.scale.x *= 1 + game.time.physicsElapsed;
+      game.camera.scale.y *= 1 + game.time.physicsElapsed;
+      gus.sprite.rotation += game.time.physicsElapsed * 60;
+    } else if ( gus.isDead && restartTimeout === undefined ) {
+      restartTimeout = setTimeout( function() { state.restartLevel() }, 5000 );
+    }
 
     // lock camera to player
     game.camera.displayObject.pivot.x = gus.sprite.position.x;
     game.camera.displayObject.pivot.y = gus.sprite.position.y;
     game.camera.displayObject.rotation = (Math.PI * 2) - gus.sprite.rotation;
+
+  }
+
+  state.restartLevel = function () {
+
+    game.toolsToCollect.forEach( function( tool ) { tool.reset() });
+    marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
+
+    gus.respawn();
+
+    game.camera.scale.x = 1;
+    game.camera.scale.y = 1;
+
+    restartTimeout = undefined;
 
   }
 

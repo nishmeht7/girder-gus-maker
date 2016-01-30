@@ -1,4 +1,5 @@
 var blocks = require( "../objects/blocks" );
+var Tool = require( "../objects/tool" );
 
 var blockIds = {};
 
@@ -18,6 +19,7 @@ function addBlockId( id, loadFunction ) {
 
 addBlockId( 'a', function( defObj ) { return new blocks.RedBrickBlock( defObj.x, defObj.y ) });
 addBlockId( 'b', function( defObj ) { return new blocks.BlackBrickBlock( defObj.x, defObj.y ) });
+addBlockId( '+', function( defObj ) { return new Tool( defObj.x, defObj.y ) });
 addBlockId( 'G', function( defObj ) { window.game.gusStartPos = { x: defObj.x, y: defObj.y } });
 
 module.exports = blockIds;
