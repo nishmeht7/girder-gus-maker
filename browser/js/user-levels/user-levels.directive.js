@@ -1,4 +1,4 @@
-app.directive('userlevels', function() {
+app.directive('userLevels', function() {
     return {
         restrict: 'E',
         templateUrl: 'js/user-levels/user-levels.html',

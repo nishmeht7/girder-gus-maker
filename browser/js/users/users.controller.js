@@ -1,3 +1,3 @@
-app.controller('UsersCtrl', function($scope) {
-    //
+app.controller('UsersCtrl', function($scope, users) {
+    $scope.users = users;
 })
