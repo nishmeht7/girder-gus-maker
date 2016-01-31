@@ -15,6 +15,7 @@ const map = {
   checksum: {
     type: String,
     default: function() {
+      if (!this.objects) return '';
       return this.objects.reduce((prev, next) => prev + next, '');
     }
   },
