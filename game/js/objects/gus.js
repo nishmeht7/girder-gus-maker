@@ -12,7 +12,7 @@ function Gus(x, y) {
     this.gravity = 1000;      // gravity speed
     this.hopStrength = 0;   // strength of gus's walk cycle hops
     this.dancingTime = 20000; // how long gus has to hold still to start dancing
-    this.killTime = 1000;     // how long gus has to fall before the game counts him as dead
+    this.killTime = 3000;     // how long gus has to fall before the game counts him as dead
 
     this.rotation = 0;        // internal rotation counter
     this.prevRotation = 0;    // previous rotation
