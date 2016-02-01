@@ -6,7 +6,13 @@ require('angular-ui-router');
 require('./misc/fsa-pre-built');
 require('./misc/ng-load-script');
 
+const events = require('events');
+const eventEmitter = new events.EventEmitter();
+
+eventEmitter.on('loaded', () => { console.log('\n\ncreator loaded\n\n') })
+
 window.app = angular.module('FullstackGeneratedApp', ['fsaPreBuilt', 'ui.router', 'ngLoadScript']);
+window.eventEmitter = eventEmitter; // for communication with levelCreator
 
 console.dir(angular.module);
 window.app.config(function($urlRouterProvider, $locationProvider) {

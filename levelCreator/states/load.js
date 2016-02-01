@@ -22,10 +22,10 @@ function initLoadState() {
 
       console.log( "Starting world..." );
       game.world.setBounds( -400, -300, 800, 600 ); // fullscreen???
-      game.physics.p2.setBoundsToWorld();
 
+      console.log( "Going to create state..." );
       // start game state
-      game.state.start( "game" );
+      game.state.start( "create" );
 
   }
 
