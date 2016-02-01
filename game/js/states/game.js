@@ -162,6 +162,7 @@ function initGameState() {
     gus.respawn();
     gus.rotationSpeed = 0;
     game.dolly.lockTo( gus.sprite );
+    gus.girders = generator.getStartingGirders();
 
     game.camera.scale.x = 1;
     game.camera.scale.y = 1;
