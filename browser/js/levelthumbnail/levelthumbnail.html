@@ -4,7 +4,9 @@
             <img src="http://placehold.it/250x150">
             <div>
                 <h5>{{ level.title }}</h5>
-                <h6 ng-show="showCreator">By {{ level.creator.name }}</h6>
+                <h5 class="glyphicon glyphicon-star">{{ level.starCount }}</h5>
+                <h6>Created by {{ level.creator.name }}</h6>
+                <h6>on {{ level.dateCreate | date: longDate }}</h6>
             </div>
         </a>
     </div>
