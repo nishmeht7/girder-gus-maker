@@ -1,8 +1,7 @@
 // All used modules.
 var gulp = require('gulp');
 var babel = require('gulp-babel');
-var browserify = require('gulp-browserify');
-var actualBrowserify = require('browserify');
+var browserify = require('browserify');
 var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 var runSeq = require('run-sequence');
@@ -25,10 +24,9 @@ var notify = require('gulp-notify');
 // --------------------------------------------------------------
 
 gulp.task('buildBrowserJS', function() {
-  var bundler = actualBrowserify();
+  var bundler = browserify();
 
   bundler.add('./browser/js/app.js');
-
   bundler.transform(babelify);
 
   return bundler.bundle()
@@ -97,14 +95,14 @@ gulp.task('lintServerJS', function() {
 // });
 
 gulp.task('buildGameJS', ['lintGameJS'], function() {
-  return gulp.src(['./game/js/main.js'])
+  var bundler = browserify();
+
+  bundler.add('./game/js/main.js');
+  bundler.transform(babelify)
+
+  return bundler.bundle()
+    .pipe(source('girder-gus.js'))
     .pipe(plumber())
-    .pipe(babel())
-    .pipe(browserify({
-      insertGlobals: true,
-      debug: !gulp.env.production
-    }))
-    .pipe(rename('girder-gus.js'))
     .pipe(gulp.dest('./public'));
 });
 
