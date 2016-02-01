@@ -1,7 +1,9 @@
 // All used modules.
 var gulp = require('gulp');
 var babel = require('gulp-babel');
-var browserify = require('gulp-browserify');
+var browserify = require('browserify');
+var babelify = require('babelify');
+var source = require('vinyl-source-stream');
 var runSeq = require('run-sequence');
 var plumber = require('gulp-plumber');
 var concat = require('gulp-concat');
@@ -21,144 +23,166 @@ var notify = require('gulp-notify');
 // Development tasks
 // --------------------------------------------------------------
 
+gulp.task('buildBrowserJS', function() {
+  var bundler = browserify();
+
+  bundler.add('./browser/js/app.js');
+  bundler.transform(babelify);
+
+  return bundler.bundle()
+    .pipe(source('main.js'))
+    .pipe(plumber())
+    .pipe(gulp.dest('./public'));
+})
+
 // Live reload business.
-gulp.task('reload', function () {
-    livereload.reload();
+gulp.task('reload', function() {
+  livereload.reload();
 });
 
-gulp.task('reloadCSS', function () {
-    return gulp.src('./public/style.css').pipe(livereload());
+gulp.task('reloadCSS', function() {
+  return gulp.src('./public/style.css').pipe(livereload());
 });
 
-gulp.task('lintBrowserJS', function () {
+gulp.task('lintBrowserJS', function() {
 
-    return gulp.src(['./browser/js/**/*.js'])
-        .pipe(plumber({
-            errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
-        }))
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failOnError());
-
-});
-
-gulp.task('lintGameJS', function () {
-
-    return gulp.src(['./game/js/**'])
-        .pipe(plumber({
-            errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
-        }))
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failOnError());
+  return gulp.src(['./browser/js/**/*.js'])
+    .pipe(plumber({
+      errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
+    }))
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failOnError());
 
 });
 
-gulp.task('lintServerJS', function () {
+gulp.task('lintGameJS', function() {
 
-    return gulp.src(['./server/**/*.js'])
-        .pipe(plumber({
-            errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
-        }))
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failOnError());
+  return gulp.src(['./game/js/**'])
+    .pipe(plumber({
+      errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
+    }))
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failOnError());
 
 });
 
-gulp.task('buildBrowserJS', ['lintBrowserJS'], function () {
-    return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
-        .pipe(plumber())
-        .pipe(sourcemaps.init())
-        .pipe(concat('main.js'))
-        .pipe(babel())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./public'));
+gulp.task('lintServerJS', function() {
+
+  return gulp.src(['./server/**/*.js'])
+    .pipe(plumber({
+      errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
+    }))
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failOnError());
+
 });
+
+// gulp.task('buildBrowserJS', ['lintBrowserJS'], function() {
+//   return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
+//     .pipe(plumber())
+//     .pipe(sourcemaps.init())
+//     .pipe(babel())
+//     .pipe(browserify({
+//       insertGlobals: true,
+//       debug: !gulp.env.production
+//     }))
+//     .pipe(sourcemaps.write())
+//     .pipe(rename('main.js'))
+//     .pipe(gulp.dest('./public'));
+// });
 
 gulp.task('buildGameJS', ['lintGameJS'], function() {
-    return gulp.src(['./game/js/main.js'])
-        .pipe(plumber())
-        .pipe(babel())
-        .pipe(browserify({
-            insertGlobals : true,
-            debug : !gulp.env.production
-        }))
-        .pipe(rename('girder-gus.js'))
-        .pipe(gulp.dest('./public'));
+  var bundler = browserify();
+
+  bundler.add('./game/js/main.js');
+  bundler.transform(babelify)
+
+  return bundler.bundle()
+    .pipe(source('girder-gus.js'))
+    .pipe(plumber())
+    .pipe(gulp.dest('./public'));
 });
 
 gulp.task('copyAssets', function() {
-    return gulp.src(['./game/assets/**'])
-        .pipe(plumber())
-        .pipe(gulp.dest('./public/assets'));
+  return gulp.src(['./game/assets/**'])
+    .pipe(plumber())
+    .pipe(gulp.dest('./public/assets'));
 });
 
-gulp.task('testServerJS', function () {
-    require('babel/register');
-	return gulp.src('./tests/server/**/*.js', {
-		read: false
-	}).pipe(mocha({ reporter: 'spec' }));
+gulp.task('testServerJS', function() {
+  require('babel/register');
+  return gulp.src('./tests/server/**/*.js', {
+    read: false
+  }).pipe(mocha({
+    reporter: 'spec'
+  }));
 });
 
-gulp.task('testServerJSWithCoverage', function (done) {
-    gulp.src('./server/**/*.js')
-        .pipe(istanbul({
-            includeUntested: true
+gulp.task('testServerJSWithCoverage', function(done) {
+  gulp.src('./server/**/*.js')
+    .pipe(istanbul({
+      includeUntested: true
+    }))
+    .pipe(istanbul.hookRequire())
+    .on('finish', function() {
+      gulp.src('./tests/server/**/*.js', {
+          read: false
+        })
+        .pipe(mocha({
+          reporter: 'spec'
         }))
-        .pipe(istanbul.hookRequire())
-        .on('finish', function () {
-            gulp.src('./tests/server/**/*.js', {read: false})
-                .pipe(mocha({reporter: 'spec'}))
-                .pipe(istanbul.writeReports({
-                    dir: './coverage/server/',
-                    reporters: ['html', 'text']
-                }))
-                .on('end', done);
-        });
-});
-
-gulp.task('testBrowserJS', function (done) {
-    karma.start({
-        configFile: __dirname + '/tests/browser/karma.conf.js',
-        singleRun: true
-    }, done);
-});
-
-gulp.task('buildCSS', function () {
-
-    var sassCompilation = sass();
-    sassCompilation.on('error', console.error.bind(console));
-
-    return gulp.src('./browser/sass/main.sass')
-        .pipe(plumber({
-            errorHandler: notify.onError('SASS processing failed! Check your gulp process.')
+        .pipe(istanbul.writeReports({
+          dir: './coverage/server/',
+          reporters: ['html', 'text']
         }))
-        .pipe(sourcemaps.init())
-        .pipe(sassCompilation)
-        .pipe(rename('style.css'))
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./public'));
+        .on('end', done);
+    });
+});
+
+gulp.task('testBrowserJS', function(done) {
+  karma.start({
+    configFile: __dirname + '/tests/browser/karma.conf.js',
+    singleRun: true
+  }, done);
+});
+
+gulp.task('buildCSS', function() {
+
+  var sassCompilation = sass();
+  sassCompilation.on('error', console.error.bind(console));
+
+  return gulp.src('./browser/sass/main.sass')
+    .pipe(plumber({
+      errorHandler: notify.onError('SASS processing failed! Check your gulp process.')
+    }))
+    .pipe(sourcemaps.init())
+    .pipe(sassCompilation)
+    .pipe(rename('style.css'))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./public'));
 });
 
 // Production tasks
 // --------------------------------------------------------------
 
-gulp.task('buildCSSProduction', function () {
-    return gulp.src('./browser/scss/main.scss')
-        .pipe(sass())
-        .pipe(rename('style.css'))
-        .pipe(minifyCSS())
-        .pipe(gulp.dest('./public'))
+gulp.task('buildCSSProduction', function() {
+  return gulp.src('./browser/scss/main.scss')
+    .pipe(sass())
+    .pipe(rename('style.css'))
+    .pipe(minifyCSS())
+    .pipe(gulp.dest('./public'))
 });
 
-gulp.task('buildJSProduction', function () {
-    return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
-        .pipe(concat('main.js'))
-        .pipe(babel())
-        .pipe(ngAnnotate())
-        .pipe(uglify())
-        .pipe(gulp.dest('./public'));
+gulp.task('buildJSProduction', function() {
+  return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
+    .pipe(concat('main.js'))
+    .pipe(babel())
+    .pipe(ngAnnotate())
+    .pipe(uglify())
+    .pipe(gulp.dest('./public'));
 });
 
 gulp.task('buildProduction', ['buildCSSProduction', 'buildJSProduction']);
@@ -166,48 +190,48 @@ gulp.task('buildProduction', ['buildCSSProduction', 'buildJSProduction']);
 // Composed tasks
 // --------------------------------------------------------------
 
-gulp.task('build', function () {
-    if (process.env.NODE_ENV === 'production') {
-        runSeq(['buildJSProduction', 'buildCSSProduction']);
-    } else {
-        runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets']);
-    }
+gulp.task('build', function() {
+  if (process.env.NODE_ENV === 'production') {
+    runSeq(['buildJSProduction', 'buildCSSProduction']);
+  } else {
+    runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets']);
+  }
 });
 
 // todo: add tests
-gulp.task('travis', ['lintServerJS','buildBrowserJS','buildGameJS','buildCSS','copyAssets'], function () {
-    process.exit( 0 );
+gulp.task('travis', ['lintServerJS', 'buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets'], function() {
+  process.exit(0);
 });
 
-gulp.task('default', function () {
+gulp.task('default', function() {
 
-    gulp.start('build');
+  gulp.start('build');
 
-    // Run when anything inside of browser/js changes.
-    gulp.watch('browser/js/**', function () {
-        runSeq('buildBrowserJS', 'reload');
-    });
+  // Run when anything inside of browser/js changes.
+  gulp.watch('browser/js/**', function() {
+    runSeq('buildBrowserJS', 'reload');
+  });
 
-    gulp.watch('game/js/**', function() {
-        runSeq('buildGameJS', 'reload');
-    });
+  gulp.watch('game/js/**', function() {
+    runSeq('buildGameJS', 'reload');
+  });
 
-    // Run when anything inside of browser/scss changes.
-    gulp.watch('browser/sass/**', function () {
-        runSeq('buildCSS', 'reloadCSS');
-    });
+  // Run when anything inside of browser/sass changes.
+  gulp.watch('browser/sass/**', function() {
+    runSeq('buildCSS', 'reloadCSS');
+  });
 
-    gulp.watch('server/**/*.js', ['lintServerJS']);
+  gulp.watch('server/**/*.js', ['lintServerJS']);
 
-    // Reload when a template (.html) file changes.
-    gulp.watch(['browser/**/*.html', 'server/app/views/*.html'], ['reload']);
+  // Reload when a template (.html) file changes.
+  gulp.watch(['browser/**/*.html', 'server/app/views/*.html'], ['reload']);
 
-    // Run server tests when a server file or server test file changes.
-    gulp.watch(['tests/server/**/*.js'], ['testServerJS']);
+  // Run server tests when a server file or server test file changes.
+  gulp.watch(['tests/server/**/*.js'], ['testServerJS']);
 
-    // Run browser testing when a browser test file changes.
-    gulp.watch('tests/browser/**/*', ['testBrowserJS']);
+  // Run browser testing when a browser test file changes.
+  gulp.watch('tests/browser/**/*', ['testBrowserJS']);
 
-    livereload.listen();
+  livereload.listen();
 
 });
