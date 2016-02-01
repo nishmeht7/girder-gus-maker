@@ -25,6 +25,7 @@
     "angular-ui-router": "^0.2.17",
     "babel": "^5.0.12",
     "babel-eslint": "^4.1.6",
+    "babelify": "^7.2.0",
     "bluebird": "^3.1.5",
     "body-parser": "^1.14.2",
     "bootstrap": "^3.3.6",
@@ -57,15 +58,14 @@
     "passport-local": "^1.0.0",
     "phaser": "^2.4.4",
     "phaser-debug": "^1.1.8",
-    "util": "^0.10.3"
+    "run-sequence": "^1.1.5",
+    "util": "^0.10.3",
+    "vinyl-source-stream": "^1.1.0"
   },
   "devDependencies": {
-    "babelify": "^7.2.0",
     "karma": "^0.13.19",
     "karma-chai": "^0.1.0",
     "karma-mocha": "^0.2.1",
-    "morgan": "^1.6.1",
-    "run-sequence": "^1.1.5",
-    "vinyl-source-stream": "^1.1.0"
+    "morgan": "^1.6.1"
   }
 }
