@@ -9,7 +9,7 @@ function Tool( x, y ) {
   this.sprite.smoothed = false;
   this.sprite.initialRotation = Math.random() * TAU;
 
-  game.physics.p2.enable( this.sprite, true );
+  game.physics.p2.enable( this.sprite, false );
 
   this.setCollisions();
 
