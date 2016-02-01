@@ -1,0 +1,16 @@
+<div>
+	<form>
+		<label for='text' name='level-title'>Level Title</label>
+		<input type='text' class='level-title' name='level-title' ng-model='levelTitle'>
+	</form>
+	<header id='tool-bar-container'>
+	<nav>
+	<ul id='tool-bar'>
+		<li ng-repeat='tool in toolArr'><img ng-src={{tool.img}}></li>
+	</ul>
+	</nav>
+	</header>
+
+	<level-creator>
+	</level-creator>
+</div>
