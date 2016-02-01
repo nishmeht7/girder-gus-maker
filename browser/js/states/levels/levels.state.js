@@ -1,7 +1,7 @@
 app.config(function ($stateProvider) {
     $stateProvider.state('levels', {
         url: '/levels',
-        templateUrl: 'js/levels/levels.html',
+        templateUrl: 'js/states/levels/levels.html',
 		controller: 'LevelsCtrl',
         resolve: {
             levels: function(LevelsFactory) {

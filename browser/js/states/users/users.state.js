@@ -2,7 +2,7 @@ app.config(function ($stateProvider) {
 
     $stateProvider.state('users', {
         url: '/users',
-        templateUrl: 'js/users/users.html',
+        templateUrl: 'js/states/users/users.html',
         controller: 'UsersCtrl',
         resolve: {
             users: function(UsersFactory) {

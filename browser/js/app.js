@@ -1,7 +1,15 @@
 'use strict';
+
+require('angular');
+require('angular-ui-router');
+
+require('./misc/fsa-pre-built');
+require('./misc/ng-load-script');
+
 window.app = angular.module('FullstackGeneratedApp', ['fsaPreBuilt', 'ui.router', 'ngLoadScript', 'slick']);
 
-app.config(function($urlRouterProvider, $locationProvider) {
+console.dir(angular.module);
+window.app.config(function($urlRouterProvider, $locationProvider) {
     // This turns off hashbang urls (/#about) and changes it to something normal (/about)
     $locationProvider.html5Mode(true);
     // If we go to a URL that ui-router doesn't have registered, go to the "/" url.
@@ -12,7 +20,7 @@ app.config(function($urlRouterProvider, $locationProvider) {
 });
 
 // This app.run is for controlling access to specific states.
-app.run(function($rootScope, AuthService, $state) {
+window.app.run(function($rootScope, AuthService, $state) {
     // The given state requires an authenticated user.
     var destinationStateRequiresAuth = function(state) {
         return state.data && state.data.authenticate;
@@ -51,3 +59,7 @@ app.run(function($rootScope, AuthService, $state) {
     });
 
 });
+
+
+require('./directives');
+require('./states');

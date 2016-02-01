@@ -26,12 +26,16 @@
     "angularslick": "^0.2.2",
     "babel": "^5.0.12",
     "babel-eslint": "^4.1.6",
+    "babelify": "^7.2.0",
     "bluebird": "^3.1.5",
     "body-parser": "^1.14.2",
     "bootstrap": "^3.3.6",
+    "browserify": "^13.0.0",
     "chalk": "^1.1.1",
     "connect-mongo": "^1.1.0",
     "cookie-parser": "^1.4.1",
+    "escope": "3.3.0",
+    "eslint": "^1.10.3",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "gulp": "^3.8.11",
@@ -59,14 +63,15 @@
     "passport-local": "^1.0.0",
     "phaser": "^2.4.4",
     "phaser-debug": "^1.1.8",
+    "run-sequence": "^1.1.5",
     "slick-carousel": "^1.5.9",
-    "util": "^0.10.3"
+    "util": "^0.10.3",
+    "vinyl-source-stream": "^1.1.0"
   },
   "devDependencies": {
     "karma": "^0.13.19",
     "karma-chai": "^0.1.0",
     "karma-mocha": "^0.2.1",
-    "morgan": "^1.6.1",
-    "run-sequence": "^1.1.5"
+    "morgan": "^1.6.1"
   }
 }
