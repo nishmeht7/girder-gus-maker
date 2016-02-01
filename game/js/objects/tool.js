@@ -29,7 +29,7 @@ Tool.prototype.setCollisions = function() {
 
 }
 
-Tool.prototype.collect = function( tool, other, shape, otherShape, contact ) {
+Tool.prototype.collect = function( ) {
 
   console.log( "tool collected!" );
   this.sprite.visible = false;
