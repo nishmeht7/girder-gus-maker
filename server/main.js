@@ -14,4 +14,12 @@ app.get('/', function (req, res) {
     res.sendFile(app.get('indexHTMLPath'));
 });
 
+app.get('/users', function (req, res) {
+    res.sendFile(app.get('indexHTMLPath'));
+});
+
+app.get('/levels', function (req, res) {
+    res.sendFile(app.get('indexHTMLPath'));
+});
+
 app.listen(1337, () => { console.log('Server eavesdropping on 1337') });

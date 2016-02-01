@@ -1,0 +1,15 @@
+<div id="users-list" class="pagewrapper">
+    <div class="row user-box" ng-repeat="user in users">
+        <div class="user-info">
+            <a ui-sref="user({ userId: user._id })">
+                <img src="http://placehold.it/150x150" class="img-circle user-img">
+                <div class="user-name">
+                    <h5>{{ user.name }}</h5>
+                </div>
+            </a>
+        </div>
+        <div class="user-levels">
+            <user-levels levels="user.createdLevels"></user-levels>
+        </div>
+    </div>
+</div>
