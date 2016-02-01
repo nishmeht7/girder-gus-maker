@@ -12,7 +12,8 @@
 */
 
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const Promise = require('bluebird');
 
 /**
  * INTERNAL HELPERS
@@ -79,9 +80,9 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [])
   }
 
   // allow users to specify results per page and to step through
-  //    pages of results
-  let page = !isNaN(req.query.page) ? req.query.page-1 : 0;
-  let limit = !isNaN(req.query.limit) ? req.query.limit : 0;
+  //    results by page number
+  let page = !isNaN(req.query.page) ? parseInt(req.query.page)-1 : 0;
+  let limit = !isNaN(req.query.limit) ? parseInt(req.query.limit) : 20;
 
   Model.find(query)
     .skip(page*limit)
@@ -89,7 +90,16 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [])
     .sort(sort)
     .select(selectParams.join(" "))
     .populate(populateParams)
-    .then(documents => res.json(documents))
+    .then(function(documents) {
+      let count = Model.count(query);
+      return Promise.all([documents, count]);
+    })
+    .then(function(results) {
+      res.json({
+        results: results[0],
+        pages: limit !== 0 ? Math.ceil(results[1]/limit) : 1
+      });
+    })
     .then(null, next);
 }
 
