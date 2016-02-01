@@ -128,9 +128,6 @@ function initGameState() {
     }
 
     // lock camera to player
-    // game.camera.displayObject.pivot.x = gus.sprite.position.x;
-    // game.camera.displayObject.pivot.y = gus.sprite.position.y;
-    // game.camera.displayObject.rotation = (Math.PI * 2) - gus.sprite.rotation;
     game.dolly.update();
 
     // render HUD
