@@ -1,5 +1,7 @@
 var blocks = require( "../objects/blocks" );
+var tilemap = require( "../consts/tilemap" );
 var Tool = require( "../objects/tool" );
+var objects = require( "../objects" );
 
 var blockIds = {};
 
@@ -17,9 +19,28 @@ function addBlockId( id, loadFunction ) {
 
 }
 
-addBlockId( 'a', function( defObj ) { return new blocks.RedBrickBlock( defObj.x, defObj.y ) });
-addBlockId( 'b', function( defObj ) { return new blocks.BlackBrickBlock( defObj.x, defObj.y ) });
-addBlockId( '+', function( defObj ) { return new Tool( defObj.x, defObj.y ) });
-addBlockId( 'G', function( defObj ) { window.game.gusStartPos = { x: defObj.x, y: defObj.y } });
+for ( var index in tilemap ) {
+
+  if ( tilemap[index] === "Gus" ) {
+    addBlockId( index, function( defObj ) { window.game.gusStartPos = { x: defObj.x, y: defObj.y } });
+  } else {
+
+    var foundConstructor = undefined;
+    for ( var objKey in objects ) {
+      if ( tilemap[index] === objKey ) foundConstructor = objects[objKey];
+    }
+
+    if ( foundConstructor !== undefined ) {
+      (function (constructor) {
+        addBlockId( index, function( defObj ) {
+          return new constructor( defObj.x, defObj.y );
+        });
+      })( foundConstructor );
+    } else {
+      console.log( "[LVGN]!! Failed to look up constructor for " + tilemap[index] );
+    }
+
+  }
+}
 
 module.exports = blockIds;
