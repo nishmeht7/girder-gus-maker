@@ -1,11 +1,14 @@
-app.config(function ($stateProvider) {
+window.app.config(function ($stateProvider) {
     $stateProvider.state('levels', {
-        url: '/levels',
+        url: '/levels?title&starCount&sort&by&limit&page',
         templateUrl: 'js/states/levels/levels.html',
 		controller: 'LevelsCtrl',
         resolve: {
-            levels: function(LevelsFactory) {
-                return LevelsFactory.fetchAllWithCreators();
+            data: function(LevelsFactory, $stateParams) {
+                console.log('in levels');
+                if($stateParams.limit === undefined) $stateParams.limit = 20;
+                if($stateParams.sort === undefined) $stateParams.sort = 'dateCreate';
+                return LevelsFactory.fetchAll($stateParams);
             }
         },
 		link: function(s, e, a) {
@@ -13,3 +16,4 @@ app.config(function ($stateProvider) {
 		}
     });
 });
+console.log('levels.state');

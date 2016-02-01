@@ -15,10 +15,7 @@ import { mustBeLoggedIn } from './helpers/permissions';
 router.post('/', createDoc('User'));
 
 // guest can see all users
-router.get('/', getDocsAndSend('User'));
-
-// guest can see all users with associated created levels
-router.get('/levels', getDocsAndSend('User', null, ['createdLevels']));
+router.get('/', getDocsAndSend('User', ['name', 'followers', 'createdLevels', 'totalStars', 'profilePic'], [{path: 'createdLevels', select: 'title dateCreat starCount'}]));
 
 // guest can see user
 router.get('/:id', getDocAndSend('User'));

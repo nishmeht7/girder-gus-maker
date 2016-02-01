@@ -6,7 +6,7 @@ require('angular-ui-router');
 require('./misc/fsa-pre-built');
 require('./misc/ng-load-script');
 
-window.app = angular.module('FullstackGeneratedApp', ['fsaPreBuilt', 'ui.router', 'ngLoadScript', 'slick']);
+window.app = angular.module('FullstackGeneratedApp', ['fsaPreBuilt', 'ui.router', 'ngLoadScript']);
 
 console.dir(angular.module);
 window.app.config(function($urlRouterProvider, $locationProvider) {

@@ -1,17 +1,12 @@
 app.factory('LevelsFactory', function($http) {
     return {
-        fetchAll: function() {
-            return $http.get('api/levels')
+        fetchAll: function(params) {
+            console.log('fetching levels')
+            return $http.get('api/levels', { params: params })
                 .then(function(res) {
+                    console.log(res);
                     return res.data;
                 });
-        },
-        fetchAllWithCreators: function() {
-            console.log('fetching');
-            return $http.get('api/levels/users')
-                .then(function(res) {
-                    return res.data;
-                })
         },
         fetchById: function(id) {
             return $http.get('api/levels/'+id)
