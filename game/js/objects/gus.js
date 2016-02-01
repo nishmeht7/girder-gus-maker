@@ -18,6 +18,7 @@ function Gus(x, y) {
     this.prevRotation = 0;    // previous rotation
     this.idleTime = 0;        // how long gus has been holding still
     this.fallTime = 0;
+    this.girders = 0;
 
     this.isDead = false;
     this.facingRight = true;  // is gus facing right?
@@ -27,6 +28,7 @@ function Gus(x, y) {
 
     // create a sprite object and set its anchor
     this.sprite = game.add.sprite(x, y, 'Gus');
+    this.sprite.smoothed = false;
 
     // attach our sprite to the physics engine
     game.physics.p2.enable( this.sprite, false );

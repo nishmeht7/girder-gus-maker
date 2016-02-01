@@ -10,6 +10,7 @@ function GirderMarker() {
   if ( game === undefined ) game = window.game;
 
   this.sprite = game.add.sprite( 0, 0, 'Girder' );
+  this.sprite.smoothed = false;
   this.sprite.anchor = new Phaser.Point( 0.5, 0.5 );
   this.master = null;
   this.girdersPlaced = [];
@@ -105,11 +106,14 @@ GirderMarker.prototype.setPlaceGirderButton = function ( key ) {
 
 GirderMarker.prototype.placeGirder = function () {
 
+  if ( this.master.girders === 0 ) return;
+
   if ( this.placeable ) {
     var newGirder = new Girder( this.sprite.position.x, this.sprite.position.y ); 
     newGirder.sprite.rotation = this.master.sprite.rotation;
 
     this.girdersPlaced.push( newGirder );
+    this.master.girders--;
 
     this.master.canRotate = false;
   }
@@ -118,7 +122,7 @@ GirderMarker.prototype.placeGirder = function () {
 
 GirderMarker.prototype.update = function () {
 
-  if ( this.master ) {
+  if ( this.master && this.master.girders > 0 ) {
     var targetPos = this.getTargetPos();
 
     if ( targetPos && this.master.isTouching( "down" ) ) {
