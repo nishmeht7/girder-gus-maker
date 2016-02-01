@@ -24,7 +24,7 @@ var notify = require('gulp-notify');
 // Development tasks
 // --------------------------------------------------------------
 
-gulp.task('bb', ['lintBrowserJS'], function() {
+gulp.task('bb', function() {
   var bundler = actualBrowserify();
 
   bundler.add('./browser/js/app.js');
@@ -82,19 +82,19 @@ gulp.task('lintServerJS', function() {
 
 });
 
-gulp.task('buildBrowserJS', ['lintBrowserJS'], function() {
-  return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
-    .pipe(plumber())
-    .pipe(sourcemaps.init())
-    .pipe(babel())
-    .pipe(browserify({
-      insertGlobals: true,
-      debug: !gulp.env.production
-    }))
-    .pipe(sourcemaps.write())
-    .pipe(rename('main.js'))
-    .pipe(gulp.dest('./public'));
-});
+// gulp.task('buildBrowserJS', ['lintBrowserJS'], function() {
+//   return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
+//     .pipe(plumber())
+//     .pipe(sourcemaps.init())
+//     .pipe(babel())
+//     .pipe(browserify({
+//       insertGlobals: true,
+//       debug: !gulp.env.production
+//     }))
+//     .pipe(sourcemaps.write())
+//     .pipe(rename('main.js'))
+//     .pipe(gulp.dest('./public'));
+// });
 
 gulp.task('buildGameJS', ['lintGameJS'], function() {
   return gulp.src(['./game/js/main.js'])
@@ -196,7 +196,7 @@ gulp.task('build', function() {
   if (process.env.NODE_ENV === 'production') {
     runSeq(['buildJSProduction', 'buildCSSProduction']);
   } else {
-    runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets']);
+    runSeq(['bb', 'buildGameJS', 'buildCSS', 'copyAssets']);
   }
 });
 
