@@ -120,10 +120,16 @@ function initGameState() {
     if ( game.toolsRemaining === 0 ) {
       if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel() }, 10000 );
 
-      game.camera.scale.x *= 1 + game.time.physicsElapsed;
-      game.camera.scale.y *= 1 + game.time.physicsElapsed;
-      gus.sprite.rotation += game.time.physicsElapsed * 60;
+      gus.rotationSpeed = gus.rotationSpeed || 0;
+      gus.rotationSpeed += game.time.physicsElapsed;
+      gus.sprite.rotation += gus.rotationSpeed * game.time.physicsElapsed;
+
+      game.camera.scale.x *= 1 + ( game.time.physicsElapsed / 3 );
+      game.camera.scale.y *= 1 + ( game.time.physicsElapsed / 3 );
+      game.dolly.unlock();
     } else if ( gus.isDead && restartTimeout === undefined ) {
+      game.dolly.unlock();
+
       restartTimeout = setTimeout( function() { state.restartLevel() }, 5000 );
     }
 
@@ -132,14 +138,14 @@ function initGameState() {
 
     // render HUD
     hudCounters.forEach( function( counter ) {
-      counter.icon.position = screenToWorldSpace( counter.icon.initPos );
-      counter.icon.rotation = gus.sprite.rotation;
+      counter.icon.position = game.dolly.screenspaceToWorldspace( counter.icon.initPos );
+      counter.icon.rotation = game.dolly.rotation;
       
       var textpos = { x: counter.icon.initPos.x, y: counter.icon.initPos.y };
       textpos.x += 32;
-      counter.text.position = screenToWorldSpace( textpos );
+      counter.text.position = game.dolly.screenspaceToWorldspace( textpos );
       counter.text.text = counter.value();
-      counter.text.rotation = gus.sprite.rotation;
+      counter.text.rotation = game.dolly.rotation;
     })
    
   }
@@ -150,6 +156,7 @@ function initGameState() {
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
 
     gus.respawn();
+    game.dolly.lockTo( gus.sprite );
 
     game.camera.scale.x = 1;
     game.camera.scale.y = 1;

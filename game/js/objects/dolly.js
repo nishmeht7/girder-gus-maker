@@ -37,8 +37,6 @@ Dolly.prototype.update = function () {
     this.position = midpoint( this.position, this.targetPos );
   }
 
-  console.log( this.position, this.lockTarget.position )
-
   if ( this.targetAng !== null ) {
     while ( this.targetAng - this.rotation > Math.PI ) this.rotation += TAU;
     while ( this.rotation - this.targetAng > Math.PI ) this.rotation -= TAU;
@@ -61,6 +59,19 @@ Dolly.prototype.lockTo = function ( dispObj ) {
 Dolly.prototype.unlock = function () {
 
   this.lockTarget = null;
+
+}
+
+Dolly.prototype.screenspaceToWorldspace = function ( point ) {
+
+  var cosine = Math.cos( TAU - this.rotation ), sine = Math.sin( TAU - this.rotation );
+  var topleft = { 
+    x: this.position.x - ( cosine * game.camera.width / 2 ) - ( sine * game.camera.height / 2 ), 
+    y: this.position.y - ( cosine * game.camera.height / 2 ) + ( sine * game.camera.width / 2 )
+  }
+
+  return new Phaser.Point( point.x * cosine + point.y * sine + topleft.x,
+                           point.y * cosine - point.x * sine + topleft.y );
 
 }
 
