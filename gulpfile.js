@@ -24,7 +24,7 @@ var notify = require('gulp-notify');
 // Development tasks
 // --------------------------------------------------------------
 
-gulp.task('bb', function() {
+gulp.task('buildBrowserJS', function() {
   var bundler = actualBrowserify();
 
   bundler.add('./browser/js/app.js');
@@ -196,7 +196,7 @@ gulp.task('build', function() {
   if (process.env.NODE_ENV === 'production') {
     runSeq(['buildJSProduction', 'buildCSSProduction']);
   } else {
-    runSeq(['bb', 'buildGameJS', 'buildCSS', 'copyAssets']);
+    runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets']);
   }
 });
 
@@ -211,14 +211,14 @@ gulp.task('default', function() {
 
   // Run when anything inside of browser/js changes.
   gulp.watch('browser/js/**', function() {
-    runSeq('bb', 'reload');
+    runSeq('buildBrowserJS', 'reload');
   });
 
   gulp.watch('game/js/**', function() {
     runSeq('buildGameJS', 'reload');
   });
 
-  // Run when anything inside of browser/scss changes.
+  // Run when anything inside of browser/sass changes.
   gulp.watch('browser/sass/**', function() {
     runSeq('buildCSS', 'reloadCSS');
   });
