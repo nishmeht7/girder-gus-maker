@@ -1,7 +1,7 @@
-app.config(function ($stateProvider) {
+window.app.config(function ($stateProvider) {
     $stateProvider.state('alllevels', {
         url: '/alllevels',
-        templateUrl: 'js/allLevels/allLevels.html',
+        templateUrl: 'js/states/allLevels/allLevels.html',
 		controller: 'AllLevelsCtrl',
 		link: function(s, e, a) {
 			console.log('in all levels');
