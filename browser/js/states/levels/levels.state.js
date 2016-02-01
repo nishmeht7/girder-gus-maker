@@ -1,10 +1,11 @@
-app.config(function ($stateProvider) {
+window.app.config(function ($stateProvider) {
     $stateProvider.state('levels', {
         url: '/levels?title&starCount&sort&by&limit&page',
         templateUrl: 'js/states/levels/levels.html',
 		controller: 'LevelsCtrl',
         resolve: {
             data: function(LevelsFactory, $stateParams) {
+                console.log('in levels');
                 if($stateParams.limit === undefined) $stateParams.limit = 20;
                 if($stateParams.sort === undefined) $stateParams.sort = 'dateCreate';
                 return LevelsFactory.fetchAll($stateParams);
@@ -15,3 +16,4 @@ app.config(function ($stateProvider) {
 		}
     });
 });
+console.log('levels.state');
