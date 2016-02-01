@@ -18,6 +18,7 @@ function Gus(x, y) {
     this.prevRotation = 0;    // previous rotation
     this.idleTime = 0;        // how long gus has been holding still
     this.fallTime = 0;
+    this.girders = 0;
 
     this.isDead = false;
     this.facingRight = true;  // is gus facing right?

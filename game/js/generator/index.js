@@ -14,6 +14,10 @@ LevelGenerator.prototype.getSkyColor = function() {
   return this.levelData.sky || defaultSkyColor;
 }
 
+LevelGenerator.prototype.getStartingGirders = function() {
+  return this.levelData.girders || 10;
+}
+
 LevelGenerator.prototype.parseObjects = function() {
 
   var levelObjects = [];

@@ -16,6 +16,7 @@ function initGameState() {
 
     var level = {
       sky: "#4499FF",
+      girders: 6,
       objs: [
         { t: 3, x: -288, y: -160 },{ t: 3, x: -288, y: -128 },{ t: 3, x: -288, y: -96 },{ t: 3, x: -288, y: -64 },{ t: 3, x: -288, y: -32 },{ t: 3, x: -288, y: 0 },{ t: 3, x: -288, y: 32 },{ t: 3, x: -288, y: 64 },{ t: 3, x: -288, y: 96 },{ t: 3, x: -288, y: 128 },{ t: 3, x: -288, y: 160 },
         { t: 3, x: -256, y: -160 },{ t: 3, x: -256, y: -128 },{ t: 3, x: -256, y: -96 },{ t: 3, x: -256, y: -64 },{ t: 3, x: -256, y: -32 },{ t: 3, x: -256, y: 0 },{ t: 3, x: -256, y: 32 },{ t: 3, x: -256, y: 64 },{ t: 3, x: -256, y: 96 },{ t: 3, x: -256, y: 128 },{ t: 3, x: -256, y: 160 },
@@ -68,6 +69,7 @@ function initGameState() {
     }
 
     gus = new Gus( game.gusStartPos.x, game.gusStartPos.y );
+    gus.girders = generator.getStartingGirders();
     marker = new GirderMarker();
     marker.setMaster( gus );
 
@@ -79,14 +81,15 @@ function initGameState() {
 
     // make hud icons
     hudCounters = [ 
-      { icon: game.add.sprite( 41, 41, "Tool" ), value: function() { return game.toolsToCollect.length } }, 
-      { icon: game.add.sprite( 141, 41, "Girder" ), value: function() { return 10 } } 
+      { icon: game.add.sprite( 41, 41, "Tool" ), value: function() { return game.toolsRemaining } }, 
+      { icon: game.add.sprite( 141, 41, "Girder" ), value: function() { return gus.girders } } 
     ];
 
     hudCounters.map( function( counter ) {
       counter.icon.initPos = { x: counter.icon.position.x, y: counter.icon.position.y };
       counter.icon.anchor = new Phaser.Point( 0.5, 0.5 );
-      counter.text = game.add.text( counter.icon.position.x, counter.icon.position.y, "", {} );
+      counter.text = game.add.text( counter.icon.position.x, counter.icon.position.y, "", { font: "bold 28pt mono" } );
+      counter.text.anchor = new Phaser.Point( 0, 0.5 );
       return counter;
     });
 
