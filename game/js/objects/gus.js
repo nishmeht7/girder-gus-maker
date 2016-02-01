@@ -280,7 +280,7 @@ Gus.prototype.update = function() {
 
     // create a rotate tween
     if ( this.rotateTween === undefined ) {
-      this.rotateTween = game.add.tween( this.sprite ).to( { rotation: this.targetRotation }, 3000, Phaser.Easing.Default, true )
+      this.rotateTween = game.add.tween( this.sprite ).to( { rotation: this.targetRotation }, 300, Phaser.Easing.Default, true )
       .onComplete.add( function() {
         this.rotation = this.targetRotation % ( TAU );  // keep angle within 0-2pi
         this.finishRotation();
