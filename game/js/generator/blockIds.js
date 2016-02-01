@@ -19,6 +19,7 @@ function addBlockId( id, loadFunction ) {
 
 }
 
+// dynamically generate our block ids
 for ( var index in tilemap ) {
 
   if ( tilemap[index] === "Gus" ) {
