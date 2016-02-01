@@ -118,15 +118,19 @@ function initGameState() {
     game.toolsToCollect.forEach( function( tool ) { tool.update() });
 
     if ( game.toolsRemaining === 0 ) {
-      if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel() }, 10000 );
+      if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel() }, 15000 );
+
+      gus.isDead = true;
 
       gus.rotationSpeed = gus.rotationSpeed || 0;
       gus.rotationSpeed += game.time.physicsElapsed;
       gus.sprite.rotation += gus.rotationSpeed * game.time.physicsElapsed;
 
-      game.camera.scale.x *= 1 + ( game.time.physicsElapsed / 3 );
-      game.camera.scale.y *= 1 + ( game.time.physicsElapsed / 3 );
+      game.camera.scale.x *= 1 + ( game.time.physicsElapsed / 5 );
+      game.camera.scale.y *= 1 + ( game.time.physicsElapsed / 5 );
+      game.dolly.rotation = Math.PI * 2 - gus.sprite.rotation;
       game.dolly.unlock();
+      
     } else if ( gus.isDead && restartTimeout === undefined ) {
       game.dolly.unlock();
 
@@ -156,6 +160,7 @@ function initGameState() {
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
 
     gus.respawn();
+    gus.rotationSpeed = 0;
     game.dolly.lockTo( gus.sprite );
 
     game.camera.scale.x = 1;
