@@ -10,7 +10,7 @@ var WIDTH = FULLSCREEN ? window.innerWidth * window.devicePixelRatio : 800,
 function startGame( phaser ) {
 
   // initialize the game
-  window.game = new window.Phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'game-container' );
+  window.game = new phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'game-container' );
 
   // add states
   game.state.add( "boot", bootState() );
@@ -26,7 +26,7 @@ function startGame( phaser ) {
 
     console.log( "Phaser runtime initialized, starting...")
     startGame( phaser );
-    
+
   } else {
     setTimeout( function() { checkPhaserExists( window.Phaser ) }, 100 );
   }
