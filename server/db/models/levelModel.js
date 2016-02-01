@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 // Calculate number of tiles for data validation
-import { TILE_MAP } from '../../misc/constants';
+var TILE_MAP = require( "../../../game/js/consts/tilemap" );
 const numTiles = Object.keys(TILE_MAP).length;
 
 // part of level schema
