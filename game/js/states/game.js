@@ -1,3 +1,4 @@
+var Dolly = require( "../objects/dolly" );
 var Gus = require( "../objects/gus" );
 var GirderMarker = require( "../objects/girderMarker" );
 var LevelGenerator = require( "../generator" );
@@ -84,6 +85,9 @@ function initGameState() {
     marker = new GirderMarker();
     marker.setMaster( gus );
 
+    game.dolly = new Dolly( game.camera );
+    game.dolly.lockTo( gus.sprite );
+
     console.log( "Binding to keys..." );
 
     game.cursors = game.input.keyboard.createCursorKeys();
@@ -124,9 +128,10 @@ function initGameState() {
     }
 
     // lock camera to player
-    game.camera.displayObject.pivot.x = gus.sprite.position.x;
-    game.camera.displayObject.pivot.y = gus.sprite.position.y;
-    game.camera.displayObject.rotation = (Math.PI * 2) - gus.sprite.rotation;
+    // game.camera.displayObject.pivot.x = gus.sprite.position.x;
+    // game.camera.displayObject.pivot.y = gus.sprite.position.y;
+    // game.camera.displayObject.rotation = (Math.PI * 2) - gus.sprite.rotation;
+    game.dolly.update();
 
     // render HUD
     hudCounters.forEach( function( counter ) {
