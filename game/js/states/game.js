@@ -148,6 +148,7 @@ function initGameState() {
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
 
     gus.respawn();
+    gus.girders = generator.getStartingGirders();
 
     game.camera.scale.x = 1;
     game.camera.scale.y = 1;
