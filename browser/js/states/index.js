@@ -1,6 +1,5 @@
-require('./allLevels/allLevels.state.js');
-require('./home/home.state.js');
-require('./levels/levels.state.js');
-require('./login/login.state.js');
-require('./users/users.state.js');
-require('./builder/builder.state.js');
+require('./home');
+require('./levels');
+require('./login');
+require('./users');
+require('./builder');

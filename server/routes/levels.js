@@ -18,16 +18,7 @@ import { mustBeLoggedIn } from './helpers/permissions';
 router.post('/', mustBeLoggedIn, createDoc('Level', 'creator'));
 
 // guest can see all levels
-router.get('/', getDocsAndSend('Level'));
-
-// guest can search levels
-// router.get('/', function(req, res, next) {
-//     Level.find(req.query)
-//         .select('title creator dateCreate starCount')
-//         .populate('creator')
-//         .then(documents => res.json(documents))
-//         .then(null, next);
-// })
+router.get('/', getDocsAndSend('Level', ['title', 'creator', 'dateCreate', 'starCount'], [{path: 'creator', select: 'name'}]));
 
 // guest can see all levels with creators
 router.get('/users', getDocsAndSend('Level', null, ['creator']));

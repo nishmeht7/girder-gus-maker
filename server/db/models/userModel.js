@@ -46,7 +46,7 @@ schema.methods.setStars = function() {
 		}, 0);
 		return that.save();
 	});
-}
+};
 
 // adds levelId to user's createdLevels array
 schema.methods.addLevel = function(levelId) {
@@ -54,7 +54,7 @@ schema.methods.addLevel = function(levelId) {
         this.createdLevels.push(levelId);
         return this.save();
     }
-}
+};
 
 // removes levelId from user's createdLevels array
 schema.methods.removeLevel = function(levelId) {
@@ -63,6 +63,22 @@ schema.methods.removeLevel = function(levelId) {
     })
 
     return this.save();
-}
+};
+
+schema.virtual('totalFollowers').get(function() {
+    return this.followers.length;
+});
+
+schema.virtual('totalFollowed').get(function() {
+    return this.following.length;
+});
+
+schema.virtual('totalCreatedLevels').get(function() {
+    return this.createdLevels.length;
+});
+
+schema.virtual('totalLikedLevels').get(function() {
+    return this.likedLevels.length;
+});
 
 var User = mongoose.model('User', schema);
