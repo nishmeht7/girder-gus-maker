@@ -1,7 +1,7 @@
 app.config(function ($stateProvider) {
     $stateProvider.state('builder', {
         url: '/builder',
-        templateUrl: 'js/builder/builder.html',
+        templateUrl: 'js/states/builder/builder.html',
 		controller: 'BuilderCtrl' 
     });
 });

@@ -23,7 +23,7 @@ app.directive('ggHeader', ($rootScope, AuthService, AUTH_EVENTS, $state) => {
 	  scope.stateChange = function(targetState) {
 		  if(targetState === 'builder') {
 			  if($rootScope.user) $state.go(targetState);
-			  else console.log("balls");
+			  else $rootScope.promptUser = true;
 		  }
 	  }
 
