@@ -163,13 +163,15 @@ Gus.prototype.rotate = function( dir ) {
   var rot = 0;
   if ( dir === "left" ) {
     rot = -Math.PI / 2;
-    this.sprite.rotation -= TAU;
+    if ( this.targetRotation - rot < this.rotation ) this.sprite.rotation -= TAU;
   } else if ( dir === "right" ) {
     rot = Math.PI / 2;
+    if ( this.targetRotation - rot < this.rotation - TAU ) this.sprite.rotation -= TAU;
   }
 
   // change values
   this.targetRotation -= rot;
+
   this.rotating = true;
   this.canRotate = false;
   this.sprite.body.enabled = false;
@@ -179,7 +181,9 @@ Gus.prototype.rotate = function( dir ) {
 Gus.prototype.finishRotation = function() {
 
   // keep our rotation between tau and 0
-  if ( this.rotation < 0 ) this.rotation = TAU + this.rotation;
+  if ( this.rotation < 0 ) this.rotation += TAU;
+  if ( this.targetRotation < 0 ) this.targetRotation += TAU;
+  else if ( this.targetRotation >= TAU ) this.targetRotation %= TAU;
 
   // set gravity relative to our new axis
   this.sprite.body.gravity.y = Math.floor( Math.cos( this.rotation ) * this.gravity );
