@@ -24,6 +24,7 @@ function RedBrickBlock( x, y ) {
   this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
 
 }
+RedBrickBlock.prototype = Block;
 
 function Girder( x, y ) {
 
@@ -33,6 +34,7 @@ function Girder( x, y ) {
   this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
 
 }
+Girder.prototype = Block;
 
 function BlackBrickBlock( x, y ) {
 
@@ -42,6 +44,7 @@ function BlackBrickBlock( x, y ) {
   this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID ] );
 
 }
+BlackBrickBlock.prototype = Block;
 
 module.exports = Block;
 module.exports.RedBrickBlock = RedBrickBlock;
