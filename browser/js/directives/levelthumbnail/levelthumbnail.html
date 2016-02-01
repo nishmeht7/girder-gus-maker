@@ -1,0 +1,11 @@
+<div class="level-box">
+    <div>
+        <a ui-sref="level({ levelId: level._id })">
+            <img src="http://placehold.it/250x150">
+            <div>
+                <h5>{{ level.title }}</h5>
+                <h6 ng-show="showCreator">By {{ level.creator.name }}</h6>
+            </div>
+        </a>
+    </div>
+</div>
