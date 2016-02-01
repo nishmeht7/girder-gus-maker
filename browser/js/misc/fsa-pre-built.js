@@ -54,6 +54,7 @@
             var data = response.data;
             Session.create(data.id, data.user);
             $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+			$rootScope.user = data.user;
             return data.user;
         }
 
@@ -98,6 +99,7 @@
             return $http.get('/logout').then(function () {
                 Session.destroy();
                 $rootScope.$broadcast(AUTH_EVENTS.logoutSuccess);
+				$rootScope.user = null;
             });
         };
 

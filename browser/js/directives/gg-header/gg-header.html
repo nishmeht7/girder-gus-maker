@@ -5,7 +5,7 @@
 
     <nav>
       <ul>
-        <li ng-repeat='item in menuItems'><a ui-sref="{{ item.state }}">{{item.title}}</a></li>
+        <li ng-repeat='item in menuItems'><a ng-click='stateChange(item.state)'>{{item.title}}</a></li>
       </ul>
     </nav>
   </div>
