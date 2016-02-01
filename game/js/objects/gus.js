@@ -41,8 +41,8 @@ function Gus(x, y) {
 
     // add animations
     this.sprite.animations.add('stand', [0], 10, true);
-    this.sprite.animations.add('walk', [1,2], 10, true);
-    this.sprite.animations.add('dance', [3,4,5,6,7], 10, true);
+    this.sprite.animations.add('walk', [1,2], 7, true);
+    this.sprite.animations.add('dance', [3,4,6,7], 5, true);
     
 }
 
