@@ -9,15 +9,15 @@ app.controller('CreateLevelCtrl', function($scope) {
 		},
     'Red Brick' : {
 			img : '/assets/images/brick_red.png',
-      tile: 'BrickRed'
+      tile: 'RedBrickBlock'
 		},
 		'Black Brick' : {
 			img : '/assets/images/brick_black.png',
-      tile: 'BrickBlack'
+      tile: 'BlackBrickBlock'
 		},
 		'Break Brick' : {
 			img : '/assets/images/brick_break.png',
-      tile: 'BrickBreak'
+      tile: 'BreakBrickBlock'
 		},
 		'Tool' : {
 			img : '/assets/images/tool.png',
