@@ -44,7 +44,7 @@ function initCreateState() {
         if (!unparsedTileMap.hasOwnProperty(x)) continue;
 
         for (let y in unparsedTileMap[x]) {
-          if (!unparsedTileMap.hasOwnProperty(x)) continue;
+          if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
           if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
             parsedTileMap.push({
               x: x,
