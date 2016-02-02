@@ -9,12 +9,16 @@ function GirderMarker() {
 
   if ( game === undefined ) game = window.game;
 
-  this.sprite = game.add.sprite( 0, 0, 'Girder' );
-  this.sprite.smoothed = false;
-  this.sprite.anchor = new Phaser.Point( 0.5, 0.5 );
+  // set our properties to their defaults
   this.master = null;
   this.girdersPlaced = [];
+  this.placeGirderButton = null;
 
+  // initialize our sprite
+  this.sprite = game.add.sprite( 0, 0, 'Girder' );
+  this.sprite.anchor = new Phaser.Point( 0.5, 0.5 );
+
+  // change the sprite visibility
   this.placeable = false;
   this.sprite.alpha = 0.5;
   this.sprite.visible = false;
@@ -32,20 +36,20 @@ GirderMarker.prototype.masterPos = function () {
 
   masterPos.right = function() {
     if ( Math.abs( cosine ) > 1 - EPSILON ) {
-      masterPos.x += cosine * 20;
+      masterPos.x += cosine * 24;
       return masterPos;
     } else {
-      masterPos.y += sine * 20;
+      masterPos.y += sine * 24;
       return masterPos;
     }
   }
 
   masterPos.left = function() {
     if ( Math.abs( cosine ) > 1 - EPSILON ) {
-      masterPos.x -= cosine * 20;
+      masterPos.x -= cosine * 24;
       return masterPos;
     } else {
-      masterPos.y -= sine * 20;
+      masterPos.y -= sine * 24;
       return masterPos;
     }
   }
@@ -69,30 +73,59 @@ GirderMarker.prototype.masterPos = function () {
 }
 
 GirderMarker.prototype.getTargetPos = function () {
-  var posFactory = null;
-  if ( this.master.facingRight ) posFactory = this.masterPos().right();
-  else posFactory = this.masterPos().left();
 
+  // get our position factory based on the player's facing
+  var posFactory = this.masterPos();
+  if ( this.master.facingRight ) posFactory = posFactory.right();
+  else posFactory = posFactory.left();
+
+  // start at the bottom
   var bottom = posFactory.bottom();
-
+  bottom.isBottom = true;
+  
+  // test to see if there's anything in the way of this girder
   var hitBoxes = game.physics.p2.hitTest( bottom );
   if ( hitBoxes.length ) {
 
+    // there is! is it an unplaceable object?
     var hitUnplaceable = false;
     hitBoxes.forEach( function( box ) {
       if ( box.parent.collidesWith.indexOf( COLLISION_GROUPS.PLAYER_SENSOR ) === -1 ) hitUnplaceable = true;
     });
-    if ( hitUnplaceable ) return undefined;
+    if ( hitUnplaceable ) return undefined; // yes, return undefined
 
+    // check in front of the player instead
     var front = posFactory.front();
+    front.isBottom = false;
 
+    // if we hit another thing, return undefined. otherwise, return the position
     if ( game.physics.p2.hitTest( front ).length ) {
       return undefined;
     } else {
       return front;
     }
+
   } else {
-    return bottom;
+
+    // check to see if there's something underneath Gus
+    var hitBelow = []
+    if ( this.master.facingRight ) hitBelow = game.physics.p2.hitTest( this.masterPos().left().bottom() );
+    else hitBelow = game.physics.p2.hitTest( this.masterPos().right().bottom() );
+
+    if ( hitBelow.length ) {
+
+      // Gus is standing on something, check to see if we can place on it
+      var standingOnUnplaceable = false;
+      hitBelow.forEach( function( box ) {
+        if ( box.parent.collidesWith.indexOf( COLLISION_GROUPS.PLAYER_SENSOR ) === -1 ) standingOnUnplaceable = true;
+      });
+      if ( standingOnUnplaceable ) return undefined;
+
+      return bottom;
+
+    } else {
+      return undefined;
+    }
   }
 }
 
@@ -102,29 +135,39 @@ GirderMarker.prototype.roundTargetPos = function ( pos ) {
 
 GirderMarker.prototype.setPlaceGirderButton = function ( key ) {
   key.onDown.add( GirderMarker.prototype.placeGirder, this, 0 );
+  this.placeGirderButton = key;
 }
 
 GirderMarker.prototype.placeGirder = function () {
 
+  // if Gus is out of girders, we can't place a new one
   if ( this.master.girders === 0 ) return;
 
+  // check that we're placeable
   if ( this.placeable ) {
+
+    // spawn a new girder and set its rotation
     var newGirder = new Girder( this.sprite.position.x, this.sprite.position.y ); 
     newGirder.sprite.rotation = this.master.sprite.rotation;
 
+    // do a little bookkeeping
     this.girdersPlaced.push( newGirder );
     this.master.girders--;
 
+    // stop Gus from rotating onto the new girder immediately
     this.master.canRotate = false;
+
   }
 
 }
 
 GirderMarker.prototype.update = function () {
 
+  // if we have a master with girders, try to reposition the marker
   if ( this.master && this.master.girders > 0 ) {
     var targetPos = this.getTargetPos();
 
+    // if we found a valid position and our master is on the ground, show the marker
     if ( targetPos && this.master.isTouching( "down" ) ) {
 
       this.sprite.position = this.roundTargetPos( targetPos );
@@ -132,9 +175,15 @@ GirderMarker.prototype.update = function () {
 
       this.sprite.visible = true;
       this.placeable = true;
-      //console.log( this.sprite.position );
+
+      // if we're holding space, build a bridge
+      if ( targetPos.isBottom && this.placeGirderButton.isDown ) {
+        this.placeGirder();
+      }
+      
     } else {
 
+      // no legal position found, hide the marker
       this.sprite.visible = false;
       this.placeable = false;
 
