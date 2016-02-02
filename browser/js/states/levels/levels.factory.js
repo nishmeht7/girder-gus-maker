@@ -1,7 +1,6 @@
 app.factory('LevelsFactory', function($http) {
     return {
         fetchAll: function(params) {
-            console.log('fetching levels')
             return $http.get('api/levels', { params: params })
                 .then(function(res) {
                     console.log(res);

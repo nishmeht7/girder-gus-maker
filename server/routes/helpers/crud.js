@@ -46,7 +46,7 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [])
   const Model = mongoose.model(ModelStr);
   let query = {};
   let sort = {};
-  
+
   if(ModelStr === 'Level') {
     // acceptable search parameters for levels
     if(req.query.title !== undefined) query.title =  { $regex: req.query.title, $options: 'i' };
@@ -59,6 +59,8 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [])
       } else {
         sort[req.query.sort] = 'desc';
       }
+    } else {
+      sort.dateCreate = 'desc';
     }
   }
 
@@ -76,6 +78,8 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [])
       } else {
         sort[req.query.sort] = 'desc';
       }
+    } else {
+      sort.name = 'asc';
     }
   }
 
@@ -84,23 +88,53 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [])
   let page = !isNaN(req.query.page) ? parseInt(req.query.page)-1 : 0;
   let limit = !isNaN(req.query.limit) ? parseInt(req.query.limit) : 20;
 
-  Model.find(query)
-    .skip(page*limit)
-    .limit(limit)
-    .sort(sort)
-    .select(selectParams.join(" "))
-    .populate(populateParams)
-    .then(function(documents) {
-      let count = Model.count(query);
-      return Promise.all([documents, count]);
-    })
-    .then(function(results) {
-      res.json({
-        results: results[0],
-        pages: limit !== 0 ? Math.ceil(results[1]/limit) : 1
-      });
-    })
-    .then(null, next);
+  // here I do terrible things and fail entirely at using DRY
+  //    in order to search levels by their creators
+  if(ModelStr === 'Level' && req.query.creator !== undefined) {
+    mongoose.model('User')
+      .find({ name: { $regex: req.query.creator, $options: 'i' }})
+      .then(function(users) {
+        let creators = users.map(function(user) {
+          return { creator: user._id };
+        });
+        query.$or = creators;
+        Model.find(query)
+          .skip(page*limit)
+          .limit(limit)
+          .sort(sort)
+          .select(selectParams.join(" "))
+          .populate(populateParams)
+          .then(function(documents) {
+            let count = Model.count(query);
+            return Promise.all([documents, count]);
+          })
+          .then(function(results) {
+            res.json({
+              results: results[0],
+              pages: limit !== 0 ? Math.ceil(results[1]/limit) : 1
+            });
+          })
+          .then(null, next);
+      })
+  } else {
+    Model.find(query)
+      .skip(page*limit)
+      .limit(limit)
+      .sort(sort)
+      .select(selectParams.join(" "))
+      .populate(populateParams)
+      .then(function(documents) {
+        let count = Model.count(query);
+        return Promise.all([documents, count]);
+      })
+      .then(function(results) {
+        res.json({
+          results: results[0],
+          pages: limit !== 0 ? Math.ceil(results[1]/limit) : 1
+        });
+      })
+      .then(null, next);
+  }
 }
 
 // returns middleware. No auth.
