@@ -3,6 +3,7 @@
 const COLORS = require('../../game/js/consts/colors');
 const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 
+var Dolly = require('../../game/js/objects/dolly');
 
 let gusSpawn;
 
@@ -33,7 +34,10 @@ function initCreateState() {
   state.create = function() {
     const game = window.game;
     gusSpawn = game.add.sprite(0, 0, 'Gus');
-    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY)
+    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
+
+    game.dolly = new Dolly( game.camera );
+    game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
     eventEmitter.on('change active tool', (tool) => {
       game.activeTool = tool
@@ -78,8 +82,11 @@ function initCreateState() {
     }
 
     if (game.input.activePointer.isDown) {
-      const x = parseCoordinate(game.input.mousePointer.x) - 400;
-      const y = parseCoordinate(game.input.mousePointer.y) - 300;
+      const clickPoint = new Phaser.Point( game.input.mousePointer.x, game.input.mousePointer.y );
+      const targetPoint = game.dolly.screenspaceToWorldspace( clickPoint );
+      const x = parseCoordinate( targetPoint.x );
+      const y = parseCoordinate( targetPoint.y );
+      
       let placedTool;
       if (game.activeTool) placedTool = game.add.sprite(x, y, game.activeTool);
 
@@ -97,6 +104,15 @@ function initCreateState() {
         tile: game.activeTool
       };
     }
+
+    if (game.input.activePointer.rightButton.isDown) {
+
+      const clickPoint = new Phaser.Point( game.input.mousePointer.x, game.input.mousePointer.y );
+      game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
+
+    }
+
+    game.dolly.update();
   }
 
   return state;
