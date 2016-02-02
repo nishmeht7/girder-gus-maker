@@ -1,3 +1,5 @@
+var ParticleBurst = require( "../particles/burst" );
+
 var COLLISION_GROUPS = require( "../consts/collisionGroups" );
 var TAU = require( "../consts" ).TAU;
 
@@ -36,6 +38,17 @@ Tool.prototype.collect = function( ) {
   this.sprite.visible = false;
   this.sprite.body.clearShapes();
   game.toolsRemaining--;
+
+  new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Tool", {
+    lifetime: 3000,
+    count: 8,
+    scaleMin: 0.4,
+    scaleMax: 1.0,
+    rotMin: 0,
+    rotMax: 360,
+    speed: 100,
+    fadeOut: true
+  });
 
 }
 
