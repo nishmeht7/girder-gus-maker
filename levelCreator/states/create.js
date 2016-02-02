@@ -82,7 +82,6 @@ function initCreateState() {
         sprite: placedTool,
         tile: game.activeTool
       };
-      console.dir(unparsedTileMap);
     }
   }
 
