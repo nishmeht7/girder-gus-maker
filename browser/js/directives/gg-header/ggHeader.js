@@ -20,6 +20,13 @@ app.directive('ggHeader', ($rootScope, AuthService, AUTH_EVENTS, $state) => {
         .then(() => { $state.go('home') })
       );
 
+	  scope.stateChange = function(targetState) {
+		  if(targetState === 'builder') {
+			  if($rootScope.user) $state.go(targetState);
+			  else $rootScope.promptUser = true;
+		  }
+	  }
+
       const setUser = () => {
         AuthService.getLoggedInUser()
         .then((user) => { scope.user = user; })
