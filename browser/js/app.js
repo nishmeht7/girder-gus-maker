@@ -14,7 +14,6 @@ eventEmitter.on('loaded', () => { console.log('\n\ncreator loaded\n\n') })
 window.app = angular.module('FullstackGeneratedApp', ['fsaPreBuilt', 'ui.router', 'ngLoadScript']);
 window.eventEmitter = eventEmitter; // for communication with levelCreator
 
-console.dir(angular.module);
 window.app.config(function($urlRouterProvider, $locationProvider) {
     // This turns off hashbang urls (/#about) and changes it to something normal (/about)
     $locationProvider.html5Mode(true);

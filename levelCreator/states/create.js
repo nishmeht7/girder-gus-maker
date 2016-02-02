@@ -1,8 +1,13 @@
+'use strict'
+
 const COLORS = require('../../game/js/consts/colors');
 
 function initCreateState() {
   const state = {};
+
   const eventEmitter = window.eventEmitter;
+  const tileMap = {}; // tileMap[x][y] === tile
+  // { 50: { 25: [ sprite, 'RedBrick' ] } }
 
   state.preload = function() {
     eventEmitter.emit('loaded', () => {})
@@ -10,17 +15,53 @@ function initCreateState() {
 
   state.create = function() {
     const game = window.game;
-    game.stage.setBackgroundColor( COLORS.DEFAULT_SKY )
-    eventEmitter.emit('loaded', () => {})
 
-    game.input.mouse.onMouseDown = function() {
-      console.log('click!');
-      console.log(game.input.mousePointer.x);
-      console.log(game.input.mousePointer.y);
-    }
+    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY)
+
+    eventEmitter.on('change active tool', (tool) => { game.activeTool = tool });
+
+    eventEmitter.on('request parsed tile map', function() {
+      console.log('recieved request. processing...')
+      const parsedTileMap = [];
+
+      for (let x in tileMap) {
+        if (!tileMap.hasOwnProperty(x)) continue;
+
+        for (let y in tileMap[x]){
+          if (!tileMap.hasOwnProperty(x)) continue;
+          if (tileMap[x][y] && tileMap[x][y][1]) {
+            parsedTileMap.push({
+              x: x,
+              y: y,
+              tile: tileMap[x][y][1]
+            })
+          }
+        }
+
+      }
+      console.dir(parsedTileMap);
+      console.log('sending...')
+      eventEmitter.emit('send parsed tile map', parsedTileMap);
+    })
   }
 
-  state.update = function() {}
+  state.update = function() {
+    function parseCoordinate(n) {
+      return Math.floor(n / 32) * 32
+    }
+
+    if (game.input.activePointer.isDown) {
+      const x = parseCoordinate(game.input.mousePointer.x) - 400;
+      const y = parseCoordinate(game.input.mousePointer.y) - 300;
+      const placedTool = game.add.sprite( x, y, game.activeTool );
+
+      if (tileMap[x] && tileMap[x][y]) tileMap[x][y][0].kill()
+
+      if (!tileMap[x]) tileMap[x] = {};
+      tileMap[x][y] = [placedTool, game.activeTool];
+      console.dir(tileMap);
+    }
+  }
 
   return state;
 };
