@@ -90,7 +90,7 @@ function initGameState() {
     hudCounters.map( function( counter ) {
       counter.icon.initPos = { x: counter.icon.position.x, y: counter.icon.position.y };
       counter.icon.anchor = new Phaser.Point( 0.5, 0.5 );
-      counter.text = game.add.text( counter.icon.position.x, counter.icon.position.y, "", { font: "bold 28pt mono" } );
+      counter.text = game.add.text( counter.icon.position.x, counter.icon.position.y, "", { font: "bold 24pt 'Press Start 2P', sans-serif" } );
       counter.text.anchor = new Phaser.Point( 0, 0.5 );
       return counter;
     });
