@@ -2,7 +2,6 @@ const _ = require('lodash');
 const eventEmitter = window.eventEmitter
 
 app.controller('CreateLevelCtrl', function($scope) {
-	console.log('i hate bugs');
 	$scope.toolArr = {
 		'Red Brick' : {
 			img : '/assets/images/brick_red.png',
@@ -28,11 +27,11 @@ app.controller('CreateLevelCtrl', function($scope) {
   }
 
   $scope.requestParsedTileMap = () => {
-    console.log('requesting parsed tile map...')
-    eventEmitter.emit('request parsed tile map', '');
+    console.log('requesting tile map...')
+    eventEmitter.emit('request tile map', '');
   }
 
-  eventEmitter.on('send parsed tile map', (parsedTileMap) => {
+  eventEmitter.on('send tile map', (parsedTileMap) => {
     console.log('recieved.')
     console.dir(parsedTileMap);
   })
