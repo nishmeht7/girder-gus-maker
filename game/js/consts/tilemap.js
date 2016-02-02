@@ -4,4 +4,5 @@ module.exports = {
   3: 'RedBrickBlock',
   4: 'BlackBrickBlock',
   5: 'BreakBrickBlock',
+  6: 'Spike'
 }
