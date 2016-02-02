@@ -7,6 +7,7 @@ function initLoadState() {
 
     console.log( "Loading assets..." );
 
+    game.load.image('Clock', '/assets/images/clock.png');
     game.load.image('BrickBlack', '/assets/images/brick_black.png');
     game.load.image('BrickBreak', '/assets/images/brick_break.png');
     game.load.image('BrickRed', '/assets/images/brick_red.png');
