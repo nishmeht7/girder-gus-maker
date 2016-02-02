@@ -14,6 +14,7 @@ function GirderMarker() {
   this.sprite.anchor = new Phaser.Point( 0.5, 0.5 );
   this.master = null;
   this.girdersPlaced = [];
+  this.placeGirderButton = null;
 
   this.placeable = false;
   this.sprite.alpha = 0.5;
@@ -32,20 +33,20 @@ GirderMarker.prototype.masterPos = function () {
 
   masterPos.right = function() {
     if ( Math.abs( cosine ) > 1 - EPSILON ) {
-      masterPos.x += cosine * 20;
+      masterPos.x += cosine * 24;
       return masterPos;
     } else {
-      masterPos.y += sine * 20;
+      masterPos.y += sine * 24;
       return masterPos;
     }
   }
 
   masterPos.left = function() {
     if ( Math.abs( cosine ) > 1 - EPSILON ) {
-      masterPos.x -= cosine * 20;
+      masterPos.x -= cosine * 24;
       return masterPos;
     } else {
-      masterPos.y -= sine * 20;
+      masterPos.y -= sine * 24;
       return masterPos;
     }
   }
@@ -74,6 +75,7 @@ GirderMarker.prototype.getTargetPos = function () {
   else posFactory = this.masterPos().left();
 
   var bottom = posFactory.bottom();
+  bottom.isBottom = true;
 
   var hitBoxes = game.physics.p2.hitTest( bottom );
   if ( hitBoxes.length ) {
@@ -85,6 +87,7 @@ GirderMarker.prototype.getTargetPos = function () {
     if ( hitUnplaceable ) return undefined;
 
     var front = posFactory.front();
+    front.isBottom = false;
 
     if ( game.physics.p2.hitTest( front ).length ) {
       return undefined;
@@ -102,6 +105,7 @@ GirderMarker.prototype.roundTargetPos = function ( pos ) {
 
 GirderMarker.prototype.setPlaceGirderButton = function ( key ) {
   key.onDown.add( GirderMarker.prototype.placeGirder, this, 0 );
+  this.placeGirderButton = key;
 }
 
 GirderMarker.prototype.placeGirder = function () {
@@ -132,7 +136,11 @@ GirderMarker.prototype.update = function () {
 
       this.sprite.visible = true;
       this.placeable = true;
-      //console.log( this.sprite.position );
+
+      if ( targetPos.isBottom && this.placeGirderButton.isDown ) {
+        this.placeGirder();
+      }
+      
     } else {
 
       this.sprite.visible = false;
