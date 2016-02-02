@@ -118,7 +118,7 @@ gulp.task('lintServerJS', function() {
 //     .pipe(gulp.dest('./public'));
 // });
 
-gulp.task('buildGameJS', ['lintGameJS'], function() {
+gulp.task('buildGameJS', ['lintGameJS','copyAssets'], function() {
   var bundler = browserify();
 
   bundler.add('./game/js/main.js');
