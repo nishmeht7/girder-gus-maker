@@ -13,3 +13,4 @@ This file is for keep track of features we want to implement after we have optai
 		* Track who finishes fastest and with the fewest girders
 		* Play against ghosts of previous plays
 	* Login with google link is visually nice, not intuitively a button / link / etc.
+	* Social sharing
