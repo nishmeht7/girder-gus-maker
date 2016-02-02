@@ -32,10 +32,11 @@ function Gus(x, y) {
 
     // attach our sprite to the physics engine
     game.physics.p2.enable( this.sprite, false );
+    this.sprite.body.setRectangle( 20, 32 );
     this.sprite.body.fixedRotation = true;
 
     // create gus's rotation sensor
-    this.rotationSensor = this.sprite.body.addRectangle( this.sprite.width, 20 );
+    this.rotationSensor = this.sprite.body.addRectangle( 20, 20 );
     this.setCollision();
     this.sprite.body.onBeginContact.add( Gus.prototype.touchesWall, this );
 
