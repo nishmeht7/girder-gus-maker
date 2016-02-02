@@ -38,5 +38,14 @@ app.controller('CreateLevelCtrl', function($scope) {
   eventEmitter.on('send tile map', (parsedTileMap) => {
     console.log('recieved.')
     console.dir(parsedTileMap);
+  });
+
+  $scope.getScreenshot = function() {
+    eventEmitter.emit('request screenshot');
+  }
+
+  eventEmitter.on('send screenshot', (screenshot) => {
+    console.log('screenshot');
+    console.log(screenshot);
   })
 });

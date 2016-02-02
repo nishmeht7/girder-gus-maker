@@ -10,6 +10,9 @@ function startGame( phaser ) {
 
   // initialize the game
   window.game = new phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'level-creator-container', undefined, undefined, false );
+  
+  // necessary for screenshots when using WebGL renderer
+  game.preserveDrawingBuffer = true;
 
   // add states
   game.state.add( "load", loadState() );
