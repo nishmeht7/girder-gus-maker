@@ -57,6 +57,11 @@ function initCreateState() {
       console.log('sending...')
       eventEmitter.emit('send tile map', parsedTileMap);
     })
+
+    eventEmitter.on('request screenshot', function() {
+      var screenshot = game.canvas.toDataURL();
+      eventEmitter.emit('send screenshot', screenshot);
+    })
   }
 
   state.update = function() {
