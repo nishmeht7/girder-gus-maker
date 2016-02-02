@@ -3,6 +3,7 @@
 const COLORS = require('../../game/js/consts/colors');
 const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 
+
 let gusSpawn;
 
 function tileToNum(tile) {
@@ -31,7 +32,7 @@ function initCreateState() {
 
   state.create = function() {
     const game = window.game;
-
+    gusSpawn = game.add.sprite(0, 0, 'Gus');
     game.stage.setBackgroundColor(COLORS.DEFAULT_SKY)
 
     eventEmitter.on('change active tool', (tool) => {
