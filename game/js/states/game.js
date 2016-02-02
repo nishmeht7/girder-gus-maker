@@ -148,7 +148,7 @@ function initGameState() {
 
     // render HUD
     hudCounters.forEach( function( counter ) {
-      
+
       counter.icon.bringToTop();
       counter.icon.position = game.dolly.screenspaceToWorldspace( counter.icon.initPos );
       counter.icon.rotation = game.dolly.rotation;
@@ -159,7 +159,7 @@ function initGameState() {
       counter.shadow.text = counter.value();
       counter.shadow.rotation = game.dolly.rotation;
       
-      var textpos = { x: counter.icon.initPos.x + 32, y: counter.icon.initPos.y + 4 };
+      textpos = { x: counter.icon.initPos.x + 32, y: counter.icon.initPos.y + 4 };
       counter.text.bringToTop();
       counter.text.position = game.dolly.screenspaceToWorldspace( textpos );
       counter.text.text = counter.value();
