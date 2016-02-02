@@ -23,7 +23,19 @@ var notify = require('gulp-notify');
 // Development tasks
 // --------------------------------------------------------------
 
-gulp.task('buildBrowserJS', function() {
+gulp.task('buildLevelCreatorJS', ['lintLevelCreatorJS'], function() {
+  var bundler = browserify();
+
+  bundler.add('./levelCreator/main.js');
+  bundler.transform(babelify);
+
+  return bundler.bundle()
+    .pipe(source('levelCreator.js'))
+    .pipe(plumber())
+    .pipe(gulp.dest('./public'));
+})
+
+gulp.task('buildBrowserJS', ['lintBrowserJS'], function() {
   var bundler = browserify();
 
   bundler.add('./browser/js/app.js');
@@ -42,6 +54,18 @@ gulp.task('reload', function() {
 
 gulp.task('reloadCSS', function() {
   return gulp.src('./public/style.css').pipe(livereload());
+});
+
+gulp.task('lintLevelCreatorJS', function() {
+
+  return gulp.src(['./levelCreator/**'])
+    .pipe(plumber({
+      errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
+    }))
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failOnError());
+
 });
 
 gulp.task('lintBrowserJS', function() {
@@ -194,18 +218,22 @@ gulp.task('build', function() {
   if (process.env.NODE_ENV === 'production') {
     runSeq(['buildJSProduction', 'buildCSSProduction']);
   } else {
-    runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets']);
+    runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets', 'buildLevelCreatorJS']);
   }
 });
 
 // todo: add tests
-gulp.task('travis', ['lintServerJS', 'buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets'], function() {
+gulp.task('travis', ['lintServerJS', 'buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets', 'buildLevelCreatorJS'], function() {
   process.exit(0);
 });
 
 gulp.task('default', function() {
 
   gulp.start('build');
+  // Run when anything inside of levelCreator changes
+  gulp.watch('levelCreator/**', function() {
+  	runSeq('buildLevelCreatorJS', 'reload');
+  });
 
   // Run when anything inside of browser/js changes.
   gulp.watch('browser/js/**', function() {
