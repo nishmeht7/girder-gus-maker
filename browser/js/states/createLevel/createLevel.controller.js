@@ -25,9 +25,10 @@ app.controller('CreateLevelCtrl', function($scope) {
 		}
 	}
 
-  $scope.changeActiveTool = function(tile) {
+  $scope.changeActiveTool = function(tool) {
     console.log('changing active tool...')
-    eventEmitter.emit('change active tool', tile)
+    eventEmitter.emit('change active tool', tool.tile)
+    $scope.activeToolImg = tool.img;
   }
 
   $scope.requestParsedTileMap = () => {
