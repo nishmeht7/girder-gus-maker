@@ -3,9 +3,13 @@ const eventEmitter = window.eventEmitter
 
 app.controller('CreateLevelCtrl', function($scope) {
 	$scope.toolArr = {
-		'Eraser' : {
-			img : '/assets/images/eraser.png',
+    'Eraser' : {
+      img : '/assets/images/eraser.png',
       tile: null
+    },
+    'Gus' : {
+			img : '/assets/images/gus-static.png',
+      tile: 'Gus'
 		},
     'Red Brick' : {
 			img : '/assets/images/brick_red.png',
