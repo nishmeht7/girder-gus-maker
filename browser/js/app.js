@@ -35,6 +35,13 @@ window.app.run(function($rootScope, AuthService, $state) {
     // whenever the process of changing a state begins.
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
 
+        // clear out the game in memory if it's there
+        if ( window.game ) {
+            console.log( "Cleaning up old game..." );
+            window.game.destroy();
+            window.game = undefined;
+        }
+
         if (!destinationStateRequiresAuth(toState)) {
             // The destination state does not require authentication
             // Short circuit with return.
