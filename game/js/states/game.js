@@ -171,7 +171,7 @@ function initGameState() {
     var rate = game.time.fps;
     fpsCounter.position = game.dolly.screenspaceToWorldspace( {x:0,y:0} );
     fpsCounter.rotation = game.dolly.rotation;
-    fpsCounter.text =  rate + " FPS" + ( rate < 30 ? "!!!!" : " :)" );
+    fpsCounter.text = rate + " FPS" + ( rate < 30 ? "!!!!" : " :)" );
 
     hudCounters.forEach( function( counter ) {
 

@@ -102,7 +102,7 @@ BreakBrickBlock.prototype.collapse = function () {
   this.sprite.body.clearShapes();
 
   // make some particles!
-  new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Debris", {
+  this.breakBurst = new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Debris", {
     lifetime: 500,
     count: 14,
     scaleMin: 0.4,

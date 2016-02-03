@@ -42,7 +42,7 @@ Tool.prototype.collect = function( ) {
   this.sprite.body.clearShapes();
   game.toolsRemaining--;
 
-  new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Tool", {
+  this.collectBurst = new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Tool", {
     lifetime: 3000,
     count: 8,
     scaleMin: 0.4,
