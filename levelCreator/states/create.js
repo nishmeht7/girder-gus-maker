@@ -5,7 +5,7 @@ const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 
 var Dolly = require('../../game/js/objects/dolly');
 
-let gusSpawn;
+let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey;
 
 function tileToNum(tile) {
   for (let n in NUM_TO_TILES)
@@ -35,6 +35,12 @@ function initCreateState() {
     const game = window.game;
     gusSpawn = game.add.sprite(0, 0, 'Gus');
     game.stage.setBackgroundColor(COLORS.DEFAULT_SKY)
+
+    // Set Keyboard input
+    upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+    downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+    leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+    rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 
     game.dolly = new Dolly( game.camera );
     game.dolly.targetPos = new Phaser.Point( 0, 0 );
@@ -105,12 +111,25 @@ function initCreateState() {
       };
     }
 
-    if (game.input.activePointer.rightButton.isDown) {
-
-      const clickPoint = new Phaser.Point( game.input.mousePointer.x, game.input.mousePointer.y );
+    function move(xDiff, yDiff) {
+      const clickPoint = new Phaser.Point(game.camera.width / 2 - xDiff, game.camera.height / 2 - yDiff);
       game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
-
     }
+
+    const moveAmount = 64;
+
+    if (upKey.isDown) move(0, moveAmount);
+    if (downKey.isDown) move(0, -moveAmount);
+    if (leftKey.isDown) move(moveAmount, 0);
+    if (rightKey.isDown) move(-moveAmount, 0);
+
+
+    // if (game.input.activePointer.rightButton.isDown) {
+    //
+    //   const clickPoint = new Phaser.Point( game.input.mousePointer.x, game.input.mousePointer.y );
+    //   game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
+    //
+    // }
 
     game.dolly.update();
   }
