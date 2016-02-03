@@ -3,6 +3,7 @@ var Gus = require( "../objects/gus" );
 var GirderMarker = require( "../objects/girderMarker" );
 var LevelGenerator = require( "../generator" );
 var ParticleBurst = require( "../particles/burst" );
+var BreakBrickBlock = require( "../objects" ).BreakBrickBlock;
 
 function initGameState() {
 
@@ -41,6 +42,7 @@ function initGameState() {
         { t: 3, x: 576, y: 320 }, { t: 3, x: 608, y: 320 },
         { t: 3, x: 576, y: 352 }, { t: 3, x: 608, y: 352 },
         { t: 3, x: 576, y: 384 }, { t: 3, x: 608, y: 384 },
+        { t: 5, x: 416, y: 352 }, { t: 5, x: 448, y: 352 }, { t: 5, x: 480, y: 352 },
 
         { t: 4, x: 0, y: 256 }, { t: 4, x: 32, y: 256 },
         { t: 4, x: 0, y: 288 }, { t: 4, x: 32, y: 288 },
@@ -135,6 +137,8 @@ function initGameState() {
     marker.update();
     game.toolsToCollect.forEach( function( tool ) { tool.update() });
 
+    BreakBrickBlock.update();
+
     if ( game.toolsRemaining === 0 ) {
       if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel() }, 15000 );
 
@@ -186,6 +190,7 @@ function initGameState() {
 
     game.toolsToCollect.forEach( function( tool ) { tool.reset() });
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
+    BreakBrickBlock.reset();
 
     gus.respawn();
     gus.rotationSpeed = 0;
