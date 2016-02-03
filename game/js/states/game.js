@@ -87,6 +87,8 @@ function initGameState() {
     game.dolly = new Dolly( game.camera );
     game.dolly.lockTo( gus.sprite );
 
+    game.physics.p2.setPostBroadphaseCallback( state.postBroadphase, state );
+
     console.log( "Binding to keys..." );
 
     game.cursors = game.input.keyboard.createCursorKeys();
@@ -197,6 +199,20 @@ function initGameState() {
 
     restartTimeout = undefined;
     levelStarted = game.time.now;
+
+  }
+
+  state.postBroadphase = function ( body1, body2 ) {
+
+    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" ) {
+      body2.sprite.owner.collect();
+      return false;
+    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" ) {
+      body1.sprite.owner.collect();
+      return false;
+    }
+
+    return true;
 
   }
 
