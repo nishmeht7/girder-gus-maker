@@ -148,6 +148,9 @@ function initGameState() {
 
       gus.isDead = true;
 
+      gus.sprite.body.velocity.x = 0;
+      gus.sprite.body.velocity.y = 0;
+
       gus.rotationSpeed = gus.rotationSpeed || 0;
       gus.rotationSpeed += game.time.physicsElapsed;
       gus.sprite.rotation += gus.rotationSpeed * game.time.physicsElapsed;
