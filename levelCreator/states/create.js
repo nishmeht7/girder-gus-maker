@@ -35,7 +35,10 @@ function initCreateState() {
   state.create = function() {
     const game = window.game;
     gusSpawn = game.add.sprite(0, 0, 'Gus');
-    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY)
+    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
+
+    game.dolly = new Dolly( game.camera );
+    game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
     // Set Keyboard input
     upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -95,7 +98,7 @@ function initCreateState() {
       const targetPoint = game.dolly.screenspaceToWorldspace( clickPoint );
       const x = parseCoordinate( targetPoint.x );
       const y = parseCoordinate( targetPoint.y );
-
+      
       let placedTool;
       if (game.activeTool) placedTool = game.add.sprite(x, y, game.activeTool);
 
