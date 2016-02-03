@@ -7,13 +7,20 @@
 	<nav>
 	<ul id='tool-bar'>
 		<li ng-click='changeActiveTool(tool)' ng-repeat='tool in toolArr'>
-      <img style='width: 32px' ng-src='{{tool.img}}' />
-    </li>
+		<img style='width: 32px' ng-src='{{tool.img}}' />
+		</li>
 	</ul>
 	</nav>
 	</header>
 
-  	<level-creator style='cursor: url("{{activeToolImg}}") 16 16, auto'  >
-  	</level-creator>
-  <button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
+	<div ng-if=!testing>
+		<level-creator ng-style='{cursor: "url("+activeToolImg+") 16 16, auto"}'  >
+		</level-creator>
+	</div>
+	<br>
+	<button class='btn' ng-click='testTesting()'>Show Game</button>
+	<div ng-if=testing>
+		<game-view></game-view>
+	</div>
+	<button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
 </div>
