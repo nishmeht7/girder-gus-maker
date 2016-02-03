@@ -23,6 +23,10 @@ app.controller('CreateLevelCtrl', function($scope) {
 			img : '/assets/images/brick_break.png',
       tile: 'BreakBrickBlock'
 		},
+    'Spike': {
+      img : '/assets/images/spike.png',
+      tile: 'Spike'
+    },
 		'Tool' : {
 			img : '/assets/images/tool.png',
       tile: 'Tool'
@@ -42,6 +46,7 @@ app.controller('CreateLevelCtrl', function($scope) {
 
   eventEmitter.on('send tile map', (parsedTileMap) => {
     console.log('recieved.')
+    $scope.map = parsedTileMap;
     console.dir(parsedTileMap);
   });
 
