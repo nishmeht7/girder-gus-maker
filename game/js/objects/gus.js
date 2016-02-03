@@ -1,3 +1,5 @@
+var ParticleBurst = require( "../particles/burst" );
+
 var COLLISION_GROUPS = require( "../consts/collisionGroups" );
 var EPSILON = require( "../consts" ).EPSILON;
 var TAU = require( "../consts" ).TAU;
@@ -101,6 +103,15 @@ Gus.prototype.doom = function() {
 }
 
 Gus.prototype.kill = function() {
+
+  new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "GusHead", {
+    lifetime: 5000,
+    count: 14,
+    scaleMin: 0.4,
+    scaleMax: 1.0,
+    speed: 100,
+    fadeOut: true
+  });
 
   this.sprite.visible = false;
   this.isDead = true;
