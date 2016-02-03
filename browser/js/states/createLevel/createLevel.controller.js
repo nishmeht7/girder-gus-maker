@@ -3,7 +3,8 @@ const eventEmitter = window.eventEmitter
 
 app.controller('CreateLevelCtrl', function($scope) {
 	var nextMapUse = null;
-	var levelArr = null;
+	var unparsedLevelArr = null;
+	var parsedLevelArr = [];
 
 	$scope.testing = false;
 
@@ -34,6 +35,8 @@ app.controller('CreateLevelCtrl', function($scope) {
 	}
 	}
 
+	$scope.activeToolImg = $scope.toolArr['Red Brick'].img;
+
 	$scope.changeActiveTool = function(tool) {
 		console.log('changing active tool...')
 			eventEmitter.emit('change active tool', tool.tile)
@@ -46,15 +49,20 @@ app.controller('CreateLevelCtrl', function($scope) {
 		eventEmitter.emit('request tile map', '');
 	}
 
-	eventEmitter.on('send tile map', (parsedTileMap) => {
+	eventEmitter.on('send tile map', (mapArr) => {
 		if(nextMapUse === 'log') {
 			console.log('recieved.');
-			console.dir(parsedTileMap);
+			console.dir(mapArr);
 		} else if (nextMapUse === 'switchToGame') {
 			console.log('ready to switch');
-			levelArr = parsedTileMap;
+			parsedLevelArr = mapArr[0];
+			unparsedLevelArr = mapArr[1];
 			$scope.testing = true;
 		}
+	});
+
+	eventEmitter.on('I need both the maps!', function() {
+		eventEmitter.emit('found maps!', [unparsedLevelArr, parsedLevelArr]);
 	});
 
 	$scope.getScreenshot = function() {
@@ -78,10 +86,11 @@ app.controller('CreateLevelCtrl', function($scope) {
 
 	eventEmitter.on('what level to play', (data) => {
 		console.log(data);
-		if(levelArr) {
-			eventEmitter.emit('play this level', ['levelArr', levelArr]);
+		if(parsedLevelArr) {
+			eventEmitter.emit('play this level', ['levelArr', parsedLevelArr]);
+			console.log('found a parsed level arr');
 		} else {
-			console.log(levelArr);
+			console.log(parsedLevelArr);
 		}
 	});
 });
