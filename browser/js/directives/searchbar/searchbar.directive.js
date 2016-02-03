@@ -5,7 +5,8 @@ app.directive('searchbar', function() {
         controller: 'SearchbarCtrl',
         scope: {
             'sorts': '=',
-            'searchTypes': '='
+            'searchTypes': '=',
+            'params': '='
         }
     }
 });
