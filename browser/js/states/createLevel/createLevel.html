@@ -6,14 +6,15 @@
 	<header id='tool-bar-container'>
 	<nav>
 	<ul id='tool-bar'>
-		<li ng-click='changeActiveTool(tool)' ng-repeat='tool in toolArr'>
-      <img style='width: 32px' ng-src='{{tool.img}}' />
+		<li ng-repeat='tool in toolArr'>
+      <a ng-click='changeActiveTool(tool)'><img style='width: 32px' ng-src='{{tool.img}}' /></a>
     </li>
 	</ul>
 	</nav>
 	</header>
 
   	<level-creator style='cursor: url("{{activeToolImg}}") 16 16, auto'  >
+      <img src="/images/loading_screen.png"></img>
   	</level-creator>
   <button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
 </div>
