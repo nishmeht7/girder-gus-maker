@@ -1,7 +1,9 @@
 <div id="levels" class="pagewrapper">
     <searchbar sorts="sorts" search-types="searchTypes" params="params"></searchbar>
-    <div class="row levels-list">
-        <level-thumbnail ng-repeat="level in levels" level="level" show-creator="true"></level-thumbnail>
+    <div class="levels-list">
+        <div class="row" ng-repeat="levelRow in levels">
+            <level-thumbnail ng-repeat="level in levelRow" level="level" show-creator="true"></level-thumbnail>
+        </div>
     </div>
     <nav>
       <ul class="pagination">

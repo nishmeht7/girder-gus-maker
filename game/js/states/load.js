@@ -81,7 +81,7 @@ function initLoadState() {
 				};
 				console.log(game.level);
 			}
-			game.state.start( "game" );
+			(function gotoStart() { if ( game.state ) game.state.start( "game" ); else setTimeout( gotoStart, 100 ) })();
 		});
 		eventEmitter.emit('what level to play', 'log me');
 

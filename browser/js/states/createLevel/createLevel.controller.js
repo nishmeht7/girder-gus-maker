@@ -70,13 +70,23 @@ app.controller('CreateLevelCtrl', function($scope) {
 	}
 
 	$scope.testTesting = function() {
-		window.game = null;
-		nextMapUse = 'switchToGame';
-		if(!$scope.testing) {
-			eventEmitter.emit('request tile map', '');
-		} else {
-			$scope.testing = !$scope.testing;
-		}
+		window.game.destroy();
+
+		(function checkGameDestroyed() {
+			if ( window.game.state === null ) {
+
+				window.game = null;
+				nextMapUse = 'switchToGame';
+				if(!$scope.testing) {
+					eventEmitter.emit('request tile map', '');
+				} else {
+					$scope.testing = !$scope.testing;
+				}
+
+			} else {
+				setTimeout( checkGameDestroyed, 100 );
+			}
+		})()
 	}
 
 	eventEmitter.on('send screenshot', (screenshot) => {

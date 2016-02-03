@@ -52,6 +52,8 @@ function initGameState() {
     game.dolly = new Dolly( game.camera );
     game.dolly.lockTo( gus.sprite );
 
+    game.physics.p2.setPostBroadphaseCallback( state.postBroadphase, state );
+
     console.log( "Binding to keys..." );
 
     game.cursors = game.input.keyboard.createCursorKeys();
@@ -108,6 +110,9 @@ function initGameState() {
 
       gus.isDead = true;
 
+      gus.sprite.body.velocity.x = 0;
+      gus.sprite.body.velocity.y = 0;
+
       gus.rotationSpeed = gus.rotationSpeed || 0;
       gus.rotationSpeed += game.time.physicsElapsed;
       gus.sprite.rotation += gus.rotationSpeed * game.time.physicsElapsed;
@@ -131,7 +136,7 @@ function initGameState() {
     var rate = game.time.fps;
     fpsCounter.position = game.dolly.screenspaceToWorldspace( {x:0,y:0} );
     fpsCounter.rotation = game.dolly.rotation;
-    fpsCounter.text =  rate + " FPS" + ( rate < 30 ? "!!!!" : " :)" );
+    fpsCounter.text = rate + " FPS" + ( rate < 30 ? "!!!!" : " :)" );
 
     hudCounters.forEach( function( counter ) {
 
@@ -171,6 +176,20 @@ function initGameState() {
 
     restartTimeout = undefined;
     levelStarted = game.time.now;
+
+  }
+
+  state.postBroadphase = function ( body1, body2 ) {
+
+    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation ) {
+      body2.sprite.owner.collect();
+      return false;
+    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation ) {
+      body1.sprite.owner.collect();
+      return false;
+    }
+
+    return true;
 
   }
 
