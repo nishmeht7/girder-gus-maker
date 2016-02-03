@@ -2,6 +2,9 @@ const _ = require('lodash');
 const eventEmitter = window.eventEmitter
 
 app.controller('CreateLevelCtrl', function($scope) {
+	var nextMapUse = null;
+	var levelArr = null;
+
 	$scope.testing = false;
 
 	$scope.toolArr = {
@@ -19,11 +22,11 @@ app.controller('CreateLevelCtrl', function($scope) {
 	},
 	'Black Brick' : {
 		img : '/assets/images/brick_black.png',
-	tile: 'BlackBrickBlock'
+		tile: 'BlackBrickBlock'
 	},
 	'Break Brick' : {
 		img : '/assets/images/brick_break.png',
-tile: 'BreakBrickBlock'
+		tile: 'BreakBrickBlock'
 	},
 	'Tool' : {
 		img : '/assets/images/tool.png',
@@ -38,13 +41,20 @@ tile: 'BreakBrickBlock'
 	}
 
 	$scope.requestParsedTileMap = () => {
-		console.log('requesting tile map...')
-			eventEmitter.emit('request tile map', '');
+		nextMapUse = 'log';
+		console.log('requesting tile map...');
+		eventEmitter.emit('request tile map', '');
 	}
 
 	eventEmitter.on('send tile map', (parsedTileMap) => {
-		console.log('recieved.')
-		console.dir(parsedTileMap);
+		if(nextMapUse === 'log') {
+			console.log('recieved.');
+			console.dir(parsedTileMap);
+		} else if (nextMapUse === 'switchToGame') {
+			console.log('ready to switch');
+			levelArr = parsedTileMap;
+			$scope.testing = true;
+		}
 	});
 
 	$scope.getScreenshot = function() {
@@ -53,7 +63,12 @@ tile: 'BreakBrickBlock'
 
 	$scope.testTesting = function() {
 		window.game = null;
-		$scope.testing = !$scope.testing;
+		nextMapUse = 'switchToGame';
+		if(!$scope.testing) {
+			eventEmitter.emit('request tile map', '');
+		} else {
+			$scope.testing = !$scope.testing;
+		}
 	}
 
 	eventEmitter.on('send screenshot', (screenshot) => {
@@ -63,6 +78,10 @@ tile: 'BreakBrickBlock'
 
 	eventEmitter.on('what level to play', (data) => {
 		console.log(data);
-		eventEmitter.emit('play this level', 'testing');
+		if(levelArr) {
+			eventEmitter.emit('play this level', ['levelArr', levelArr]);
+		} else {
+			console.log(levelArr);
+		}
 	});
 });
