@@ -10,7 +10,7 @@ function initGameState() {
   var state = {};
   var gus, marker, generator, restartTimeout, hudCounters, levelStarted;
   var fpsCounter;
-  var game = window.game;
+  const game = window.game;
 
   state.preload = function () {
 
