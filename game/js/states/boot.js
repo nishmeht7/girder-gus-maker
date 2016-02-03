@@ -7,6 +7,9 @@ function initBootState() {
 
   state.create = function() {
 
+    // use advanced timing engine
+    game.time.advancedTiming = true;
+
     console.log( "Initializing physics..." );
 
     // start game physics

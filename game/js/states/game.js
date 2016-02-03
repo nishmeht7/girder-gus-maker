@@ -3,11 +3,13 @@ var Gus = require( "../objects/gus" );
 var GirderMarker = require( "../objects/girderMarker" );
 var LevelGenerator = require( "../generator" );
 var ParticleBurst = require( "../particles/burst" );
+var BreakBrickBlock = require( "../objects" ).BreakBrickBlock;
 
 function initGameState() {
 
   var state = {};
   var gus, marker, generator, restartTimeout, hudCounters, levelStarted;
+  var fpsCounter;
   var game = window.game;
 
   state.preload = function () {
@@ -41,6 +43,7 @@ function initGameState() {
         { t: 3, x: 576, y: 320 }, { t: 3, x: 608, y: 320 },
         { t: 3, x: 576, y: 352 }, { t: 3, x: 608, y: 352 },
         { t: 3, x: 576, y: 384 }, { t: 3, x: 608, y: 384 },
+        { t: 5, x: 416, y: 352 }, { t: 5, x: 448, y: 352 }, { t: 5, x: 480, y: 352 },
 
         { t: 4, x: 0, y: 256 }, { t: 4, x: 32, y: 256 },
         { t: 4, x: 0, y: 288 }, { t: 4, x: 32, y: 288 },
@@ -96,6 +99,7 @@ function initGameState() {
     game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( function() { gus.doom() }, this, 0 );
 
     // make hud icons
+    fpsCounter = game.add.text( 0, 0, "60 FPS", { font: "9pt mono" });
     hudCounters = [ 
       { icon: game.add.sprite( 41, 41, "Tool" ), value: function() { return game.toolsRemaining } }, 
       { icon: game.add.sprite( 181, 41, "Girder" ), value: function() { return gus.girders } },
@@ -137,6 +141,8 @@ function initGameState() {
     marker.update();
     game.toolsToCollect.forEach( function( tool ) { tool.update() });
 
+    BreakBrickBlock.update();
+
     if ( game.toolsRemaining === 0 ) {
       if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel() }, 15000 );
 
@@ -162,6 +168,11 @@ function initGameState() {
     ParticleBurst.update();
 
     // render HUD
+    var rate = game.time.fps;
+    fpsCounter.position = game.dolly.screenspaceToWorldspace( {x:0,y:0} );
+    fpsCounter.rotation = game.dolly.rotation;
+    fpsCounter.text =  rate + " FPS" + ( rate < 30 ? "!!!!" : " :)" );
+
     hudCounters.forEach( function( counter ) {
 
       counter.icon.bringToTop();
@@ -188,6 +199,7 @@ function initGameState() {
 
     game.toolsToCollect.forEach( function( tool ) { tool.reset() });
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
+    BreakBrickBlock.reset();
 
     gus.respawn();
     gus.rotationSpeed = 0;
