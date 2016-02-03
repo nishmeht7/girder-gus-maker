@@ -3,8 +3,10 @@
 const COLORS = require('../../game/js/consts/colors');
 const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 
+var Dolly = require('../../game/js/objects/dolly');
 
-let gusSpawn;
+let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey;
+let lastRotTime = 0;
 
 function tileToNum(tile) {
   for (let n in NUM_TO_TILES)
@@ -32,8 +34,22 @@ function initCreateState() {
 
   state.create = function() {
     const game = window.game;
-    gusSpawn = game.add.sprite(-16, -16, 'Gus');
-    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY)
+    gusSpawn = game.add.sprite(0, 0, 'Gus');
+    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
+
+    game.dolly = new Dolly( game.camera );
+    game.dolly.targetPos = new Phaser.Point( 0, 0 );
+
+    // Set Keyboard input
+    upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+    downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+    leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+    rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+    rotateCounterKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+    routateClockwiseKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
+
+    game.dolly = new Dolly( game.camera );
+    game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
     eventEmitter.on('change active tool', (tool) => {
       game.activeTool = tool
@@ -78,8 +94,11 @@ function initCreateState() {
     }
 
     if (game.input.activePointer.isDown) {
-      const x = parseCoordinate(game.input.mousePointer.x) - 400;
-      const y = parseCoordinate(game.input.mousePointer.y) - 300;
+      const clickPoint = new Phaser.Point( game.input.mousePointer.x, game.input.mousePointer.y );
+      const targetPoint = game.dolly.screenspaceToWorldspace( clickPoint );
+      const x = parseCoordinate( targetPoint.x );
+      const y = parseCoordinate( targetPoint.y );
+      
       let placedTool;
       if (game.activeTool) placedTool = game.add.sprite(x, y, game.activeTool);
 
@@ -97,6 +116,31 @@ function initCreateState() {
         tile: game.activeTool
       };
     }
+
+    function move(xDiff, yDiff) {
+      const clickPoint = new Phaser.Point(game.camera.width / 2 - xDiff, game.camera.height / 2 - yDiff);
+      game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
+    }
+
+    function rotate(dir) {
+      if(Date.now() - lastRotTime > 500) {
+        if (!game.dolly.targetAng) game.dolly.targetAng = 0;
+        game.dolly.targetAng += dir * Math.PI / 2;
+        lastRotTime = Date.now();
+      }
+    }
+
+    const moveAmount = 64;
+
+    if (upKey.isDown) move(0, moveAmount);
+    if (downKey.isDown) move(0, -moveAmount);
+    if (leftKey.isDown) move(moveAmount, 0);
+    if (rightKey.isDown) move(-moveAmount, 0);
+
+    if (rotateCounterKey.isDown) rotate(1);
+    if (routateClockwiseKey.isDown) rotate(-1);
+
+    game.dolly.update();
   }
 
   return state;
