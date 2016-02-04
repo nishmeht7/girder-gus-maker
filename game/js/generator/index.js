@@ -11,11 +11,11 @@ function LevelGenerator( levelData ) {
 }
 
 LevelGenerator.prototype.getSkyColor = function() {
-  return this.levelData.sky || defaultSkyColor;
+  return this.levelData.skyColor || defaultSkyColor;
 }
 
 LevelGenerator.prototype.getStartingGirders = function() {
-  return this.levelData.girders || 10;
+  return this.levelData.startGirders || 10;
 }
 
 LevelGenerator.prototype.parseObjects = function() {

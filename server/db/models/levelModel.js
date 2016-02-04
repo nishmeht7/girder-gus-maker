@@ -20,7 +20,7 @@ const map = {
     }
   },
   objects: [{
-    tile: {
+    t: {
       type: Number,
       max: numTiles
     },
@@ -28,6 +28,9 @@ const map = {
       type: Number
     },
     y: {
+      type: Number
+    },
+    r: {
       type: Number
     }
   }],

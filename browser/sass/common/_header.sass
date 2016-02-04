@@ -1,8 +1,15 @@
 $menu-item-border: 4px
 
 #logo
-  height: 85px
+  height: 96px
   padding-right: 15px
+
+  /* aliased mode */
+  image-rendering: -moz-crisp-edges         /* Firefox */
+  image-rendering:   -o-crisp-edges         /* Opera */
+  image-rendering: -webkit-optimize-contrast/* Webkit (non-standard naming) */
+  image-rendering: crisp-edges
+  -ms-interpolation-mode: nearest-neighbor  /* IE (non-standard property) */
 
 #company-title
   color: $heading
