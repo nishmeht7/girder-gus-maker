@@ -9,67 +9,72 @@ let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockw
 let lastRotTime = 0;
 
 function tileToNum(tile) {
-  for (let n in NUM_TO_TILES)
-    if (NUM_TO_TILES[n] === tile) return +n;
+	for (let n in NUM_TO_TILES)
+		if (NUM_TO_TILES[n] === tile) return +n;
 
-  throw new Error('Tile not found!')
+	throw new Error('Tile not found!')
 }
 
 function initCreateState() {
-  const state = {};
+	const state = {};
 
-  const eventEmitter = window.eventEmitter;
+	const eventEmitter = window.eventEmitter;
 
-  /* unparsedTileMap[x][y] = {sprite: sprite, tile: tile}
-   * e.g. { 50: { 25: [ sprite: sprite, tile: 'RedBrick' ] } }
-   *
-   * formatted like this so that each addition to it is O(1) rather than O(n)
-   * O(n) would suck with mouse drag.
-   */
-  const unparsedTileMap = {};
+	/* unparsedTileMap[x][y] = {sprite: sprite, tile: tile}
+	 * e.g. { 50: { 25: [ sprite: sprite, tile: 'RedBrick' ] } }
+	 *
+	 * formatted like this so that each addition to it is O(1) rather than O(n)
+	 * O(n) would suck with mouse drag.
+	 */
+	let unparsedTileMap;
+	
+	state.preload = function() {
+		eventEmitter.emit('loaded', () => {})
+		unparsedTileMap = game.unparsedTileMap;
+		game.parsedTileMap.forEach(function(obj) {
+			game.add.sprite(obj.x, obj.y, NUM_TO_TILES[obj.t]);
+		});
+		game.activeTool = 'RedBrickBlock';
+	}
 
-  state.preload = function() {
-    eventEmitter.emit('loaded', () => {})
-  }
+	state.create = function() {
+		const game = window.game;
+		gusSpawn = game.add.sprite(0, 0, 'Gus');
+		game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
 
-  state.create = function() {
-    const game = window.game;
-    gusSpawn = game.add.sprite(0, 0, 'Gus');
-    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
+		game.dolly = new Dolly( game.camera );
+		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-    game.dolly = new Dolly( game.camera );
-    game.dolly.targetPos = new Phaser.Point( 0, 0 );
+		// Set Keyboard input
+		upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+		downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+		leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+		rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+		rotateCounterKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+		routateClockwiseKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
 
-    // Set Keyboard input
-    upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-    downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
-    leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-    rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
-    rotateCounterKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-    routateClockwiseKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
+		game.dolly = new Dolly( game.camera );
+		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-    game.dolly = new Dolly( game.camera );
-    game.dolly.targetPos = new Phaser.Point( 0, 0 );
+		eventEmitter.on('change active tool', (tool) => {
+			game.activeTool = tool
+		});
 
-    eventEmitter.on('change active tool', (tool) => {
-      game.activeTool = tool
-    });
-
-    eventEmitter.on('request tile map', function() {
+    var handleTileMapRequest = function() {
       console.log('recieved request. processing...')
       const parsedTileMap = [];
 
       for (let x in unparsedTileMap) {
         if (!unparsedTileMap.hasOwnProperty(x)) continue;
-
+ 
         for (let y in unparsedTileMap[x]) {
           if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
           if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
             parsedTileMap.push({
-              x: parseInt(x),
-              y: parseInt(y),
-              t: parseInt(tileToNum(unparsedTileMap[x][y]['tile'])),
-              r: unparsedTileMap[x][y].tile !== 'Spike' ? undefined : unparsedTileMap[x][y].sprite.angle === 0 ? undefined : unparsedTileMap[x][y].sprite.angle === -180 ? 180 : unparsedTileMap[x][y].sprite.angle === -90 ? 270 : unparsedTileMap[x][y].sprite.angle
+              x: x,
+              y: y,
+              t: tileToNum(unparsedTileMap[x][y]['tile']),
+              r: unparsedTileMap[x][y].sprite.angle ? unparsedTileMap[x][y].sprite.angle : undefined
             })
           }
         }
@@ -79,10 +84,11 @@ function initCreateState() {
         y: gusSpawn.y,
         t: tileToNum('Gus')
       });
-      console.log('sending...')
-      eventEmitter.emit('send tile map', parsedTileMap);
-      console.log(unparsedTileMap);
-    })
+      console.log('sending...');
+      eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
+    }
+
+    eventEmitter.on('request tile map', handleTileMapRequest)
 
     eventEmitter.on('request screenshot', function() {
       var screenshot = game.canvas.toDataURL();

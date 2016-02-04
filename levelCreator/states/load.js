@@ -26,7 +26,17 @@ function initLoadState() {
 
       console.log( "Going to create state..." );
       // start game state
-      game.state.start( "create" );
+	  const eventEmitter = window.eventEmitter;
+
+
+		eventEmitter.on('found maps!', function(maps) {
+			game.unparsedTileMap = maps[0] || {};
+			console.log('about to log out the unparsed tile map');
+			console.log(game.unparsedTileMap);
+			game.parsedTileMap = maps[1];
+			  (function gotoStart() { if ( game.state ) game.state.start( "create" ); else setTimeout( gotoStart, 100 ) })();
+		});
+		eventEmitter.emit('I need both the maps!');
 
   }
 

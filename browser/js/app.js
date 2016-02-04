@@ -39,7 +39,7 @@ window.app.run(function($rootScope, AuthService, $state) {
         if ( window.game ) {
             console.log( "Cleaning up old game..." );
             window.game.destroy();
-            window.game = undefined;
+            window.game = null;
         }
 
         if (!destinationStateRequiresAuth(toState)) {

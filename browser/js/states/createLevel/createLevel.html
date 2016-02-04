@@ -13,9 +13,14 @@
 	</nav>
 	</header>
 
-  	<level-creator style='cursor: url("{{activeToolImg}}") 16 16, auto'  >
-      <img src="/images/loading_screen.png"></img>
-  	</level-creator>
-  <button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
-  <pre>{{ map }}</pre>
+	<div ng-if=!testing>
+		<level-creator ng-style='{cursor: "url("+activeToolImg+") 16 16, auto"}'  >
+		</level-creator>
+	</div>
+	<div ng-if=testing>
+		<game-view></game-view>
+	</div>
+  <br>
+  <button class='btn' ng-click='testTesting()'>Show Game</button>
+	<button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
 </div>
