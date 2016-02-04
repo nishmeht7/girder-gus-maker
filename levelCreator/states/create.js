@@ -34,9 +34,11 @@ function initCreateState() {
 		game.parsedTileMap.forEach(function(obj) {
 			var unparTiMa = unparsedTileMap[obj.x][obj.y];
 			var sprite = game.add.sprite(obj.x, obj.y, unparTiMa.tile)
+			if(unparTiMa.tile === 'Gus') {
+				gusSpawn = sprite;
+			}
 			sprite.anchor.setTo(.5,.5); 
 			unparTiMa.sprite = sprite;
-			console.log('adding sprite: '+unparTiMa.tile+' at '+obj.x+', '+obj.y);
 			if(unparTiMa !== undefined)
 				unparTiMa.sprite.angle = obj.r;
 		});
@@ -45,7 +47,7 @@ function initCreateState() {
 
 	state.create = function() {
 		const game = window.game;
-		gusSpawn = game.add.sprite('0', '0', 'Gus');
+		gusSpawn = gusSpawn || game.add.sprite('0', '0', 'Gus');
 		gusSpawn.anchor.setTo(.5,.5);
 		game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
 
@@ -68,8 +70,15 @@ function initCreateState() {
 		});
 
 		var handleTileMapRequest = function() {
-			console.log('recieved request. processing...')
 				const parsedTileMap = [];
+
+			if(!unparsedTileMap[gusSpawn.x]) {
+				unparsedTileMap[gusSpawn.x] = {};
+			}
+			unparsedTileMap[gusSpawn.x][gusSpawn.y] = {
+				tile: 'Gus',
+				sprite: gusSpawn
+			}
 
 			for (let x in unparsedTileMap) {
 				if (!unparsedTileMap.hasOwnProperty(x)) continue;
@@ -77,6 +86,11 @@ function initCreateState() {
 				for (let y in unparsedTileMap[x]) {
 					if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
 					if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
+						if(unparsedTileMap[x][y]['tile'] === 'Gus') {
+							if(x != gusSpawn.x || y != gusSpawn.y) {
+								continue;
+							}
+						}
 						parsedTileMap.push({
 							x: x,
 							y: y,
@@ -86,19 +100,11 @@ function initCreateState() {
 					}
 				}
 			}
-			if(!unparsedTileMap[gusSpawn.x]) {
-				unparsedTileMap[gusSpawn.x] = {};
-			}
-			unparsedTileMap[gusSpawn.x][gusSpawn.y] = {
-				tile: 'Gus',
-				sprite: gusSpawn
-			}
-			if (gusSpawn) parsedTileMap.push({
+			/*if (gusSpawn) parsedTileMap.push({
 				x: gusSpawn.x,
 			y: gusSpawn.y,
 			t: tileToNum('Gus')
-			});
-			console.log('sending...');
+			});*/
 			eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
 		}
 
