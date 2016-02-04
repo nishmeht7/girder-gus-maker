@@ -33,6 +33,6 @@ app.controller('SearchbarCtrl', function($scope, $state) {
             params.title = undefined;
         }
 
-        $state.go('levels',params, { reload: true });
+        $state.go('levels.list',params, { reload: true });
     }
 })
