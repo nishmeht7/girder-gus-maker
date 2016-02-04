@@ -23,7 +23,6 @@ class GhostGirder extends Block {
     super(x, y, "Girder"); // Block constructor does not set collisions
 
     this.sprite.alpha = 0.5;
-    console.log('GHOST GIRDER BEING MADED!')
 
     // set collisions
     this.sprite.body.setCollisionGroup( COLLISION_GROUPS.GHOST_BLOCK_ROTATE );

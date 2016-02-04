@@ -13,7 +13,6 @@ const TAU = require("../consts").TAU;
 class GhostGus extends Gus {
   constructor(x, y) {
     super(x, y, false);
-    console.log('ghosting');
     this.sprite.alpha = 0.5;
 
     this.compressedRecord = [0, 175, 2, 116, 0, 34, 1, 78, 0, 39, 5, 1, 2, 23, 5, 1, 2, 50, 0, 35, 1, 68, 0, 33, 2, 56, 0, 54];
@@ -23,6 +22,8 @@ class GhostGus extends Gus {
 
     this.marker = new GhostGirderMarker();
     this.marker.setMaster( this );
+
+    console.log('Ghost Gus (a.k.a girder ghost) created.')
 }
 
   // diff from Gus's doom: doesn't unlock the dolly
@@ -109,9 +110,8 @@ class GhostGus extends Gus {
       } else {
         this.stop();
       }
-      console.log(currentMove)
+
       if (currentMove === 5) {
-        console.log('PLACING GIRDER!\n\n')
         this.marker.placeGirder();
       }
 
