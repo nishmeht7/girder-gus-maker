@@ -66,9 +66,10 @@ function initCreateState() {
           if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
           if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
             parsedTileMap.push({
-              x: x,
-              y: y,
-              t: tileToNum(unparsedTileMap[x][y]['tile'])
+              x: parseInt(x),
+              y: parseInt(y),
+              t: parseInt(tileToNum(unparsedTileMap[x][y]['tile'])),
+              r: unparsedTileMap[x][y].tile !== 'Spike' ? undefined : unparsedTileMap[x][y].sprite.angle === 0 ? undefined : unparsedTileMap[x][y].sprite.angle === -180 ? 180 : unparsedTileMap[x][y].sprite.angle === -90 ? 270 : unparsedTileMap[x][y].sprite.angle
             })
           }
         }
@@ -80,6 +81,7 @@ function initCreateState() {
       });
       console.log('sending...')
       eventEmitter.emit('send tile map', parsedTileMap);
+      console.log(unparsedTileMap);
     })
 
     eventEmitter.on('request screenshot', function() {
@@ -98,9 +100,55 @@ function initCreateState() {
       const targetPoint = game.dolly.screenspaceToWorldspace( clickPoint );
       const x = parseCoordinate( targetPoint.x );
       const y = parseCoordinate( targetPoint.y );
-      
       let placedTool;
-      if (game.activeTool) placedTool = game.add.sprite(x, y, game.activeTool);
+
+      if (game.activeTool) {
+        placedTool = game.add.sprite(x, y, game.activeTool);
+        placedTool.anchor.setTo(0.5, 0.5);
+      }
+
+      if (game.activeTool === 'Spike') {
+        let orientations = {
+          0: 0,
+          90: 0,
+          180: 0,
+          270: 0
+        };
+
+        // find all adjacent blocks, checking in arcs of 90 degrees
+        for ( var orient = 0; orient < 360; orient += 90 ) {
+          var orientRadians = ( orient / 180 ) * Math.PI;
+          var adjPoint = { x: x - Math.round( Math.sin( orientRadians )) * 32, y: y + Math.round( Math.cos( orientRadians )) * 32 };
+
+          if ( unparsedTileMap && unparsedTileMap[ adjPoint.x ] ) {
+            var adjacentBlock = unparsedTileMap[ adjPoint.x ][ adjPoint.y ];
+
+            if ( adjacentBlock === undefined ) continue;
+
+            // check what kind of block it is, and weight it based on the angles
+            if ( adjacentBlock.tile === "RedBrickBlock" || adjacentBlock.tile === "BlackBrickBlock" ) {
+              orientations[ orient ] += 7;
+            } else if ( adjacentBlock.tile === "Spike" ) {
+              orientations[ adjacentBlock.sprite.angle ] += 2;
+            }
+          }
+        }
+
+        // weight our rotation selection to our current rotation
+        var curRot = game.dolly.targetAng % ( Math.PI * 2 );
+        if ( curRot < 0 ) curRot += Math.PI * 2;
+        var maxOrient = ( 180 * curRot / Math.PI );
+
+        // find the maximum orientation
+        for ( var ang in orientations ) {
+          if ( orientations[ ang ] > orientations[ maxOrient ] ) {
+            maxOrient = ang;
+          }
+        }
+
+        // set angle
+        placedTool.angle = maxOrient;
+      }
 
       if (game.activeTool === 'Gus') {
         if (gusSpawn) gusSpawn.kill();
@@ -114,6 +162,7 @@ function initCreateState() {
       unparsedTileMap[x][y] = {
         sprite: placedTool,
         tile: game.activeTool
+        // r: game.activeTool === 'Spike' ? placedTool.angle : undefined
       };
     }
 
