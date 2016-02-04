@@ -82,9 +82,9 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		eventEmitter.emit('request screenshot');
 	}
 
-	$scope.submitBeatenLevel = function(levelArrayBeaten, girdersAllowed, skyColor) {
-		console.log(levelArrayBeaten, girdersAllowed, skyColor);
-		CreateLevelFactory.submitLevel();
+	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor) {
+		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
+		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
 	}
 
 	$scope.testTesting = function() {
