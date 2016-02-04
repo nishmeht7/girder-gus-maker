@@ -27,12 +27,16 @@ function initCreateState() {
 	 * O(n) would suck with mouse drag.
 	 */
 	let unparsedTileMap;
-	
+
 	state.preload = function() {
 		eventEmitter.emit('loaded', () => {})
-		unparsedTileMap = game.unparsedTileMap;
+			unparsedTileMap = game.unparsedTileMap;
 		game.parsedTileMap.forEach(function(obj) {
-			game.add.sprite(obj.x, obj.y, NUM_TO_TILES[obj.t]);
+			//game.add.sprite(obj.x, obj.y, NUM_TO_TILES[obj.t]);
+			var sprite = game.add.sprite(obj.x, obj.y, unparsedTileMap[obj.x][obj.y].tile)
+			sprite.anchor.setTo(.5,.5); 
+			unparsedTileMap[obj.x][obj.y].sprite = sprite;
+			console.log('adding sprite: '+unparsedTileMap[obj.x][obj.y].tile+' at '+obj.x+', '+obj.y);
 		});
 		game.activeTool = 'RedBrickBlock';
 	}
@@ -40,6 +44,7 @@ function initCreateState() {
 	state.create = function() {
 		const game = window.game;
 		gusSpawn = game.add.sprite(0, 0, 'Gus');
+		gusSpawn.anchor.setTo(.5,.5);
 		game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
 
 		game.dolly = new Dolly( game.camera );
@@ -60,145 +65,152 @@ function initCreateState() {
 			game.activeTool = tool
 		});
 
-    var handleTileMapRequest = function() {
-      console.log('recieved request. processing...')
-      const parsedTileMap = [];
+		var handleTileMapRequest = function() {
+			console.log('recieved request. processing...')
+				const parsedTileMap = [];
 
-      for (let x in unparsedTileMap) {
-        if (!unparsedTileMap.hasOwnProperty(x)) continue;
- 
-        for (let y in unparsedTileMap[x]) {
-          if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
-          if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
-            parsedTileMap.push({
-              x: x,
-              y: y,
-              t: tileToNum(unparsedTileMap[x][y]['tile']),
-              r: unparsedTileMap[x][y].sprite.angle ? unparsedTileMap[x][y].sprite.angle : undefined
-            })
-          }
-        }
-      }
-      if (gusSpawn) parsedTileMap.push({
-        x: gusSpawn.x,
-        y: gusSpawn.y,
-        t: tileToNum('Gus')
-      });
-      console.log('sending...');
-      eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
-    }
+			for (let x in unparsedTileMap) {
+				if (!unparsedTileMap.hasOwnProperty(x)) continue;
 
-    eventEmitter.on('request tile map', handleTileMapRequest)
+				for (let y in unparsedTileMap[x]) {
+					if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
+					if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
+						parsedTileMap.push({
+							x: x,
+							y: y,
+							t: tileToNum(unparsedTileMap[x][y]['tile']),
+							r: unparsedTileMap[x][y].sprite.angle ? unparsedTileMap[x][y].sprite.angle : undefined
+						})
+					}
+				}
+			}
+			if(!unparsedTileMap[gusSpawn.x]) {
+				unparsedTileMap[gusSpawn.x] = {};
+			}
+			unparsedTileMap[gusSpawn.x][gusSpawn.y] = {
+				tile: 'Gus',
+				sprite: gusSpawn
+			}
+			if (gusSpawn) parsedTileMap.push({
+				x: gusSpawn.x,
+			y: gusSpawn.y,
+			t: tileToNum('Gus')
+			});
+			console.log('sending...');
+			eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
+		}
 
-    eventEmitter.on('request screenshot', function() {
-      var screenshot = game.canvas.toDataURL();
-      eventEmitter.emit('send screenshot', screenshot);
-    })
-  }
+		eventEmitter.on('request tile map', handleTileMapRequest)
 
-  state.update = function() {
-    function parseCoordinate(n) {
-      return Math.floor(n / 32) * 32
-    }
+			eventEmitter.on('request screenshot', function() {
+				var screenshot = game.canvas.toDataURL();
+				eventEmitter.emit('send screenshot', screenshot);
+			})
+	}
 
-    if (game.input.activePointer.isDown) {
-      const clickPoint = new Phaser.Point( game.input.mousePointer.x, game.input.mousePointer.y );
-      const targetPoint = game.dolly.screenspaceToWorldspace( clickPoint );
-      const x = parseCoordinate( targetPoint.x );
-      const y = parseCoordinate( targetPoint.y );
-      let placedTool;
+	state.update = function() {
+		function parseCoordinate(n) {
+			return Math.floor(n / 32) * 32
+		}
 
-      if (game.activeTool) {
-        placedTool = game.add.sprite(x, y, game.activeTool);
-        placedTool.anchor.setTo(0.5, 0.5);
-      }
+		if (game.input.activePointer.isDown) {
+			const clickPoint = new Phaser.Point( game.input.mousePointer.x, game.input.mousePointer.y );
+			const targetPoint = game.dolly.screenspaceToWorldspace( clickPoint );
+			const x = parseCoordinate( targetPoint.x );
+			const y = parseCoordinate( targetPoint.y );
+			let placedTool;
 
-      if (game.activeTool === 'Spike') {
-        let orientations = {
-          0: 0,
-          90: 0,
-          180: 0,
-          270: 0
-        };
+			if (game.activeTool) {
+				placedTool = game.add.sprite(x, y, game.activeTool);
+				placedTool.anchor.setTo(0.5, 0.5);
+			}
 
-        // find all adjacent blocks, checking in arcs of 90 degrees
-        for ( var orient = 0; orient < 360; orient += 90 ) {
-          var orientRadians = ( orient / 180 ) * Math.PI;
-          var adjPoint = { x: x - Math.round( Math.sin( orientRadians )) * 32, y: y + Math.round( Math.cos( orientRadians )) * 32 };
+			if (game.activeTool === 'Spike') {
+				let orientations = {
+					0: 0,
+					90: 0,
+					180: 0,
+					270: 0
+				};
 
-          if ( unparsedTileMap && unparsedTileMap[ adjPoint.x ] ) {
-            var adjacentBlock = unparsedTileMap[ adjPoint.x ][ adjPoint.y ];
+				// find all adjacent blocks, checking in arcs of 90 degrees
+				for ( var orient = 0; orient < 360; orient += 90 ) {
+					var orientRadians = ( orient / 180 ) * Math.PI;
+					var adjPoint = { x: x - Math.round( Math.sin( orientRadians )) * 32, y: y + Math.round( Math.cos( orientRadians )) * 32 };
 
-            if ( adjacentBlock === undefined ) continue;
+					if ( unparsedTileMap && unparsedTileMap[ adjPoint.x ] ) {
+						var adjacentBlock = unparsedTileMap[ adjPoint.x ][ adjPoint.y ];
 
-            // check what kind of block it is, and weight it based on the angles
-            if ( adjacentBlock.tile === "RedBrickBlock" || adjacentBlock.tile === "BlackBrickBlock" ) {
-              orientations[ orient ] += 7;
-            } else if ( adjacentBlock.tile === "Spike" ) {
-              orientations[ adjacentBlock.sprite.angle ] += 2;
-            }
-          }
-        }
+						if ( adjacentBlock === undefined ) continue;
 
-        // weight our rotation selection to our current rotation
-        var curRot = game.dolly.targetAng % ( Math.PI * 2 );
-        if ( curRot < 0 ) curRot += Math.PI * 2;
-        var maxOrient = ( 180 * curRot / Math.PI );
+						// check what kind of block it is, and weight it based on the angles
+						if ( adjacentBlock.tile === "RedBrickBlock" || adjacentBlock.tile === "BlackBrickBlock" ) {
+							orientations[ orient ] += 7;
+						} else if ( adjacentBlock.tile === "Spike" ) {
+							orientations[ adjacentBlock.sprite.angle ] += 2;
+						}
+					}
+				}
 
-        // find the maximum orientation
-        for ( var ang in orientations ) {
-          if ( orientations[ ang ] > orientations[ maxOrient ] ) {
-            maxOrient = ang;
-          }
-        }
+				// weight our rotation selection to our current rotation
+				var curRot = game.dolly.targetAng % ( Math.PI * 2 );
+				if ( curRot < 0 ) curRot += Math.PI * 2;
+				var maxOrient = ( 180 * curRot / Math.PI );
 
-        // set angle
-        placedTool.angle = maxOrient;
-      }
+				// find the maximum orientation
+				for ( var ang in orientations ) {
+					if ( orientations[ ang ] > orientations[ maxOrient ] ) {
+						maxOrient = ang;
+					}
+				}
 
-      if (game.activeTool === 'Gus') {
-        if (gusSpawn) gusSpawn.kill();
-        gusSpawn = placedTool;
-        return;
-      }
+				// set angle
+				placedTool.angle = maxOrient;
+			}
 
-      if (unparsedTileMap[x] && unparsedTileMap[x][y] && unparsedTileMap[x][y]['sprite']) unparsedTileMap[x][y]['sprite'].kill()
+			if (game.activeTool === 'Gus') {
+				if (gusSpawn) gusSpawn.kill();
+				gusSpawn = placedTool;
+				return;
+			}
 
-      if (!unparsedTileMap[x]) unparsedTileMap[x] = {};
-      unparsedTileMap[x][y] = {
-        sprite: placedTool,
-        tile: game.activeTool
-        // r: game.activeTool === 'Spike' ? placedTool.angle : undefined
-      };
-    }
+			if (unparsedTileMap[x] && unparsedTileMap[x][y] && unparsedTileMap[x][y]['sprite']) unparsedTileMap[x][y]['sprite'].kill()
 
-    function move(xDiff, yDiff) {
-      const clickPoint = new Phaser.Point(game.camera.width / 2 - xDiff, game.camera.height / 2 - yDiff);
-      game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
-    }
+				if (!unparsedTileMap[x]) unparsedTileMap[x] = {};
+			unparsedTileMap[x][y] = {
+				sprite: placedTool,
+				tile: game.activeTool
+					// r: game.activeTool === 'Spike' ? placedTool.angle : undefined
+			};
+		}
 
-    function rotate(dir) {
-      if(Date.now() - lastRotTime > 500) {
-        if (!game.dolly.targetAng) game.dolly.targetAng = 0;
-        game.dolly.targetAng += dir * Math.PI / 2;
-        lastRotTime = Date.now();
-      }
-    }
+		function move(xDiff, yDiff) {
+			const clickPoint = new Phaser.Point(game.camera.width / 2 - xDiff, game.camera.height / 2 - yDiff);
+			game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
+		}
 
-    const moveAmount = 64;
+		function rotate(dir) {
+			if(Date.now() - lastRotTime > 500) {
+				if (!game.dolly.targetAng) game.dolly.targetAng = 0;
+				game.dolly.targetAng += dir * Math.PI / 2;
+				lastRotTime = Date.now();
+			}
+		}
 
-    if (upKey.isDown) move(0, moveAmount);
-    if (downKey.isDown) move(0, -moveAmount);
-    if (leftKey.isDown) move(moveAmount, 0);
-    if (rightKey.isDown) move(-moveAmount, 0);
+		const moveAmount = 64;
 
-    if (rotateCounterKey.isDown) rotate(1);
-    if (routateClockwiseKey.isDown) rotate(-1);
+		if (upKey.isDown) move(0, moveAmount);
+		if (downKey.isDown) move(0, -moveAmount);
+		if (leftKey.isDown) move(moveAmount, 0);
+		if (rightKey.isDown) move(-moveAmount, 0);
 
-    game.dolly.update();
-  }
+		if (rotateCounterKey.isDown) rotate(1);
+		if (routateClockwiseKey.isDown) rotate(-1);
 
-  return state;
+		game.dolly.update();
+	}
+
+	return state;
 };
 
 module.exports = initCreateState;
