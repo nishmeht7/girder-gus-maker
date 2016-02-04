@@ -2,7 +2,7 @@ var blockIds = require( "./blockIds" );
 var defaultSkyColor = require( "../consts/colors" ).DEFAULT_SKY;
 var tilemap = require('../consts/tilemap');
 
-var GhostBreakBrickBlock = require('../objects/ghostBreakBrickBlock');
+var GhostBreakBrickBlock = require('../objects/ghostBlocks').GhostBreakBrickBlock;
 
 function LevelGenerator( levelData ) {
 

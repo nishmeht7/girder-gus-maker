@@ -1,5 +1,5 @@
 var Dolly = require( "../objects/dolly" );
-var Gus = require( "../objects/gus" );
+var Gus = require( "../objects/recordingGus" );
 var GirderMarker = require( "../objects/girderMarker" );
 var LevelGenerator = require( "../generator" );
 var ParticleBurst = require( "../particles/burst" );

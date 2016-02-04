@@ -35,7 +35,7 @@ function Girder( x, y ) {
   Block.call( this, x, y, "Girder" );
 
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.BLOCK_ROTATE );
-  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.GHOST_PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR, COLLISION_GROUPS.GHOST_PLAYER_SENSOR ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
 
 }
 Girder.prototype = Block;
