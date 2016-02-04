@@ -82,7 +82,7 @@ gulp.task('lintBrowserJS', function() {
 
 gulp.task('lintGameJS', function() {
 
-  return gulp.src(['./game/js/**'])
+  return gulp.src(['./game/js/**/*.js'])
     .pipe(plumber({
       errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
     }))
@@ -231,16 +231,16 @@ gulp.task('default', function() {
 
   gulp.start('build');
   // Run when anything inside of levelCreator changes
-  gulp.watch('levelCreator/**', function() {
+  gulp.watch('levelCreator/**/*.js', function() {
   	runSeq('buildLevelCreatorJS', 'reload');
   });
 
   // Run when anything inside of browser/js changes.
-  gulp.watch('browser/js/**', function() {
+  gulp.watch('browser/js/**/*.js', function() {
     runSeq('buildBrowserJS', 'reload');
   });
 
-  gulp.watch('game/js/**', function() {
+  gulp.watch('game/js/**/*.js', function() {
     runSeq('buildGameJS', 'reload');
   });
 

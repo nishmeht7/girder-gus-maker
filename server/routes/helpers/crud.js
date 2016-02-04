@@ -15,6 +15,8 @@
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
 
+const allowedHost = "http://127.0.0.1:1337";
+
 /**
  * INTERNAL HELPERS
  */
@@ -138,7 +140,7 @@ export const getDocAndSend = (ModelStr, selectParams=[], populateParams=[]) => (
   Model.findById(id)
     .select( selectParams.join(" ") )
     .populate(populateParams.join(" "))
-    .then(document => res.status(200).json(document))
+    .then(document => res.status(200).header("Access-Control-Allow-Origin",allowedHost).json(document))
     .then(null, next);
 }
 
