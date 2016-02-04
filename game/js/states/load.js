@@ -99,29 +99,29 @@ function initLoadState() {
         var progress = 0;
         var id = data[1];
 
-        console.log( "Getting level " + id )
+        // construct our HTTP request
         var req = http.request({
-          hostname: "localhost",
+          hostname: "localhost",  // change this to our actual hostname
           path: "/api/levels/" + id + "/map",
-          port: 1337,
-          headers: {
-            'Origin': 'localhost'
-          } 
+          port: 1337
         }, function( res ) {
+          // get data from the response
           res.setEncoding( "utf8" );
-          console.dir( res );
           var totalLen = res.headers["content-length"];
+          if ( totalLen === 0 ) console.error( "Response is empty!" );
 
+          // assemble a data string from our chunks
           res.on( "data", function( chunk ) {
             levelData += chunk;
             progress += Math.floor(( chunk.length / totalLen ) * 100 );
             loadText.text = "Downloading level (" + progress.toString() + "%)..."
           })
 
+          // once the data is fully received, try to extract it
           res.on( "end", function() {
             loadText.text = "Downloading level (100%)...";
             levelData = JSON.parse( levelData );
-            console.log( levelData );
+
             if ( levelData.map ) {
               // check checksum here
 
