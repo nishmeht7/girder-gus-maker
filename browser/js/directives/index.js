@@ -4,3 +4,4 @@ require('./levelthumbnail');
 require('./user-levels');
 require('./searchbar');
 require('./level-creator');
+require('./user-minicard')
