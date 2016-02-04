@@ -4,17 +4,27 @@ const path = require('path');
 const chalk = require('chalk');
 
 var mongoose = require('mongoose');
-const db = mongoose.connect('mongodb://gus:gusIsGreat@ds051655.mongolab.com:51655/ggmng').connection;
+var oldMongoose = false;
+var db = mongoose.connect('mongodb://gus:gusIsGreat@ds051655.mongolab.com:51655/ggmng');
+if ( db.connection !== undefined ) {
+  db = db.connection;
+  oldMongoose = true;
+}
 
 // Require our models -- these should register the model into mongoose
 // so the rest of the application can simply call mongoose.model('User')
 // anywhere the User model needs to be used.
 require('./models');
 
-const startDbPromise = new Promise(function (resolve, reject) {
+var startDbPromise = null;
+if ( oldMongoose ) {
+  startDbPromise = new Promise(function (resolve, reject) {
 	    db.on('open', resolve);
 		    db.on('error', reject);
-});
+  });
+} else {
+  startDbPromise = db;
+}
 
 console.log(chalk.yellow('Opening connection to MongoDB . . .'));
 startDbPromise.then(function () {
