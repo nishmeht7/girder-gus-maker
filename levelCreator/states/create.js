@@ -45,7 +45,7 @@ function initCreateState() {
 
 	state.create = function() {
 		const game = window.game;
-		gusSpawn = game.add.sprite(0, 0, 'Gus');
+		gusSpawn = game.add.sprite('0', '0', 'Gus');
 		gusSpawn.anchor.setTo(.5,.5);
 		game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
 
