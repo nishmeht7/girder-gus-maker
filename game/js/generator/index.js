@@ -21,9 +21,11 @@ LevelGenerator.prototype.getStartingGirders = function() {
 LevelGenerator.prototype.parseObjects = function() {
 
   var levelObjects = [];
-  var objDefList = this.levelData.objs;
+  var objDefList = this.levelData.objects;
   var blocks = this.blockIds;
 
+  console.log("logging objdef");
+  console.log(objDefList);
   objDefList.forEach( function( objDef ) {
 
     // find the object definition function for this id
