@@ -83,13 +83,11 @@ function initLoadState() {
     eventEmitter.on('play this level', function(data) {
       if(data[0] === 'levelArr') {
         loadText.text = "Creating level...";
-
-        game.level = {
-          skyColor: '#FFBB22',
-          startGirders: 12,
-          objects: data[1]
-        };
-
+				game.level = {
+					skyColor: data[1].skyColor,
+					startGirders: data[1].girdersAllowed,
+					objects: data[1].levelArr
+				};
         state.gotoStart();
       } else if (data[0] === 'levelId') {
         loadText.text = "Downloading level...";

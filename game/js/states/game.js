@@ -18,7 +18,7 @@ function initGameState() {
 
     console.log( "Loading level data..." );
 
-
+	console.log(game.level);
     generator = new LevelGenerator( game.level );
 
     // set background color

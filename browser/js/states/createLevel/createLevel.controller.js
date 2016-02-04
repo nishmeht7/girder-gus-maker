@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const eventEmitter = window.eventEmitter
 
-app.controller('CreateLevelCtrl', function($scope) {
+app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 	var nextMapUse = null;
 	var unparsedLevelArr = null;
 	var parsedLevelArr = [];
@@ -82,8 +82,9 @@ app.controller('CreateLevelCtrl', function($scope) {
 		eventEmitter.emit('request screenshot');
 	}
 
-	$scope.submitBeatenLevel = function(levelArrayBeaten) {
-		console.log(levelArrayBeaten);
+	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor) {
+		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
+		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
 	}
 
 	$scope.testTesting = function() {
@@ -117,7 +118,11 @@ app.controller('CreateLevelCtrl', function($scope) {
 	eventEmitter.on('what level to play', (data) => {
 		console.log(data);
 		if(parsedLevelArr) {
-			eventEmitter.emit('play this level', ['levelArr', parsedLevelArr]);
+			eventEmitter.emit('play this level', ['levelArr', {
+				levelArr: parsedLevelArr,
+				skyColor: $scope.skyColor,
+				girdersAllowed: $scope.girdersAllowed
+			}]);
 			console.log('found a parsed level arr');
 		} else {
 			console.log(parsedLevelArr);

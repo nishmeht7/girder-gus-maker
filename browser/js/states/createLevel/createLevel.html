@@ -1,7 +1,11 @@
 <div>
-	<form>
+	<form id='create-level-form'>
 		<label for='text' name='level-title'>Level Title</label>
 		<input type='text' class='level-title' name='level-title' ng-model='levelTitle' />
+		<label for='number' name='girder-count'>Number of Girders Available to Gus</label>
+		<input type='number' class='girder-count' name='girder-count' ng-model='girdersAllowed' ng-init=10 />
+		<label for='color' name='sky-color'>Pick Sky Color</label>
+		<input type='color' class='sky-color' name='sky-color' ng-model='skyColor' value='#ebebeb'/>
 	</form>
 	<header id='tool-bar-container'>
 	<nav>
@@ -24,6 +28,6 @@
   <button class='btn' ng-click='testTesting()'>Show Game</button>
 	<button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
 	<div ng-if='beaten'>
-		<button ng-click='submitBeatenLevel(beatenLevel)'>Submit</button>
+		<button ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor)'>Submit</button>
 	</div>
 </div>
