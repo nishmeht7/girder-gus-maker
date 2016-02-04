@@ -81,14 +81,13 @@ function initLoadState() {
 
     loadText.text = "Waiting for level info...";
     eventEmitter.on('play this level', function(data) {
-      console.log(data);
       if(data[0] === 'levelArr') {
         loadText.text = "Creating level...";
 
         game.level = {
-          sky: '#FFBB22',
-          girders: 12,
-          objs: data[1]
+          skyColor: '#FFBB22',
+          startGirders: 12,
+          objects: data[1]
         };
 
         state.gotoStart();
