@@ -29,10 +29,10 @@ app.controller('CreateLevelCtrl', function($scope) {
 		img : '/assets/images/brick_break.png',
 		tile: 'BreakBrickBlock'
 	},
-  'Spike': {
-    img : '/assets/images/spike.png',
-    tile: 'Spike'
-  },
+	'Spike': {
+		img : '/assets/images/spike.png',
+		tile: 'Spike'
+	},
 	'Tool' : {
 		img : '/assets/images/tool.png',
 		tile: 'Tool'
@@ -60,6 +60,8 @@ app.controller('CreateLevelCtrl', function($scope) {
 		} else if (nextMapUse === 'switchToGame') {
 			console.log('ready to switch');
 			parsedLevelArr = mapArr[0];
+			console.log(parsedLevelArr);
+			console.log("look above");
 			unparsedLevelArr = mapArr[1];
 			$scope.testing = true;
 		}
@@ -81,6 +83,7 @@ app.controller('CreateLevelCtrl', function($scope) {
 
 				window.game = null;
 				nextMapUse = 'switchToGame';
+				$scope.activeToolImg = $scope.toolArr['Red Brick'].img;
 				if(!$scope.testing) {
 					eventEmitter.emit('request tile map', '');
 				} else {
