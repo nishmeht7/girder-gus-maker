@@ -32,11 +32,13 @@ function initCreateState() {
 		eventEmitter.emit('loaded', () => {})
 			unparsedTileMap = game.unparsedTileMap;
 		game.parsedTileMap.forEach(function(obj) {
-			//game.add.sprite(obj.x, obj.y, NUM_TO_TILES[obj.t]);
-			var sprite = game.add.sprite(obj.x, obj.y, unparsedTileMap[obj.x][obj.y].tile)
+			var unparTiMa = unparsedTileMap[obj.x][obj.y];
+			var sprite = game.add.sprite(obj.x, obj.y, unparTiMa.tile)
 			sprite.anchor.setTo(.5,.5); 
-			unparsedTileMap[obj.x][obj.y].sprite = sprite;
-			console.log('adding sprite: '+unparsedTileMap[obj.x][obj.y].tile+' at '+obj.x+', '+obj.y);
+			unparTiMa.sprite = sprite;
+			console.log('adding sprite: '+unparTiMa.tile+' at '+obj.x+', '+obj.y);
+			if(unparTiMa !== undefined)
+				unparTiMa.sprite.angle = obj.r;
 		});
 		game.activeTool = 'RedBrickBlock';
 	}
