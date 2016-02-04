@@ -122,7 +122,9 @@ function initLoadState() {
             loadText.text = "Downloading level (100%)...";
             levelData = JSON.parse( levelData );
 
-            if ( levelData.map ) {
+            if ( levelData === null || typeof levelData.map !== 'object' ) {
+              console.log( "Mapdata not found!" );
+            } else if ( levelData.map ) {
               // check checksum here
 
 
