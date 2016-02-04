@@ -75,9 +75,9 @@ function initLoadState() {
 			console.log(data);
 			if(data[0] === 'levelArr') {
 				game.level = {
-					sky: '#FFBB22',
-					girders: 12,
-					objs: data[1]
+					sky: data[1].skyColor,
+					girders: data[1].girdersAllowed,
+					objs: data[1].levelArr
 				};
 				console.log(game.level);
 			}
