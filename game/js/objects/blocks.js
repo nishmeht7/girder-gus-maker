@@ -68,7 +68,7 @@ function BreakBrickBlock( x, y, setCollisions ) {
 BreakBrickBlock.prototype = Object.create( Block.prototype );
 
 BreakBrickBlock.prototype.setCollisions = function () {
-
+  this.sprite.body.setRectangle( 32, 32 );
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.BLOCK_BREAK );
   this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
   this.sprite.body.onBeginContact.add( BreakBrickBlock.prototype.startCollapsing, this );
@@ -100,10 +100,10 @@ BreakBrickBlock.prototype.collapse = function () {
   if ( !this.sprite.visible ) return;
 
   this.sprite.visible = false;
-  this.sprite.body.clearCollision();
+  this.sprite.body.clearShapes();
 
   // make some particles!
-  new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Debris", {
+  this.breakBurst = new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Debris", {
     lifetime: 500,
     count: 14,
     scaleMin: 0.4,

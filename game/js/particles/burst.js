@@ -12,7 +12,6 @@ function ParticleBurst( x, y, particle, options ) {
   this.emitter.setAlpha( options.alphaMin || 1.0, options.alphaMax || 1.0, options.lifetime || 1000, Phaser.Easing.Linear.None, true );
   this.emitter.setRotation( options.rotMin || 0, options.rotMax || 0 );
 
-  var scale = ( options.scaleMin || 1 ) + Math.random() * (( options.scaleMax || 1 ) - ( options.scaleMin || 1 ));
   this.emitter.setScale( ( options.scaleMin || 1 ), ( options.scaleMax || 1 ), ( options.scaleMin || 1 ), ( options.scaleMax || 1 ), 0 );
 
   this.emitter.setXSpeed( -( options.speed || 100 ), ( options.speed || 100 ) );

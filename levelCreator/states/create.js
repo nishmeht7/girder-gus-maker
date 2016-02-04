@@ -9,66 +9,72 @@ let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockw
 let lastRotTime = 0;
 
 function tileToNum(tile) {
-  for (let n in NUM_TO_TILES)
-    if (NUM_TO_TILES[n] === tile) return +n;
+	for (let n in NUM_TO_TILES)
+		if (NUM_TO_TILES[n] === tile) return +n;
 
-  throw new Error('Tile not found!')
+	throw new Error('Tile not found!')
 }
 
 function initCreateState() {
-  const state = {};
+	const state = {};
 
-  const eventEmitter = window.eventEmitter;
+	const eventEmitter = window.eventEmitter;
 
-  /* unparsedTileMap[x][y] = {sprite: sprite, tile: tile}
-   * e.g. { 50: { 25: [ sprite: sprite, tile: 'RedBrick' ] } }
-   *
-   * formatted like this so that each addition to it is O(1) rather than O(n)
-   * O(n) would suck with mouse drag.
-   */
-  const unparsedTileMap = {};
+	/* unparsedTileMap[x][y] = {sprite: sprite, tile: tile}
+	 * e.g. { 50: { 25: [ sprite: sprite, tile: 'RedBrick' ] } }
+	 *
+	 * formatted like this so that each addition to it is O(1) rather than O(n)
+	 * O(n) would suck with mouse drag.
+	 */
+	let unparsedTileMap;
+	
+	state.preload = function() {
+		eventEmitter.emit('loaded', () => {})
+		unparsedTileMap = game.unparsedTileMap;
+		game.parsedTileMap.forEach(function(obj) {
+			game.add.sprite(obj.x, obj.y, NUM_TO_TILES[obj.t]);
+		});
+		game.activeTool = 'RedBrickBlock';
+	}
 
-  state.preload = function() {
-    eventEmitter.emit('loaded', () => {})
-  }
+	state.create = function() {
+		const game = window.game;
+		gusSpawn = game.add.sprite(0, 0, 'Gus');
+		game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
 
-  state.create = function() {
-    const game = window.game;
-    gusSpawn = game.add.sprite(0, 0, 'Gus');
-    game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
+		game.dolly = new Dolly( game.camera );
+		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-    game.dolly = new Dolly( game.camera );
-    game.dolly.targetPos = new Phaser.Point( 0, 0 );
+		// Set Keyboard input
+		upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+		downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+		leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+		rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+		rotateCounterKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+		routateClockwiseKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
 
-    // Set Keyboard input
-    upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-    downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
-    leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-    rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
-    rotateCounterKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-    routateClockwiseKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
+		game.dolly = new Dolly( game.camera );
+		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-    game.dolly = new Dolly( game.camera );
-    game.dolly.targetPos = new Phaser.Point( 0, 0 );
+		eventEmitter.on('change active tool', (tool) => {
+			game.activeTool = tool
+		});
 
-    eventEmitter.on('change active tool', (tool) => {
-      game.activeTool = tool
-    });
-
-    eventEmitter.on('request tile map', function() {
+    var handleTileMapRequest = function() {
       console.log('recieved request. processing...')
       const parsedTileMap = [];
 
       for (let x in unparsedTileMap) {
         if (!unparsedTileMap.hasOwnProperty(x)) continue;
-
+ 
         for (let y in unparsedTileMap[x]) {
           if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
           if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
             parsedTileMap.push({
               x: x,
               y: y,
-              t: tileToNum(unparsedTileMap[x][y]['tile'])
+              t: tileToNum(unparsedTileMap[x][y]['tile']),
+              r: unparsedTileMap[x][y].sprite.angle ? unparsedTileMap[x][y].sprite.angle : undefined
             })
           }
         }
@@ -78,9 +84,11 @@ function initCreateState() {
         y: gusSpawn.y,
         t: tileToNum('Gus')
       });
-      console.log('sending...')
-      eventEmitter.emit('send tile map', parsedTileMap);
-    })
+      console.log('sending...');
+      eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
+    }
+
+    eventEmitter.on('request tile map', handleTileMapRequest)
 
     eventEmitter.on('request screenshot', function() {
       var screenshot = game.canvas.toDataURL();
@@ -98,9 +106,55 @@ function initCreateState() {
       const targetPoint = game.dolly.screenspaceToWorldspace( clickPoint );
       const x = parseCoordinate( targetPoint.x );
       const y = parseCoordinate( targetPoint.y );
-      
       let placedTool;
-      if (game.activeTool) placedTool = game.add.sprite(x, y, game.activeTool);
+
+      if (game.activeTool) {
+        placedTool = game.add.sprite(x, y, game.activeTool);
+        placedTool.anchor.setTo(0.5, 0.5);
+      }
+
+      if (game.activeTool === 'Spike') {
+        let orientations = {
+          0: 0,
+          90: 0,
+          180: 0,
+          270: 0
+        };
+
+        // find all adjacent blocks, checking in arcs of 90 degrees
+        for ( var orient = 0; orient < 360; orient += 90 ) {
+          var orientRadians = ( orient / 180 ) * Math.PI;
+          var adjPoint = { x: x - Math.round( Math.sin( orientRadians )) * 32, y: y + Math.round( Math.cos( orientRadians )) * 32 };
+
+          if ( unparsedTileMap && unparsedTileMap[ adjPoint.x ] ) {
+            var adjacentBlock = unparsedTileMap[ adjPoint.x ][ adjPoint.y ];
+
+            if ( adjacentBlock === undefined ) continue;
+
+            // check what kind of block it is, and weight it based on the angles
+            if ( adjacentBlock.tile === "RedBrickBlock" || adjacentBlock.tile === "BlackBrickBlock" ) {
+              orientations[ orient ] += 7;
+            } else if ( adjacentBlock.tile === "Spike" ) {
+              orientations[ adjacentBlock.sprite.angle ] += 2;
+            }
+          }
+        }
+
+        // weight our rotation selection to our current rotation
+        var curRot = game.dolly.targetAng % ( Math.PI * 2 );
+        if ( curRot < 0 ) curRot += Math.PI * 2;
+        var maxOrient = ( 180 * curRot / Math.PI );
+
+        // find the maximum orientation
+        for ( var ang in orientations ) {
+          if ( orientations[ ang ] > orientations[ maxOrient ] ) {
+            maxOrient = ang;
+          }
+        }
+
+        // set angle
+        placedTool.angle = maxOrient;
+      }
 
       if (game.activeTool === 'Gus') {
         if (gusSpawn) gusSpawn.kill();
@@ -114,6 +168,7 @@ function initCreateState() {
       unparsedTileMap[x][y] = {
         sprite: placedTool,
         tile: game.activeTool
+        // r: game.activeTool === 'Spike' ? placedTool.angle : undefined
       };
     }
 

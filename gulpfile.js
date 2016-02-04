@@ -58,7 +58,7 @@ gulp.task('reloadCSS', function() {
 
 gulp.task('lintLevelCreatorJS', function() {
 
-  return gulp.src(['./levelCreator/**'])
+  return gulp.src(['./levelCreator/**/*.js'])
     .pipe(plumber({
       errorHandler: notify.onError('Linting FAILED! Check your gulp process.')
     }))

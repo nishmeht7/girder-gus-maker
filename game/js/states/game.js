@@ -10,52 +10,14 @@ function initGameState() {
   var state = {};
   var gus, marker, generator, restartTimeout, hudCounters, levelStarted;
   var fpsCounter;
-  var game = window.game;
+  const game = window.game;
 
   state.preload = function () {
 
     console.log( "Loading level data..." );
 
-    var level = {
-      sky: "#FFBB22",
-      girders: 10,
-      objs: [
-        { t: 4, x: 0, y: 0 }, { t: 4, x: 32, y: 0 }, { t: 4, x: 64, y: 0 }, { t: 4, x: 96, y: 0 }, { t: 4, x: 128, y: 0 }, { t: 4, x: 160, y: 0 }, { t: 4, x: 192, y: 0 }, { t: 4, x: 224, y: 0 },
-        { t: 4, x: 0, y: 32 }, { t: 4, x: 32, y: 32 }, { t: 4, x: 64, y: 32 }, { t: 4, x: 96, y: 32 }, { t: 4, x: 128, y: 32 }, { t: 4, x: 160, y: 32 }, { t: 4, x: 192, y: 32 }, { t: 4, x: 224, y: 32 },
-        { t: 2, x: 96, y: -32 }, { t: 2, x: 96, y: 64 },  
 
-        { t: 2, x: 512, y: -32 },
-        { t: 3, x: 416, y: 0 }, { t: 3, x: 448, y: 0 }, { t: 3, x: 480, y: 0 }, { t: 3, x: 512, y: 0 }, { t: 3, x: 544, y: 0 }, { t: 3, x: 576, y: 0 }, { t: 3, x: 608, y: 0 },
-        { t: 3, x: 416, y: 32 }, { t: 3, x: 448, y: 32 }, { t: 3, x: 480, y: 32 }, { t: 3, x: 512, y: 32 }, { t: 3, x: 544, y: 32 }, { t: 3, x: 576, y: 32 }, { t: 3, x: 608, y: 32 },
-
-        { t: 6, x: 0, y: 160 }, { t: 6, x: 32, y: 160 }, { t: 6, x: 64, y: 160 }, { t: 6, x: 96, y: 160 }, { t: 6, x: 128, y: 160 }, { t: 6, x: 160, y: 160 }, { t: 6, x: 192, y: 160 }, { t: 6, x: 224, y: 160 }, { t: 6, x: 256, y: 160 }, { t: 6, x: 288, y: 160 }, { t: 6, x: 320, y: 160 }, { t: 6, x: 352, y: 160 }, { t: 6, x: 384, y: 160 }, { t: 6, x: 416, y: 160 }, { t: 6, x: 440, y: 160 }, { t: 6, x: 472, y: 160 },
-        { t: 4, x: 0, y: 192 }, { t: 4, x: 32, y: 192 }, { t: 4, x: 64, y: 192 }, { t: 4, x: 96, y: 192 }, { t: 4, x: 128, y: 192 }, { t: 4, x: 160, y: 192 }, { t: 4, x: 192, y: 192 }, { t: 4, x: 224, y: 192 }, { t: 4, x: 256, y: 192 }, { t: 4, x: 288, y: 192 }, { t: 4, x: 320, y: 192 }, { t: 4, x: 352, y: 192 }, { t: 4, x: 384, y: 192 }, { t: 4, x: 416, y: 192 }, { t: 4, x: 440, y: 192 }, { t: 4, x: 472, y: 192 },
-        { t: 4, x: 0, y: 224 }, { t: 4, x: 32, y: 224 }, { t: 6, r: 180, x: 64, y: 224 }, { t: 6, r: 180, x: 96, y: 224 }, { t: 6, r: 180, x: 128, y: 224 }, { t: 6, r: 180, x: 160, y: 224 }, { t: 6, r: 180, x: 192, y: 224 }, { t: 6, r: 180, x: 224, y: 224 }, { t: 6, r: 180, x: 256, y: 224 }, { t: 6, r: 180, x: 288, y: 224 }, { t: 6, r: 180, x: 320, y: 224 }, { t: 6, r: 180, x: 352, y: 224 }, { t: 6, r: 180, x: 384, y: 224 }, { t: 6, r: 180, x: 416, y: 224 }, { t: 6, r: 180, x: 440, y: 224 }, { t: 6, r: 180, x: 472, y: 224 },
-
-        { t: 4, x: 576, y: 64 }, { t: 4, x: 608, y: 64 },
-        { t: 4, x: 576, y: 96 }, { t: 4, x: 608, y: 96 },
-        { t: 3, x: 576, y: 128 }, { t: 3, x: 608, y: 128 },
-        { t: 3, x: 576, y: 160 }, { t: 3, x: 608, y: 160 },
-        { t: 3, x: 576, y: 192 }, { t: 3, x: 608, y: 192 }, { t: 2, x: 544, y: 192 },
-        { t: 3, x: 576, y: 224 }, { t: 3, x: 608, y: 224 },
-        { t: 3, x: 576, y: 256 }, { t: 3, x: 608, y: 256 },
-        { t: 3, x: 576, y: 288 }, { t: 3, x: 608, y: 288 },
-        { t: 3, x: 576, y: 320 }, { t: 3, x: 608, y: 320 },
-        { t: 3, x: 576, y: 352 }, { t: 3, x: 608, y: 352 },
-        { t: 3, x: 576, y: 384 }, { t: 3, x: 608, y: 384 },
-        { t: 5, x: 416, y: 352 }, { t: 5, x: 448, y: 352 }, { t: 5, x: 480, y: 352 },
-
-        { t: 4, x: 0, y: 256 }, { t: 4, x: 32, y: 256 },
-        { t: 4, x: 0, y: 288 }, { t: 4, x: 32, y: 288 },
-        { t: 4, x: 0, y: 320 }, { t: 4, x: 32, y: 320 },
-        { t: 4, x: 0, y: 352 }, { t: 4, x: 32, y: 352 }, { t: 3, x: 64, y: 352 }, { t: 3, x: 96, y: 352 }, { t: 3, x: 128, y: 352 }, { t: 3, x: 160, y: 352 }, { t: 3, x: 192, y: 352 }, { t: 3, x: 224, y: 352 }, { t: 3, x: 256, y: 352 }, { t: 3, x: 256, y: 352 }, { t: 3, x: 288, y: 352 }, { t: 3, x: 320, y: 352 }, { t: 3, x: 352, y: 352 }, { t: 3, x: 384, y: 352 },
-        { t: 4, x: 0, y: 384 }, { t: 4, x: 32, y: 384 }, { t: 3, x: 64, y: 384 }, { t: 3, x: 96, y: 384 }, { t: 3, x: 128, y: 384 }, { t: 3, x: 160, y: 384 }, { t: 3, x: 192, y: 384 }, { t: 3, x: 224, y: 384 }, { t: 3, x: 256, y: 384 }, { t: 3, x: 256, y: 384 }, { t: 3, x: 288, y: 384 }, { t: 3, x: 320, y: 384 }, { t: 3, x: 352, y: 384 }, { t: 3, x: 384, y: 384 },
-
-        { t: 1, x: 128, y: 320 }, { t: 2, x: 128, y: 416 }
-      ]
-    };
-
-    generator = new LevelGenerator( level );
+    generator = new LevelGenerator( game.level );
 
     // set background color
     game.stage.setBackgroundColor( generator.getSkyColor() );
@@ -89,6 +51,8 @@ function initGameState() {
 
     game.dolly = new Dolly( game.camera );
     game.dolly.lockTo( gus.sprite );
+
+    game.physics.p2.setPostBroadphaseCallback( state.postBroadphase, state );
 
     console.log( "Binding to keys..." );
 
@@ -146,6 +110,9 @@ function initGameState() {
 
       gus.isDead = true;
 
+      gus.sprite.body.velocity.x = 0;
+      gus.sprite.body.velocity.y = 0;
+
       gus.rotationSpeed = gus.rotationSpeed || 0;
       gus.rotationSpeed += game.time.physicsElapsed;
       gus.sprite.rotation += gus.rotationSpeed * game.time.physicsElapsed;
@@ -169,7 +136,7 @@ function initGameState() {
     var rate = game.time.fps;
     fpsCounter.position = game.dolly.screenspaceToWorldspace( {x:0,y:0} );
     fpsCounter.rotation = game.dolly.rotation;
-    fpsCounter.text =  rate + " FPS" + ( rate < 30 ? "!!!!" : " :)" );
+    fpsCounter.text = rate + " FPS" + ( rate < 30 ? "!!!!" : " :)" );
 
     hudCounters.forEach( function( counter ) {
 
@@ -209,6 +176,20 @@ function initGameState() {
 
     restartTimeout = undefined;
     levelStarted = game.time.now;
+
+  }
+
+  state.postBroadphase = function ( body1, body2 ) {
+
+    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation ) {
+      body2.sprite.owner.collect();
+      return false;
+    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation ) {
+      body1.sprite.owner.collect();
+      return false;
+    }
+
+    return true;
 
   }
 

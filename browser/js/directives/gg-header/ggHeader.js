@@ -24,7 +24,9 @@ app.directive('ggHeader', ($rootScope, AuthService, AUTH_EVENTS, $state) => {
 		  if(targetState === 'builder') {
 			  if($rootScope.user) $state.go(targetState);
 			  else $rootScope.promptUser = true;
-		  }
+		  } else {
+        $state.go(targetState);
+      }
 	  }
 
       const setUser = () => {

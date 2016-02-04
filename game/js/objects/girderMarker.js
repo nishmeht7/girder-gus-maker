@@ -159,7 +159,7 @@ GirderMarker.prototype.placeGirder = function () {
     this.master.canRotate = false;
 
     // make some particles!
-    new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Debris", {
+    this.debrisBurst = new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "Debris", {
       lifetime: 500,
       count: 14,
       scaleMin: 0.4,
@@ -175,7 +175,7 @@ GirderMarker.prototype.placeGirder = function () {
 GirderMarker.prototype.update = function () {
 
   // if we have a master with girders, try to reposition the marker
-  if ( this.master && this.master.girders > 0 ) {
+  if ( this.master && !this.master.rotating && this.master.girders > 0 ) {
     var targetPos = this.getTargetPos();
 
     // if we found a valid position and our master is on the ground, show the marker

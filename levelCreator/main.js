@@ -1,34 +1,34 @@
-var loadState = require( "./states/load" );
-var createState = require( "./states/create" );
-
 // startup options
 var FULLSCREEN = false;
 var WIDTH = FULLSCREEN ? window.innerWidth * window.devicePixelRatio : 800,
-    HEIGHT = FULLSCREEN ? window.innerHeight * window.devicePixelRatio : 600;
+	HEIGHT = FULLSCREEN ? window.innerHeight * window.devicePixelRatio : 600;
 
 function startGame( phaser ) {
 
-  // initialize the game
-  window.game = new phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'level-creator-container', undefined, undefined, false );
-  
-  // necessary for screenshots when using WebGL renderer
-  game.preserveDrawingBuffer = true;
+	// initialize the game
+	window.game = new phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'level-creator-container', undefined, undefined, false );
 
-  // add states
-  game.state.add( "load", loadState() );
-  game.state.add( "create", createState() );
+	var loadState = require( "./states/load" );
+	var createState = require( "./states/create" );
 
-  game.state.start( "load" );
+	// necessary for screenshots when using WebGL renderer
+	game.preserveDrawingBuffer = true;
+
+	// add states
+	game.state.add( "load", loadState() );
+	game.state.add( "create", createState() );
+
+	game.state.start( "load" );
 
 }
 
 (function checkPhaserExists( phaser ) {
-  if ( phaser ) {
+  if ( phaser && ( window.game === null || window.game === undefined )) {
 
-    console.log( "Phaser runtime initialized, starting...")
-    startGame( phaser );
+		console.log( "Phaser runtime initialized, starting...")
+	startGame( phaser );
 
-  } else {
-    setTimeout( function() { checkPhaserExists( window.Phaser ) }, 100 );
-  }
+	} else {
+		setTimeout( function() { checkPhaserExists( window.Phaser ) }, 100 );
+	}
 })( window.Phaser );

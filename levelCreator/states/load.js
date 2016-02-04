@@ -11,6 +11,7 @@ function initLoadState() {
     game.load.image('BreakBrickBlock', '/assets/images/brick_break.png');
     game.load.image('RedBrickBlock', '/assets/images/brick_red.png');
     game.load.image('Girder', '/assets/images/girder.png');
+    game.load.image('Spike', '/assets/images/spike.png');
     game.load.image('Tool', '/assets/images/tool.png');
     game.load.image('Gus', '/assets/images/gus-static.png');
 
@@ -25,7 +26,17 @@ function initLoadState() {
 
       console.log( "Going to create state..." );
       // start game state
-      game.state.start( "create" );
+	  const eventEmitter = window.eventEmitter;
+
+
+		eventEmitter.on('found maps!', function(maps) {
+			game.unparsedTileMap = maps[0] || {};
+			console.log('about to log out the unparsed tile map');
+			console.log(game.unparsedTileMap);
+			game.parsedTileMap = maps[1];
+			  (function gotoStart() { if ( game.state ) game.state.start( "create" ); else setTimeout( gotoStart, 100 ) })();
+		});
+		eventEmitter.emit('I need both the maps!');
 
   }
 
