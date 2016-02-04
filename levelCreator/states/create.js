@@ -60,14 +60,14 @@ function initCreateState() {
 
     grid = game.add.graphics();
     grid.lineStyle( 2, 0x000, 0.2 );
-    for ( var y = parseCoordinate( game.dolly.position.y - (game.camera.height / 2) ) - 16; y < game.dolly.position.y + (game.camera.height / 2) + 16; y += 32 ) {
+    for ( var y = parseCoordinate( game.dolly.position.y - (game.camera.width / 2) ) - 16; y < game.dolly.position.y + (game.camera.width / 2) + 16; y += 32 ) {
       grid.moveTo( game.dolly.position.x - (game.camera.width / 2) - 32, y );
       grid.lineTo( game.dolly.position.x + (game.camera.width / 2) + 32, y );
     }
 
     for ( var x = parseCoordinate( game.dolly.position.x - (game.camera.width / 2) ) - 16; x < game.dolly.position.x + (game.camera.width / 2) + 16; x += 32 ) {
-      grid.moveTo( x, game.dolly.position.y - (game.camera.height / 2) - 32 );
-      grid.lineTo( x, game.dolly.position.y + (game.camera.height / 2) + 32 );
+      grid.moveTo( x, game.dolly.position.y - (game.camera.width / 2) - 32 );
+      grid.lineTo( x, game.dolly.position.y + (game.camera.width / 2) + 32 );
     }
 
 		// Set Keyboard input
