@@ -117,7 +117,11 @@ app.controller('CreateLevelCtrl', function($scope) {
 	eventEmitter.on('what level to play', (data) => {
 		console.log(data);
 		if(parsedLevelArr) {
-			eventEmitter.emit('play this level', ['levelArr', parsedLevelArr]);
+			eventEmitter.emit('play this level', ['levelArr', {
+				levelArr: parsedLevelArr,
+				skyColor: $scope.skyColor,
+				girdersAllowed: $scope.girdersAllowed
+			}]);
 			console.log('found a parsed level arr');
 		} else {
 			console.log(parsedLevelArr);
