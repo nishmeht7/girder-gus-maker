@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const eventEmitter = window.eventEmitter
 
-app.controller('CreateLevelCtrl', function($scope) {
+app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 	var nextMapUse = null;
 	var unparsedLevelArr = null;
 	var parsedLevelArr = [];
@@ -82,8 +82,9 @@ app.controller('CreateLevelCtrl', function($scope) {
 		eventEmitter.emit('request screenshot');
 	}
 
-	$scope.submitBeatenLevel = function(levelArrayBeaten) {
-		console.log(levelArrayBeaten);
+	$scope.submitBeatenLevel = function(levelArrayBeaten, girdersAllowed, skyColor) {
+		console.log(levelArrayBeaten, girdersAllowed, skyColor);
+		CreateLevelFactory.submitLevel();
 	}
 
 	$scope.testTesting = function() {
