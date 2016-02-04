@@ -4,8 +4,10 @@ const COLORS = require('../../game/js/consts/colors');
 const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 
 var Dolly = require('../../game/js/objects/dolly');
+var Cursors = require('../controls/cursors');
 
 let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey, grid;
+let wasdCursors, arrowCursors;
 let lastRotTime = 0;
 
 function tileToNum(tile) {
@@ -71,12 +73,16 @@ function initCreateState() {
     }
 
 		// Set Keyboard input
-		upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-		downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
-		leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-		rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
-		rotateCounterKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-		routateClockwiseKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
+    wasdCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.W ),
+                               game.input.keyboard.addKey( Phaser.KeyCode.A ),
+                               game.input.keyboard.addKey( Phaser.KeyCode.S ),
+                               game.input.keyboard.addKey( Phaser.KeyCode.D ) );
+    arrowCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.UP ),
+                                game.input.keyboard.addKey( Phaser.KeyCode.LEFT ),
+                                game.input.keyboard.addKey( Phaser.KeyCode.DOWN ),
+                                game.input.keyboard.addKey( Phaser.KeyCode.RIGHT ) );
+		rotateCounterKey = game.input.keyboard.addKey(Phaser.KeyCode.Q);
+		routateClockwiseKey = game.input.keyboard.addKey(Phaser.KeyCode.E);
 
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
@@ -224,10 +230,14 @@ function initCreateState() {
 
 		const moveAmount = 64;
 
-		if (upKey.isDown) move(0, moveAmount);
-		if (downKey.isDown) move(0, -moveAmount);
-		if (leftKey.isDown) move(moveAmount, 0);
-		if (rightKey.isDown) move(-moveAmount, 0);
+    var vec;
+		if ( arrowCursors.isDown() ) {
+      vec = arrowCursors.getVector();
+      move( vec.x * moveAmount, vec.y * moveAmount );
+    } else if ( wasdCursors.isDown() ) {
+      vec = wasdCursors.getVector();
+      move( vec.x * moveAmount, vec.y * moveAmount );
+    }
 
 		if (rotateCounterKey.isDown) rotate(1);
 		if (routateClockwiseKey.isDown) rotate(-1);
