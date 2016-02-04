@@ -29,6 +29,10 @@ app.controller('CreateLevelCtrl', function($scope) {
 		img : '/assets/images/brick_break.png',
 		tile: 'BreakBrickBlock'
 	},
+  'Spike': {
+    img : '/assets/images/spike.png',
+    tile: 'Spike'
+  },
 	'Tool' : {
 		img : '/assets/images/tool.png',
 		tile: 'Tool'
