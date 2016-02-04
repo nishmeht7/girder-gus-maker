@@ -42,6 +42,10 @@ window.app.run(function($rootScope, AuthService, $state) {
             window.game = null;
         }
 
+        // remove events from our emitter
+        eventEmitter.removeAllListeners( 'what level to play' )
+                    .removeAllListeners( 'play this level' );
+
         if (!destinationStateRequiresAuth(toState)) {
             // The destination state does not require authentication
             // Short circuit with return.
