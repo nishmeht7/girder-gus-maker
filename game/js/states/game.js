@@ -8,7 +8,7 @@ var BreakBrickBlock = require( "../objects" ).BreakBrickBlock;
 function initGameState() {
 
   var state = {};
-  var gus, ghostGus, marker, generator, restartTimeout, hudCounters, levelStarted;
+  var gus, ghostGus, marker, ghostMarker, generator, restartTimeout, hudCounters, levelStarted;
   var fpsCounter;
   const game = window.game;
 

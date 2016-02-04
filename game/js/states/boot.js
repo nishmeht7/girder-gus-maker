@@ -20,7 +20,6 @@ function initBootState() {
 
     for ( var key in COLLISION_GROUPS ) {
       COLLISION_GROUPS[key] = game.physics.p2.createCollisionGroup();
-      console.log('created collision group for', key)
     }
 
     console.log( "Activating ghost state..." )

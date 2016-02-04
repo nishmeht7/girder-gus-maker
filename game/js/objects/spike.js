@@ -27,7 +27,7 @@ Spike.prototype.touched = function( spikes, other ) {
 
   var doomBlockTypes = [ "Gus", "GhostGus", "RecordingGus" ]
 
-  if ( doomBlockTypes.find( (blockType) => blockType === otherBlockType ) ) {
+  if ( doomBlockTypes.find( ( blockType ) => blockType === otherBlockType ) ) {
     other.parent.gameObject.doom();
   }
 
