@@ -1,7 +1,3 @@
-var bootState = require( "./states/boot" );
-var gameState = require( "./states/game" );
-var loadState = require( "./states/load" );
-
 // startup options
 var FULLSCREEN = false;
 var WIDTH = FULLSCREEN ? window.innerWidth * window.devicePixelRatio : 800,
@@ -13,16 +9,16 @@ function startGame( phaser ) {
   window.game = new phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'game-container', undefined, undefined, false );
 
   // add states
-  game.state.add( "boot", bootState() );
-  game.state.add( "load", loadState() );
-  game.state.add( "game", gameState() );
+  game.state.add( "boot", require( "./states/boot" )() );
+  game.state.add( "load", require( "./states/load" )() );
+  game.state.add( "game", require( "./states/game" )() );
 
   game.state.start( "boot" );
-  
+
 }
 
 (function checkPhaserExists( phaser ) {
-  if ( phaser ) { 
+  if ( phaser ) {
 
     console.log( "Phaser runtime initialized, starting...")
     startGame( phaser );

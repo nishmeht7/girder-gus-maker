@@ -46,7 +46,7 @@ function Gus(x, y) {
     this.sprite.animations.add('stand', [0], 10, true);
     this.sprite.animations.add('walk', [1,2], 7, true);
     this.sprite.animations.add('dance', [3,4,6,7], 5, true);
-    
+
 }
 
 function saneVec( vec ) {
@@ -63,7 +63,7 @@ Gus.prototype.setCollision = function() {
 
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SOLID );
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SENSOR, this.rotationSensor );
-  this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE, COLLISION_GROUPS.ITEM, COLLISION_GROUPS.SPIKES ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE, COLLISION_GROUPS.BLOCK_BREAK, COLLISION_GROUPS.ITEM, COLLISION_GROUPS.SPIKES ] );
 
 }
 
