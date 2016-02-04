@@ -1,6 +1,10 @@
 window.app.config(function ($stateProvider) {
     $stateProvider.state('levels', {
-        url: '/levels?title&creator&starCount&sort&by&limit&page',
+        abstract: true,
+        url: '/levels',
+        template: '<ui-view />'
+    }).state('levels.list', {
+        url: '?title&creator&starCount&sort&by&limit&page',
         templateUrl: 'js/states/levels/levels.html',
 		controller: 'LevelsCtrl',
         resolve: {
