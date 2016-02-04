@@ -1,7 +1,9 @@
-const eventEmitter = window.eventEmitter
-app.controller('homectrl', function ($scope) {
-    eventEmitter.on('what level to play', (data) => {
-        console.log(data);
-        eventEmitter.emit('play this level', ['levelId', '']);
-    });
-});
+const eventEmitter = window.eventEmitter;
+
+window.app.controller( 'HomeCtrl', function( $scope, $timeout ) {
+
+  eventEmitter.on('what level to play', () => {
+    eventEmitter.emit( 'play this level', [ 'default' ] )
+  })
+
+})

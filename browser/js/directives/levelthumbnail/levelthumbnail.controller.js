@@ -1,2 +1,2 @@
-app.controller('LevelThumbnailCtrl', function($scope) {
+app.controller('LevelThumbnailCtrl', function($scope, $state) {
 })
