@@ -13,10 +13,10 @@ const TAU = require("../consts").TAU;
 class GhostGus extends Gus {
   constructor(x, y) {
     super(x, y, false);
-
+    console.log('ghosting');
     this.sprite.alpha = 0.5;
 
-    this.compressedRecord = [0, 175, 2, 116, 0, 34, 1, 78, 0, 39, 5, 1, 2, 73, 0, 35, 1, 68, 0, 33, 2, 56, 0, 54];
+    this.compressedRecord = [0, 175, 2, 116, 0, 34, 1, 78, 0, 39, 5, 1, 2, 23, 5, 1, 2, 50, 0, 35, 1, 68, 0, 33, 2, 56, 0, 54];
 
     this.setCollision();
     this.uncompressRecord();
