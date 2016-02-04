@@ -23,4 +23,7 @@
   <br>
   <button class='btn' ng-click='testTesting()'>Show Game</button>
 	<button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
+	<div ng-if='beaten'>
+		<button ng-click='submitBeatenLevel(beatenLevel)'>Submit</button>
+	</div>
 </div>

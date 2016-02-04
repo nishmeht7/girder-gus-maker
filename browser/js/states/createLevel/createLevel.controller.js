@@ -53,6 +53,13 @@ app.controller('CreateLevelCtrl', function($scope) {
 		eventEmitter.emit('request tile map', '');
 	}
 
+	eventEmitter.on('game ended', function(data) {
+		console.log(data);
+		$scope.beaten = true;
+		$scope.beatenLevel = parsedLevelArr;
+		$scope.$digest();
+	});
+
 	eventEmitter.on('send tile map', (mapArr) => {
 		if(nextMapUse === 'log') {
 			console.log('recieved.');
@@ -75,6 +82,10 @@ app.controller('CreateLevelCtrl', function($scope) {
 		eventEmitter.emit('request screenshot');
 	}
 
+	$scope.submitBeatenLevel = function(levelArrayBeaten) {
+		console.log(levelArrayBeaten);
+	}
+
 	$scope.testTesting = function() {
 		window.game.destroy();
 
@@ -88,6 +99,8 @@ app.controller('CreateLevelCtrl', function($scope) {
 					eventEmitter.emit('request tile map', '');
 				} else {
 					$scope.testing = !$scope.testing;
+					$scope.beatenLevel = null;
+					$scope.beaten = false;
 				}
 
 			} else {
