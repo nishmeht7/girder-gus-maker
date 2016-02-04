@@ -8,7 +8,7 @@ var BreakBrickBlock = require( "../objects" ).BreakBrickBlock;
 function initGameState() {
 
   var state = {};
-  var gus, marker, generator, restartTimeout, hudCounters, levelStarted;
+  var gus, ghostGus, marker, generator, restartTimeout, hudCounters, levelStarted;
   var fpsCounter;
   const game = window.game;
 
@@ -44,6 +44,9 @@ function initGameState() {
       game.gusStartPos = { x: 0, y: 0 };
     }
 
+    const GhostGus = require('../objects/ghostGus');
+    ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y )
+
     gus = new Gus( game.gusStartPos.x, game.gusStartPos.y );
     gus.girders = generator.getStartingGirders();
     marker = new GirderMarker();
@@ -62,8 +65,8 @@ function initGameState() {
 
     // make hud icons
     fpsCounter = game.add.text( 0, 0, "60 FPS", { font: "9pt mono" });
-    hudCounters = [ 
-      { icon: game.add.sprite( 41, 41, "Tool" ), value: function() { return game.toolsRemaining } }, 
+    hudCounters = [
+      { icon: game.add.sprite( 41, 41, "Tool" ), value: function() { return game.toolsRemaining } },
       { icon: game.add.sprite( 181, 41, "Girder" ), value: function() { return gus.girders } },
       { icon: game.add.sprite( game.camera.width - 200, 41, "Clock" ), value: function() {
         var timediff = Math.floor(( game.time.now - levelStarted ) / 1000 );
@@ -78,11 +81,11 @@ function initGameState() {
       counter.icon.initPos = { x: counter.icon.position.x, y: counter.icon.position.y };
       counter.icon.anchor = new Phaser.Point( 0.5, 0.5 );
 
-      counter.shadow = game.add.text( counter.icon.position.x + 4, counter.icon.position.y + 4, "", { 
+      counter.shadow = game.add.text( counter.icon.position.x + 4, counter.icon.position.y + 4, "", {
         font: "bold 24pt 'Press Start 2P', sans-serif",
         fill: "#0D0D0D"
       });
-      counter.text = game.add.text( counter.icon.position.x, counter.icon.position.y, "", { 
+      counter.text = game.add.text( counter.icon.position.x, counter.icon.position.y, "", {
         font: "bold 24pt 'Press Start 2P', sans-serif",
         fill: "#F2F2F2"
       });
@@ -100,6 +103,7 @@ function initGameState() {
 
     // update actors
     gus.update();
+    ghostGus.update();
     marker.update();
     game.toolsToCollect.forEach( function( tool ) { tool.update() });
 
@@ -121,7 +125,7 @@ function initGameState() {
       game.camera.scale.y *= 1 + ( game.time.physicsElapsed / 5 );
       game.dolly.rotation = Math.PI * 2 - gus.sprite.rotation;
       game.dolly.unlock();
-      
+
     } else if ( gus.isDead && restartTimeout === undefined ) {
       game.dolly.unlock();
 
@@ -149,7 +153,7 @@ function initGameState() {
       counter.shadow.position = game.dolly.screenspaceToWorldspace( textpos );
       counter.shadow.text = counter.value();
       counter.shadow.rotation = game.dolly.rotation;
-      
+
       textpos = { x: counter.icon.initPos.x + 32, y: counter.icon.initPos.y + 4 };
       counter.text.bringToTop();
       counter.text.position = game.dolly.screenspaceToWorldspace( textpos );
@@ -157,7 +161,7 @@ function initGameState() {
       counter.text.rotation = game.dolly.rotation;
 
     });
-   
+
   }
 
   state.restartLevel = function () {

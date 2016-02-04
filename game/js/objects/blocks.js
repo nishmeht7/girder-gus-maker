@@ -25,7 +25,7 @@ function RedBrickBlock( x, y ) {
   Block.call( this, x, y, "BrickRed" );
 
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.BLOCK_ROTATE );
-  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.GHOST_PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.GHOST_PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR, COLLISION_GROUPS.GHOST_PLAYER_SENSOR ] );
 
 }
 RedBrickBlock.prototype = Block;
@@ -35,7 +35,7 @@ function Girder( x, y ) {
   Block.call( this, x, y, "Girder" );
 
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.BLOCK_ROTATE );
-  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.GHOST_PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.GHOST_PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR, COLLISION_GROUPS.GHOST_PLAYER_SENSOR ] );
 
 }
 Girder.prototype = Block;
@@ -70,7 +70,7 @@ BreakBrickBlock.prototype = Object.create( Block.prototype );
 BreakBrickBlock.prototype.setCollisions = function () {
   this.sprite.body.setRectangle( 32, 32 );
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.BLOCK_BREAK );
-  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR, COLLISION_GROUPS.GHOST_PLAYER_SENSOR ] );
   this.sprite.body.onBeginContact.add( BreakBrickBlock.prototype.startCollapsing, this );
 
 }
