@@ -53,6 +53,31 @@ function initCreateState() {
 		selector.anchor.setTo(.5,.5);
 	}
 
+	state.drawGrid = function() {
+		// THIS IS TERRIBLE
+		if ( PIXI.blendModesWebGL !== undefined ) window.__tempBlendModes = PIXI.blendModesWebGL;
+		else if ( window.__tempBlendModes ) {
+			console.error( "PIXI blend modes were undefined but we restored them from a previous cache" );
+			PIXI.blendModesWebGL = window.__tempBlendModes;
+		} else return game.text.add( 0, 0, "FATAL: PIXI blend modes are undefined. Tell a programmer." );
+
+		const game = window.game;
+
+		state.grid = game.add.graphics();
+		state.grid.blendMode = PIXI.blendModes.NORMAL;
+		state.grid.lineStyle( 2, 0x000, 0.2 );
+		var length = game.camera.width * 0.625; // 3:4 res :. a,b,c=3,4,5 :. c=1.25b :. b=0.5*1.25=0.625
+		for ( var y = parseCoordinate( game.dolly.position.y - length ) - 16; y < game.dolly.position.y + length + 16; y += 32 ) {
+			state.grid.moveTo( game.dolly.position.x - length - 32, y );
+			state.grid.lineTo( game.dolly.position.x + length + 32, y );
+		}
+
+		for ( var x = parseCoordinate( game.dolly.position.x - length ) - 16; x < game.dolly.position.x + length + 16; x += 32 ) {
+			state.grid.moveTo( x, game.dolly.position.y - length - 32 );
+			state.grid.lineTo( x, game.dolly.position.y + length + 32 );
+		}
+	}
+
 	state.create = function() {
 		const game = window.game;
 		gusSpawn = gusSpawn || game.add.sprite('0', '0', 'Gus');
@@ -62,18 +87,7 @@ function initCreateState() {
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-		grid = game.add.graphics();
-		grid.lineStyle( 2, 0x000, 0.2 );
-		var length = game.camera.width * 0.625; // 3:4 res; a,b,c=3,4,5; :. c=1.25b :. b=0.5*1.25=0.625
-		for ( var y = parseCoordinate( game.dolly.position.y - length ) - 16; y < game.dolly.position.y + length + 16; y += 32 ) {
-			grid.moveTo( game.dolly.position.x - length - 32, y );
-			grid.lineTo( game.dolly.position.x + length + 32, y );
-		}
-
-		for ( var x = parseCoordinate( game.dolly.position.x - length ) - 16; x < game.dolly.position.x + length + 16; x += 32 ) {
-			grid.moveTo( x, game.dolly.position.y - length - 32 );
-			grid.lineTo( x, game.dolly.position.y + length + 32 );
-		}
+		this.drawGrid();
 
 		// Set Keyboard input
 		wasdCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.W ),
@@ -161,10 +175,12 @@ function initCreateState() {
 		selector.x = parseCoordinate( convertedMousePoint.x );
 		selector.y = parseCoordinate( convertedMousePoint.y );
 
+		if ( state.grid ) {
 
+			state.grid.position.x = parseCoordinate( game.dolly.position.x );
+			state.grid.position.y = parseCoordinate( game.dolly.position.y );
 
-		grid.position.x = parseCoordinate( game.dolly.position.x );
-		grid.position.y = parseCoordinate( game.dolly.position.y );
+		}
 
 		if (game.input.activePointer.isDown) {
 			const clickPoint = new Phaser.Point( game.input.mousePointer.x + (16 * cosine + sine), game.input.mousePointer.y + (16 * cosine - sine) );
@@ -235,6 +251,10 @@ function initCreateState() {
 				tile: game.activeTool
 					// r: game.activeTool === 'Spike' ? placedTool.angle : undefined
 			};
+
+			if ( state.grid ) game.world.bringToTop( state.grid );
+			selector.bringToTop();
+
 		}
 
 		function move(xDiff, yDiff) {
