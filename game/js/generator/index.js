@@ -10,6 +10,12 @@ function LevelGenerator( levelData ) {
 
   this.blockIds = blockIds;
   this.levelData = levelData;
+  this.spriteBatches = {
+    3: null,
+    4: null,
+    5: null,
+    6: null
+  };
 
 }
 
@@ -26,6 +32,8 @@ LevelGenerator.prototype.parseObjects = function() {
   var levelObjects = [];
   var objDefList = this.levelData.objects;
   var blocks = this.blockIds;
+  var game = window.game;
+  var spriteBatches = this.spriteBatches;
 
   console.log("logging objdef");
   console.log(objDefList);
@@ -46,12 +54,22 @@ LevelGenerator.prototype.parseObjects = function() {
     }
 
     // create it!
+    var newObject = createFunction( objDef );
+    levelObjects.push( newObject );
 
-    levelObjects.push( createFunction( objDef ) );
+    // batch it maybe
+    if ( spriteBatches[ objDef.t ] !== undefined ) {
+      if ( spriteBatches[ objDef.t ] === null ) spriteBatches[ objDef.t ] = game.add.spriteBatch();
+      spriteBatches[ objDef.t ].add( newObject.sprite );
+    }
 
     // account for ghost mode
     if ( tilemap[objDef.t] === 'BreakBrickBlock' ) {
-      levelObjects.push( new GhostBreakBrickBlock( objDef.x, objDef.y ))
+      var ghostBlock = new GhostBreakBrickBlock( objDef.x, objDef.y );
+      levelObjects.push( ghostBlock );
+
+      if ( spriteBatches[ "GhostBreakBrickBlock" ] === undefined ) spriteBatches[ "GhostBreakBrickBlock" ] = game.add.spriteBatch();
+      spriteBatches[ "GhostBreakBrickBlock" ].add( ghostBlock.sprite );
     }
 
   });
