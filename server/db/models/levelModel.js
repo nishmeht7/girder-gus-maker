@@ -1,6 +1,10 @@
 'use strict';
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
+const path = require('path');
+
+const convert = require('../../imaging/convert');
+const mapToCanvas = require('../../imaging/mapToCanvas');
 
 // Calculate number of tiles for data validation
 var TILE_MAP = require( "../../../game/js/consts/tilemap" );
@@ -110,6 +114,28 @@ schema.post('save', function(doc, next) {
       console.error(error);
       next();
     });
+});
+
+// post-save hook to save a screenshot of the level
+schema.post('save', function(doc, next) {
+
+  // find gus's position in the map
+  var gusDef = doc.map.objects.reduce( function( gus, objDef ) { 
+    if ( objDef.t === 1 ) return objDef;
+    return gus;
+  }, undefined );
+  
+  // now let's start making beautiful pictures
+  var outName = path.join( __dirname, "../../../public/images/mapthumbs/" ) + doc._id + ".png";
+  mapToCanvas( doc.map, gusDef.x, gusDef.y, 250, 150, 0.5 )
+  .then( function( canvas ) {
+    var pngStream = convert.canvasToPNG( canvas );
+    
+    convert.streamToFile( pngStream, outName )
+    .then( next );
+  })
+  .then( null, next );
+
 });
 
 // hook to remove deleted level from creator's level list and

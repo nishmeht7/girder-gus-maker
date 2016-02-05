@@ -11,20 +11,22 @@ function canvasToJpegStream( canvas ) {
 
 function streamToFile( stream, filename ) {
 
-  console.log( "Writing canvas data to", chalk.yellow( filename ), ". . ." );
-  var out = fs.createWriteStream( filename );
+  return new Promise( function( ok, fail ) {
 
-  stream.on( 'data', function( chunk ) {
-    out.write( chunk );
+    console.log( "Writing canvas data to", chalk.yellow( filename ), ". . ." );
+    var out = fs.createWriteStream( filename );
+
+    stream.on( 'data', function( chunk ) {
+      out.write( chunk );
+    });
+
+    stream.on( 'end', function() {
+      out.end();
+      console.log( "Saved data successfully!" );
+      ok();
+    });
+
   });
-
-  stream.on( 'end', function() {
-    out.end();
-    console.log( "Saved data successfully!" );
-  });
-
-  return stream;
-
 }
 
 module.exports = {
