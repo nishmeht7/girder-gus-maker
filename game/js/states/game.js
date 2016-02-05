@@ -19,8 +19,6 @@ function initGameState() {
   state.preload = function () {
 
     console.log( "Loading level data..." );
-
-	  console.log(game.level);
     generator = new LevelGenerator( game.level );
 
     // set background color
@@ -54,7 +52,7 @@ function initGameState() {
 
     gus = new Gus( game.gusStartPos.x, game.gusStartPos.y );
     gus.girders = generator.getStartingGirders();
-	  startingGirderCount = gus.girders;
+    startingGirderCount = gus.girders;
     marker = new GirderMarker();
     marker.setMaster( gus );
 
@@ -142,10 +140,10 @@ function initGameState() {
       game.dolly.rotation = Math.PI * 2 - gus.sprite.rotation;
       game.dolly.unlock();
 
-	  if(!gameEndingEmitted) {
-		  gameEndingEmitted = true;
-		  eventEmitter.emit('game ended', [(startingGirderCount - gus.girders), (game.time.now - levelStarted)]);
-	  }
+    if(!gameEndingEmitted) {
+      gameEndingEmitted = true;
+      eventEmitter.emit('game ended', [(startingGirderCount - gus.girders), (game.time.now - levelStarted)]);
+    }
 
     } else if ( gus.isDead && restartTimeout === undefined ) {
       game.dolly.unlock();

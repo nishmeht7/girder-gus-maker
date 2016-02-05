@@ -6,9 +6,9 @@ const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 var Dolly = require('../../game/js/objects/dolly');
 var Cursors = require('../controls/cursors');
 
-let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey, grid, selector;
-let wasdCursors, arrowCursors;
-let lastRotTime = 0;
+var gusSpawn, rotateCounterKey, routateClockwiseKey, selector;
+var wasdCursors, arrowCursors;
+var lastRotTime = 0;
 
 function tileToNum(tile) {
 	for (let n in NUM_TO_TILES)
@@ -124,16 +124,16 @@ function initCreateState() {
 
 				for (let y in unparsedTileMap[x]) {
 					if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
-					if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
-						if(unparsedTileMap[x][y]['tile'] === 'Gus') {
-							if(x != gusSpawn.x || y != gusSpawn.y) {
+					if (unparsedTileMap[x][y] && unparsedTileMap[x][y].tile) {
+						if(unparsedTileMap[x][y].tile === 'Gus') {
+							if(x !== gusSpawn.x || y !== gusSpawn.y) {
 								continue;
 							}
 						}
 						parsedTileMap.push({
 							x: x,
 							y: y,
-							t: tileToNum(unparsedTileMap[x][y]['tile']),
+							t: tileToNum(unparsedTileMap[x][y].tile),
 							r: unparsedTileMap[x][y].sprite.angle ? unparsedTileMap[x][y].sprite.angle : undefined
 						})
 					}
@@ -243,7 +243,7 @@ function initCreateState() {
 				return;
 			}
 
-			if (unparsedTileMap[x] && unparsedTileMap[x][y] && unparsedTileMap[x][y]['sprite']) unparsedTileMap[x][y]['sprite'].kill()
+			if (unparsedTileMap[x] && unparsedTileMap[x][y] && unparsedTileMap[x][y].sprite) unparsedTileMap[x][y].sprite.kill()
 
 				if (!unparsedTileMap[x]) unparsedTileMap[x] = {};
 			unparsedTileMap[x][y] = {
