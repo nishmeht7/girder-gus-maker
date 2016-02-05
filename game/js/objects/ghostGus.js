@@ -18,11 +18,8 @@ class GhostGus extends Gus {
     this.startTime = game.time.now + 500;
     this.timingTolerance = -20; // in ms
 
-    console.log(this.startTime);
 
-    this.records =
-
-    [{"INPUT":[2],"ENDTIME":10867},{"INPUT":[1],"ENDTIME":9817},{"INPUT":[0],"ENDTIME":9517},{"INPUT":[2],"ENDTIME":9167},{"INPUT":[1],"ENDTIME":8667},{"INPUT":[0],"ENDTIME":8367},{"INPUT":[1],"ENDTIME":7634},{"INPUT":[2],"ENDTIME":7317},{"INPUT":[0],"ENDTIME":6867},{"INPUT":[1],"ENDTIME":6667},{"INPUT":[0],"ENDTIME":6317},{"INPUT":[2],"ENDTIME":6284},{"INPUT":[0],"ENDTIME":5817},{"INPUT":[2],"ENDTIME":5550},{"INPUT":[1],"ENDTIME":4967},{"INPUT":[0],"ENDTIME":4667},{"INPUT":[2],"ENDTIME":4267},{"INPUT":[1],"ENDTIME":3817},{"INPUT":[0],"ENDTIME":3367},{"INPUT":[2],"ENDTIME":2734},{"INPUT":[0],"ENDTIME":800}];
+    this.records = [{"INPUT":[2],"ENDTIME":10867},{"INPUT":[1],"ENDTIME":9817},{"INPUT":[0],"ENDTIME":9517},{"INPUT":[2],"ENDTIME":9167},{"INPUT":[1],"ENDTIME":8667},{"INPUT":[0],"ENDTIME":8367},{"INPUT":[1],"ENDTIME":7634},{"INPUT":[2],"ENDTIME":7317},{"INPUT":[0],"ENDTIME":6867},{"INPUT":[1],"ENDTIME":6667},{"INPUT":[0],"ENDTIME":6317},{"INPUT":[2],"ENDTIME":6284},{"INPUT":[0],"ENDTIME":5817},{"INPUT":[2],"ENDTIME":5550},{"INPUT":[1],"ENDTIME":4967},{"INPUT":[0],"ENDTIME":4667},{"INPUT":[2],"ENDTIME":4267},{"INPUT":[1],"ENDTIME":3817},{"INPUT":[0],"ENDTIME":3367},{"INPUT":[2],"ENDTIME":2734},{"INPUT":[0],"ENDTIME":800}];
 
     this.currentRecord = this.records.pop();
 
@@ -41,11 +38,7 @@ class GhostGus extends Gus {
     if (this.currentRecord) {
 
       if (this.isRecordExpired() && this.currentRecord.hasBeenExecuted) {
-        console.log('current: ', this.currentRecord)
         this.currentRecord = this.records.pop();
-        console.log('time: ', this.getTime())
-
-        console.log('new: ', this.currentRecord)
       }
 
       if (!this.currentRecord) return;
@@ -54,21 +47,14 @@ class GhostGus extends Gus {
         switch (action) {
           case 1:
             this.walk('left');
-            console.log('LEFT')
-            console.log(this.getTime())
             break;
           case 2:
             this.walk('right');
-            console.log('RIGHT');
-            console.log(this.getTime())
             break;
           case 3:
-            // debugger;
             this.marker.placeGirder();
-            console.log(this.getTime())
             break;
           default:
-            console.log('nothing')
             this.stop();
             break;
         }
@@ -85,7 +71,6 @@ class GhostGus extends Gus {
   isRecordExpired() {
     const currentTime = this.getTime();
     const currentRecordEnd = this.currentRecord.ENDTIME;
-    // console.log(currentTime, currentRecordEnd);
 
     return currentTime >= currentRecordEnd - this.timingTolerance;
   }
@@ -117,8 +102,6 @@ class GhostGus extends Gus {
 
     // check to see if we're rotating
     if (this.rotating) {
-      console.log('hey')
-
       // stop all movement
       this.stop();
       this.sprite.body.velocity.y = 0;
