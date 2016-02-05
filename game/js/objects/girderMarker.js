@@ -148,7 +148,7 @@ GirderMarker.prototype.setPlaceGirderButton = function ( key ) {
 GirderMarker.prototype.placeGirder = function () {
 
   // if Gus is out of girders, we can't place a new one
-  if ( this.master.girders === 0 ) return;
+  if ( this.master.girders === 0 || this.master.isDead ) return;
 
   // check that we're placeable
   if ( this.placeable ) {
