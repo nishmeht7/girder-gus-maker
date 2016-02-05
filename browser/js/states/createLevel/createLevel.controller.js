@@ -83,10 +83,10 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		eventEmitter.emit('request screenshot');
 	}
 
-	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, fifthParam) {
-		//fifthParam indicates if the level is being saved permenantly or simply for future editing
-		if(typeof fifthParam !== 'boolean') fifthParam = true;
-		if(!levelArrayBeaten && !fifthParam) {
+	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish) {
+		//shouldPublish indicates if the level is being saved permenantly or simply for future editing
+		if(typeof shouldPublish !== 'boolean') shouldPublish = true;
+		if(!levelArrayBeaten && !shouldPublish) {
 			levelArrayBeaten = parsedLevelArr;
 		}
 		if(!levelArrayBeaten || !levelTitle) {
@@ -98,8 +98,8 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		}
 		if(!girdersAllowed) girdersAllowed = 0;
 		if(!skyColor) skyColor = '#000000';
-		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, fifthParam);
-		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, fifthParam).then(function(data) {
+		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish);
+		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish).then(function(data) {
 				$scope.error = false;
 				console.log(data);
 			}).then(null, function(err) {
