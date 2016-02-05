@@ -15,6 +15,8 @@ function initLoadState() {
     game.load.image('Tool', '/assets/images/tool.png');
     game.load.image('Gus', '/assets/images/gus-static.png');
 
+    game.load.image('Select', '/assets/images/selectedBlockOutline.png');
+
     console.log( "Done loading" );
 
   }

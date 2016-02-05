@@ -20,6 +20,8 @@ function initLoadState() {
     game.load.image('GusHead', '/assets/images/part_gushead.png');
     game.load.image('Debris', '/assets/images/part_redblock.png');
 
+    game.load.image('Select', '/assets/images/selectedBlockOutline.png');
+
     game.load.spritesheet('Gus', '/assets/images/gus.png', 32, 32);
 
     console.log( "Done loading" );
