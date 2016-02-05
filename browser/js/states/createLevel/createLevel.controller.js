@@ -7,6 +7,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 	var parsedLevelArr = [];
 
 	$scope.testing = false;
+	$scope.error = false;
 
 	$scope.toolArr = {
 		'Eraser' : {
@@ -82,9 +83,29 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		eventEmitter.emit('request screenshot');
 	}
 
-	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor) {
-		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
-		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
+	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, fifthParam) {
+		//fifthParam indicates if the level is being saved permenantly or simply for future editing
+		if(typeof fifthParam !== 'boolean') fifthParam = true;
+		if(!levelArrayBeaten && !fifthParam) {
+			levelArrayBeaten = parsedLevelArr;
+		}
+		if(!levelArrayBeaten || !levelTitle) {
+			$scope.error = true;
+			console.log('something is missing');
+			console.log(levelArrayBeaten);
+			console.log(levelTitle);
+			return;
+		}
+		if(!girdersAllowed) girdersAllowed = 0;
+		if(!skyColor) skyColor = '#000000';
+		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, fifthParam);
+		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, fifthParam).then(function(data) {
+				$scope.error = false;
+				console.log(data);
+			}).then(null, function(err) {
+				$scope.error = true;
+				console.error(err);
+			});
 	}
 
 	$scope.stopInputCapture = function() {

@@ -1,6 +1,6 @@
 app.factory('CreateLevelFactory', function ($http) {
 	var factory = {};
-	factory.submitLevel = function(objArr, title, girderCount, skyColor) {
+	factory.submitLevel = function(objArr, title, girderCount, skyColor, fifthParam) {
 		try { 
 			var map = {
 				startGirders: girderCount,
@@ -9,9 +9,10 @@ skyColor: skyColor
 			}
 			var level = {
 				title: title,
-map: map
+map: map,
+published: fifthParam
 			}
-			$http.post('/api/levels/', level).then(res => console.log(res.data)).then(null, console.error);
+			return $http.post('/api/levels/', level).then(res => res.data); 
 		} catch(e) {
 			console.error(e);
 		}

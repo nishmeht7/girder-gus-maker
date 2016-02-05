@@ -34,6 +34,10 @@ const map = {
       type: Number
     }
   }],
+  published: {
+	 type: Boolean,
+	 default: true
+ },
   skyColor: {
     type: String,
     default: "#4428BC"
