@@ -132,10 +132,21 @@ function initCreateState() {
 
 		eventEmitter.on('request tile map', handleTileMapRequest)
 
-			eventEmitter.on('request screenshot', function() {
-				var screenshot = game.canvas.toDataURL();
-				eventEmitter.emit('send screenshot', screenshot);
-			})
+		eventEmitter.on('request screenshot', function() {
+			var screenshot = game.canvas.toDataURL();
+			eventEmitter.emit('send screenshot', screenshot);
+		})
+
+    eventEmitter.on('stop input capture', function() {
+      game.input.enabled = false;
+      game.input.reset();
+    })
+
+    eventEmitter.on('start input capture', function() {
+      game.input.enabled = true;
+      game.input.reset();
+    })
+
 	}
 
 	state.update = function() {
