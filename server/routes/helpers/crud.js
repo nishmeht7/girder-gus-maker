@@ -21,7 +21,6 @@ const allowedHost = "http://127.0.0.1:1337";
  * INTERNAL HELPERS
  */
 const ownerOrAdmin = (doc, user) => {
-  console.log('in ownerOrAdmin',doc,user);
   if (!user) return false;
   return doc.user.equals(user._id) || user.isAdmin
 }
@@ -140,7 +139,7 @@ export const getDocAndSend = (ModelStr, selectParams=[], populateParams=[]) => (
 
   Model.findById(id)
     .select( selectParams.join(" ") )
-    .populate(populateParams.join(" "))
+    .populate(populateParams)
     .then(document => res.status(200).header("Access-Control-Allow-Origin",allowedHost).json(document))
     .then(null, next);
 }
@@ -234,13 +233,11 @@ export const getDocAndRunFunctionIfOwnerOrAdmin = (ModelStr, func) => (req, res,
 export const getUserDocAndRunFunction = (func) => (req, res, next) => {
   const id = req.user._id;
   const User = mongoose.model('User');
-  console.log(req.query);
-  console.log(req.body);
 
   User.findById(id)
     .then(document=> {
       if(!document) next();
-      else return document[req.query.func](req.query.args);
+      else return document[req.body.func](req.body.args);
     })
     .then(document => res.status(200).json(document))
     .then(null, next);

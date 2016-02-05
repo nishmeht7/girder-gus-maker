@@ -1,35 +1,47 @@
 const eventEmitter = window.eventEmitter
 
-app.controller('LevelDetailsCtrl', function ($scope, data, user, LevelsFactory) {
-    $scope.level = data;
+app.controller('LevelDetailsCtrl', function ($scope, data, user, SocialFactory) {
+    $scope.level = {
+        _id: data._id,
+        dateCreated: data.dateCreated,
+        starCount: data.starCount,
+        title: data.title
+    };
+    $scope.creator = data.creator;
+    console.log('data',data);
     $scope.user = user;
     $scope.liked = (function() {
         if(user !== null) {
             console.log('liked',user.likedLevels.indexOf(data._id));
             return user.likedLevels.indexOf(data._id) !== -1;
         } else return false;
-    })()
+    })();
+    $scope.pending = false;
 
     $scope.starLevel = function() {
         if(user !== null) {
-            LevelsFactory.levelLiker(data._id,'likeLevel')
+            $scope.pending = true;
+            SocialFactory.levelLiker(data._id,'likeLevel')
                 .then(function(res) {
                     console.log(res);
                     $scope.level.starCount = res.level.starCount;
-                    $scope.level.creator.totalStars = res.level.creator.totalStars;
+                    $scope.creator.totalStars = res.creator.totalStars;
                     $scope.liked = res.user.likedLevels.indexOf(data._id) !== -1;
+                    $scope.pending = false;
                 });
         }
     }
 
     $scope.unstarLevel = function() {
         if(user !== null) {
-            LevelsFactory.levelLiker(data._id,'unlikeLevel')
+            $scope.pending = true;
+            SocialFactory.levelLiker(data._id,'unlikeLevel')
                 .then(function(res) {
                     console.log(res);
                     $scope.level.starCount = res.level.starCount;
-                    $scope.level.creator.totalStars = res.level.creator.totalStars;
+                    $scope.creator.totalStars = res.creator.totalStars;
                     $scope.liked = res.user.likedLevels.indexOf(data._id) !== -1;
+                    $scope.pending = false;
                 });
         }
     }

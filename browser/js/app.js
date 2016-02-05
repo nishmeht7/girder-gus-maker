@@ -79,3 +79,4 @@ window.app.run(function($rootScope, AuthService, $state) {
 
 require('./directives');
 require('./states');
+require('./factories');

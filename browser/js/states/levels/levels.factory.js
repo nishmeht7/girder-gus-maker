@@ -12,17 +12,6 @@ app.factory('LevelsFactory', function($http) {
                 .then(function(res) {
                     return res.data;
                 });
-        },
-        levelLiker: function(levelId, func) {
-            return $http.get('api/levels/like', {
-                params: {
-                    args: levelId,
-                    func: func }
-                })
-                .then(function(res) {
-                    console.log(res);
-                    return res.data;
-                });
         }
     }
 })

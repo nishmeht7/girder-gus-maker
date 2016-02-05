@@ -16,18 +16,34 @@ var schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
+    totalFollowing: {
+        type: Number,
+        default: 0
+    },
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
+    totalFollowers: {
+        type: Number,
+        default: 0
+    },
     likedLevels: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Level'
     }],
+    totallikedLevels: {
+        type: Number,
+        default: 0
+    },
     createdLevels: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Level'
     }],
+    totalCreatedLevels: {
+        type: Number,
+        default: 0
+    },
     totalStars: {
         type: Number,
         default: 0
@@ -61,21 +77,24 @@ schema.methods.followUser = function(userId) {
             if(self.following.indexOf(user._id) !== -1) throw new Error('Already following user #'+user._id);
 
             self.following.push(user._id);
+            self.totalFollowing = self.following.length;
             var here = self.save();
             var there = user.addFollower(self._id);
 
             return Promise.all([here,there]);
         })
         .then(function(data) {
-            return [{
-                _id: data[0]._id,
-                following: data[0].following,
-                totalFollowed: data[0].totalFollowed
-            },
-            {
-                _id: data[1]._id,
-                followers: data[1].totalFollowers
-            }];
+            return {
+                user: {
+                    _id: data[0]._id,
+                    following: data[0].following,
+                    totalFollowed: data[0].totalFollowed
+                },
+                creator: {
+                    _id: data[1]._id,
+                    totalFollowers: data[1].totalFollowers
+                }
+            };
         });
 };
 
@@ -83,6 +102,8 @@ schema.methods.addFollower = function(userId) {
     if(this.followers.indexOf(userId) !== -1) return;
 
     this.followers.push(userId);
+    this.totalFollowers = this.followers.length;
+
     return this.save();
 };
 
@@ -90,6 +111,7 @@ schema.methods.unfollowUser = function(userId) {
     var self = this;
     var followingIdx = self.following.indexOf(userId);
     if(followingIdx !== -1) self.following.splice(followingIdx,1);
+    self.totalFollowing = self.following.length;
     var here = self.save();
     var there = this.model('User').findById(userId)
         .then(function(user) {
@@ -98,15 +120,17 @@ schema.methods.unfollowUser = function(userId) {
         });
     return Promise.all([here, there])
         .then(function(data) {
-            return [{
-                _id: data[0]._id,
-                following: data[0].following,
-                totalFollowed: data[0].totalFollowed
-            },
-            {
-                _id: data[1]._id,
-                followers: data[1].totalFollowers
-            }];
+            return {
+                user: {
+                    _id: data[0]._id,
+                    following: data[0].following,
+                    totalFollowed: data[0].totalFollowed
+                },
+                creator: {
+                    _id: data[1]._id,
+                    totalFollowers: data[1].totalFollowers
+                }
+            };
         });
 }
 
@@ -115,6 +139,8 @@ schema.methods.removeFollower = function(userId) {
     if(followerIdx === -1) return;
 
     this.followers.splice(followerIdx,1);
+    this.totalFollowers = this.followers.length;
+
     return this.save();
 }
 
@@ -122,6 +148,7 @@ schema.methods.removeFollower = function(userId) {
 schema.methods.addLevel = function(levelId) {
     if(this.createdLevels.indexOf(levelId) === -1){
         this.createdLevels.push(levelId);
+        this.totalCreatedLevels = this.createdLevels.length;
         return this.save();
     }
 };
@@ -130,7 +157,8 @@ schema.methods.addLevel = function(levelId) {
 schema.methods.removeLevel = function(levelId) {
     this.createdLevels = this.createdLevels.filter(function(level) {
         return level !== levelId;
-    })
+    });
+    this.totalCreatedLevels = this.createdLevels.length;
 
     return this.save();
 };
@@ -140,11 +168,18 @@ schema.methods.likeLevel = function(levelId) {
     var Level = mongoose.model('Level');
     return Level.findById(levelId)
         .then(function(level) {
-            if(level === null) throw new Error('Level #'+levelId+' not found');
+            if(level === null) {
+                var err = new Error();
+                err.status = 404;
+                throw err;
+            }
             if(self.likedLevels.indexOf(level._id) !== -1) {
-                throw new Error('Already liked level #'+level._id);
+                err = new Error();
+                err.status = 400;
+                throw err;
             } else {
                 self.likedLevels.push(levelId);
+                self.totalLikedLevels = self.likedLevels.length;
                 return Promise.all([self.save(),level]);
             }
         })
@@ -154,15 +189,24 @@ schema.methods.likeLevel = function(levelId) {
             return Promise.all([user,level.setStars()]);
         })
         .then(function(data) {
-            var user = data[0];
-            var level = data[1];
+            var user = {
+                _id: data[0]._id,
+                likedLevels: data[0].likedLevels,
+                totalLikedLevels: data[0].totalLikedLevels
+            }
+            var level = {
+                _id: data[1].level._id,
+                starCount: data[1].level.starCount
+            };
+            var creator = {
+                _id: data[1].creator._id,
+                totalStars: data[1].creator.totalStars
+            }
+
             return {
-                user: {
-                    _id: user._id,
-                    likedLevels: user.likedLevels,
-                    totalLikedLevels: user.totalLikedLevels
-                },
-                level: level
+                user: user,
+                level: level,
+                creator: creator
             };
         });
 };
@@ -170,6 +214,7 @@ schema.methods.likeLevel = function(levelId) {
 schema.methods.unlikeLevel = function(levelId) {
     var likedIdx = this.likedLevels.indexOf(levelId);
     if(likedIdx !== -1) this.likedLevels.splice(likedIdx,1);
+    this.totalLikedLevels = this.likedLevels.length;
     var here = this.save();
 
     var Level = mongoose.model('Level');
@@ -183,38 +228,47 @@ schema.methods.unlikeLevel = function(levelId) {
             return Promise.all([user,level.setStars()]);
         })
         .then(function(data) {
-            var user = data[0];
-            var level = data[1];
-            return {
-                user: {
-                    _id: user._id,
-                    likedLevels: user.likedLevels,
-                    totalLikedLevels: user.totalLikedLevels
-                },
-                level: level
+            var user = {
+                _id: data[0]._id,
+                likedLevels: data[0].likedLevels,
+                totalLikedLevels: data[0].totalLikedLevels
             }
-        })
+            var level = {
+                _id: data[1].level._id,
+                starCount: data[1].level.starCount
+            };
+            var creator = {
+                _id: data[1].creator._id,
+                totalStars: data[1].creator.totalStars
+            }
+
+            return {
+                user: user,
+                level: level,
+                creator: creator
+            };
+        });
 }
 
-schema.virtual('totalFollowers').get(function() {
-    return this.followers.length;
-});
+// schema.virtual('totalFollowers').get(function() {
+//     return this.followers.length;
+// });
 
-schema.virtual('totalFollowed').get(function() {
-    return this.following.length;
-});
+// schema.virtual('totalFollowed').get(function() {
+//     return this.following.length;
+// });
 
-schema.virtual('totalCreatedLevels').get(function() {
-    return this.createdLevels.length;
-});
+// schema.virtual('totalCreatedLevels').get(function() {
+//     return this.createdLevels.length;
+// });
 
-schema.virtual('totalLikedLevels').get(function() {
-    return this.likedLevels.length;
-});
+// schema.virtual('totalLikedLevels').get(function() {
+//     return this.likedLevels.length;
+// });
 
-schema.virtual('profilePic').get(function() {
-    return 'images/user_imgs/'+this._id+'.png';
-});
+// schema.virtual('profilePic').get(function() {
+//     return 'images/user_imgs/'+this._id+'.png';
+// });
 
 schema.virtual('user').get(function() {
   return this._id;
