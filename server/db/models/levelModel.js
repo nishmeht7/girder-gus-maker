@@ -74,6 +74,24 @@ schema.methods.setStars = function() {
       self.starCount = users.length;
       return self.save();
     })
+    .then(function(level) {
+      return level.populate({
+        path: 'creator',
+        select: 'totalStars'
+      }).execPopulate();
+    })
+    .then(function(level) {
+      return {
+        level: {
+          _id: level._id,
+          starCount: level.starCount
+        },
+        creator: {
+          _id: level.creator._id,
+          totalStars: level.creator.totalStars
+        }
+      };
+    })
 }
 
 // note whether level is new before saving
@@ -106,7 +124,8 @@ schema.post('save', function(doc, next) {
     })
     .then(function(user) {
       next();
-    }).then(null, function(error) {
+    })
+    .then(null, function(error) {
       console.error(error);
       next();
     });

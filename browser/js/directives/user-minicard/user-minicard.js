@@ -4,8 +4,10 @@ app.directive( "userMinicard", function() {
     restrict: 'E',
     templateUrl: '/js/directives/user-minicard/user-minicard.html',
     scope: {
+      creator: '=',
       user: '='
-    }
+    },
+    controller: 'UserMinicardCtrl'
   }
 
 });

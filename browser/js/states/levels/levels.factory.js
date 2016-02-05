@@ -12,12 +12,6 @@ app.factory('LevelsFactory', function($http) {
                 .then(function(res) {
                     return res.data;
                 });
-        },
-        likeLevel: function(userId, levelId) {
-            //
-        },
-        unlikeLevel: function(userId, levelId) {
-            //
         }
     }
 })
