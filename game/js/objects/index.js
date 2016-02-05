@@ -6,7 +6,11 @@ module.exports = {
   "Girder" : require( "./blocks" ).Girder,
   "Gus" : require( "./gus" ),
   "GirderMarker" : require( "./girderMarker" ),
+  "RecordingGus" : require( "./recordingGus" ),
+  "Spike" : require( "./spike" ),
   "Tool" : require( "./tool" ),
-  "Spike" : require( "./spike" )
+
+  "GhostBreakBrickBlock" : require( "./ghostBlocks" ).GhostBreakBrickBlock,
+  "GhostGus" : require( "./ghostGus" ),
 
 }

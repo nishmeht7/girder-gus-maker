@@ -1,5 +1,3 @@
-
-
 var COLLISION_GROUPS = require( "../consts/collisionGroups" );
 var EPSILON = require( "../consts" ).EPSILON;
 var TAU = require( "../consts" ).TAU;
@@ -40,14 +38,17 @@ function Gus(x, y) {
 
     // create gus's rotation sensor
     this.rotationSensor = this.sprite.body.addRectangle( 20, 20, 0, -6 );
+
+    // set collisions
     this.setCollision();
+
     this.sprite.body.onBeginContact.add( Gus.prototype.touchesWall, this );
 
     // add animations
     this.sprite.animations.add('stand', [0], 10, true);
     this.sprite.animations.add('walk', [1,2], 7, true);
     this.sprite.animations.add('dance', [3,4,6,7], 5, true);
-    
+
 }
 
 function saneVec( vec ) {
@@ -61,10 +62,9 @@ function dot( vec1, vec2 ) {
 }
 
 Gus.prototype.setCollision = function() {
-
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SOLID );
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SENSOR, this.rotationSensor );
-  this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE, COLLISION_GROUPS.ITEM, COLLISION_GROUPS.SPIKES ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE, COLLISION_GROUPS.BLOCK_BREAK, COLLISION_GROUPS.ITEM, COLLISION_GROUPS.SPIKES ] );
 
 }
 

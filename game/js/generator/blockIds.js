@@ -1,6 +1,8 @@
 var tilemap = require( "../consts/tilemap" );
 var objects = require( "../objects" );
 
+var game = window.game;
+
 var blockIds = {};
 
 function addBlockId( id, loadFunction ) {
