@@ -90,7 +90,7 @@ function initCreateState() {
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-		eventEmitter.on('change active tool', (tool) => {
+		eventEmitter.only('change active tool', (tool) => {
 			game.activeTool = tool
 		});
 
@@ -133,19 +133,19 @@ function initCreateState() {
 			eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
 		}
 
-		eventEmitter.on('request tile map', handleTileMapRequest)
+		eventEmitter.only('request tile map', handleTileMapRequest)
 
-			eventEmitter.on('request screenshot', function() {
-				var screenshot = game.canvas.toDataURL();
-				eventEmitter.emit('send screenshot', screenshot);
-			})
+		eventEmitter.only('request screenshot', function() {
+			var screenshot = game.canvas.toDataURL();
+			eventEmitter.emit('send screenshot', screenshot);
+		})
 
-		eventEmitter.on('stop input capture', function() {
+		eventEmitter.only('stop input capture', function() {
 			game.input.enabled = false;
 			game.input.reset();
 		})
 
-		eventEmitter.on('start input capture', function() {
+		eventEmitter.only('start input capture', function() {
 			game.input.enabled = true;
 			game.input.reset();
 		})

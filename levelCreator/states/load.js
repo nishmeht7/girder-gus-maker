@@ -31,7 +31,7 @@ function initLoadState() {
 	  const eventEmitter = window.eventEmitter;
 
 
-		eventEmitter.on('found maps!', function(maps) {
+		eventEmitter.only('found maps!', function(maps) {
 			game.unparsedTileMap = maps[0] || {};
 			console.log('about to log out the unparsed tile map');
 			console.log(game.unparsedTileMap);

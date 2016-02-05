@@ -6,6 +6,10 @@ app.directive( "gameView", function() {
     scope: {
       level: '=',
       state: '='
+    },
+    link: function() {
+      const eventEmitter = window.eventEmitter;
+      eventEmitter.emit( "start input capture" );
     }
   }
 

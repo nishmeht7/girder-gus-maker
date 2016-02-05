@@ -22,7 +22,7 @@
 		</level-creator>
 	</div>
 	<div ng-if=testing>
-		<game-view></game-view>
+		<game-view ng-mouseenter="startInputCapture()" ng-mouseleave="stopInputCapture()"></game-view>
 	</div>
   <br>
   <button class='btn' ng-click='testTesting()'>Show Game</button>
