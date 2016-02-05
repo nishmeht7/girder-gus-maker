@@ -87,6 +87,14 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
 	}
 
+	$scope.stopInputCapture = function() {
+		eventEmitter.emit('stop input capture');
+	}
+
+	$scope.startInputCapture = function() {
+		eventEmitter.emit('start input capture');
+	}
+
 	$scope.testTesting = function() {
 		window.game.destroy();
 
