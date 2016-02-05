@@ -20,7 +20,7 @@ function initGameState() {
 
     console.log( "Loading level data..." );
 
-	console.log(game.level);
+	  console.log(game.level);
     generator = new LevelGenerator( game.level );
 
     // set background color
@@ -54,7 +54,7 @@ function initGameState() {
 
     gus = new Gus( game.gusStartPos.x, game.gusStartPos.y );
     gus.girders = generator.getStartingGirders();
-	startingGirderCount = gus.girders;
+	  startingGirderCount = gus.girders;
     marker = new GirderMarker();
     marker.setMaster( gus );
 

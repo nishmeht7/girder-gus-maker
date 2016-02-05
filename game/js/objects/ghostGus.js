@@ -15,7 +15,7 @@ class GhostGus extends Gus {
     super(x, y, false);
     this.sprite.alpha = 0.5;
 
-    this.compressedRecord = [0, 175, 2, 116, 0, 34, 1, 78, 0, 39, 5, 1, 2, 23, 5, 1, 2, 50, 0, 35, 1, 68, 0, 33, 2, 56, 0, 54];
+    this.compressedRecord = [0, 89, 2, 19, 0, 21, 2, 93, 3, 1, 2, 25, 0, 108];
 
     this.setCollision();
     this.uncompressRecord();
@@ -111,7 +111,7 @@ class GhostGus extends Gus {
         this.stop();
       }
 
-      if (currentMove === 5) {
+      if (currentMove === 3) {
         this.marker.placeGirder();
       }
 
