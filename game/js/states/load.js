@@ -82,7 +82,7 @@ function initLoadState() {
     };
 
     loadText.text = "Waiting for level info...";
-    eventEmitter.on('play this level', function(data) {
+    eventEmitter.only('play this level', function(data) {
       if(data[0] === 'levelArr') {
         loadText.text = "Creating level...";
 				game.level = {

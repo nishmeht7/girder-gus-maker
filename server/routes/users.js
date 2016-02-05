@@ -1,4 +1,6 @@
 const router = require('express').Router();
+
+const User = require('mongoose').model('User');
 module.exports = router
 
 import {
@@ -6,7 +8,9 @@ import {
     getDocAndSend,
     getDocsAndSend,
     getDocAndUpdateIfOwnerOrAdmin,
-    getDocAndDeleteIfOwnerOrAdmin
+    getDocAndDeleteIfOwnerOrAdmin,
+    getDocAndRunFunction,
+    getDocAndRunFunctionIfOwnerOrAdmin
 } from './helpers/crud';
 
 import { mustBeLoggedIn } from './helpers/permissions';
@@ -19,6 +23,14 @@ router.get('/', getDocsAndSend('User', ['name', 'followers', 'createdLevels', 't
 
 // guest can see user
 router.get('/:id', getDocAndSend('User'));
+
+router.post('/:id/follow', getDocAndRunFunctionIfOwnerOrAdmin('User', 'followUser'));
+
+router.post('/:id/unfollow', getDocAndRunFunctionIfOwnerOrAdmin('User', 'unfollowUser'));
+
+router.post('/:id/like', getDocAndRunFunctionIfOwnerOrAdmin('User', 'likeLevel'));
+
+router.post('/:id/unlike', getDocAndRunFunctionIfOwnerOrAdmin('User', 'unlikeLevel'));
 
 // user can update own profile
 router.put('/:id', mustBeLoggedIn, getDocAndUpdateIfOwnerOrAdmin('User'));

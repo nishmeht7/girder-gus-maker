@@ -7,6 +7,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 	var parsedLevelArr = [];
 
 	$scope.testing = false;
+	$scope.error = false;
 
 	$scope.toolArr = {
 		'Eraser' : {
@@ -53,14 +54,14 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		eventEmitter.emit('request tile map', '');
 	}
 
-	eventEmitter.on('game ended', function(data) {
+	eventEmitter.only('game ended', function(data) {
 		console.log(data);
 		$scope.beaten = true;
 		$scope.beatenLevel = parsedLevelArr;
 		$scope.$digest();
 	});
 
-	eventEmitter.on('send tile map', (mapArr) => {
+	eventEmitter.only('send tile map', (mapArr) => {
 		if(nextMapUse === 'log') {
 			console.log('recieved.');
 			console.dir(mapArr);
@@ -74,7 +75,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		}
 	});
 
-	eventEmitter.on('I need both the maps!', function() {
+	eventEmitter.only('I need both the maps!', function() {
 		eventEmitter.emit('found maps!', [unparsedLevelArr, parsedLevelArr]);
 	});
 
@@ -82,9 +83,29 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		eventEmitter.emit('request screenshot');
 	}
 
-	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor) {
-		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
-		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor);
+	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish) {
+		//shouldPublish indicates if the level is being saved permenantly or simply for future editing
+		if(typeof shouldPublish !== 'boolean') shouldPublish = true;
+		if(!levelArrayBeaten && !shouldPublish) {
+			levelArrayBeaten = parsedLevelArr;
+		}
+		if(!levelArrayBeaten || !levelTitle) {
+			$scope.error = true;
+			console.log('something is missing');
+			console.log(levelArrayBeaten);
+			console.log(levelTitle);
+			return;
+		}
+		if(!girdersAllowed) girdersAllowed = 0;
+		if(!skyColor) skyColor = '#000000';
+		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish);
+		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish).then(function(data) {
+				$scope.error = false;
+				console.log(data);
+			}).then(null, function(err) {
+				$scope.error = true;
+				console.error(err);
+			});
 	}
 
 	$scope.stopInputCapture = function() {
@@ -118,12 +139,12 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		})()
 	}
 
-	eventEmitter.on('send screenshot', (screenshot) => {
+	eventEmitter.only('send screenshot', (screenshot) => {
 		console.log('screenshot');
 		console.log(screenshot);
 	})
 
-	eventEmitter.on('what level to play', (data) => {
+	eventEmitter.only('what level to play', (data) => {
 		console.log(data);
 		if(parsedLevelArr) {
 			eventEmitter.emit('play this level', ['levelArr', {

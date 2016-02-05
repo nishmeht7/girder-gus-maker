@@ -20,8 +20,6 @@ function initGameState() {
   state.preload = function () {
 
     console.log( "Loading level data..." );
-
-	  console.log(game.level);
     generator = new LevelGenerator( game.level );
 
     // set background color
@@ -55,7 +53,7 @@ function initGameState() {
 
     gus = new Gus( game.gusStartPos.x, game.gusStartPos.y );
     gus.girders = generator.getStartingGirders();
-	  startingGirderCount = gus.girders;
+    startingGirderCount = gus.girders;
     marker = new GirderMarker();
     marker.setMaster( gus );
 
@@ -101,6 +99,16 @@ function initGameState() {
       counter.shadow.anchor = new Phaser.Point( 0, 0.5 );
       return counter;
     });
+
+    eventEmitter.only('stop input capture', function() {
+      game.input.enabled = false;
+      game.input.reset();
+    })
+
+    eventEmitter.only('start input capture', function() {
+      game.input.enabled = true;
+      game.input.reset();
+    })
 
     levelStarted = game.time.now;
 

@@ -7,7 +7,12 @@ require('./misc/fsa-pre-built');
 require('./misc/ng-load-script');
 
 const events = require('events');
-const eventEmitter = new events.EventEmitter();
+var eventEmitter = new events.EventEmitter();
+
+eventEmitter.only = function( event, callback ) {
+    this.removeAllListeners( event );
+    return this.on( event, callback );
+}
 
 eventEmitter.on('loaded', () => { console.log('\n\ncreator loaded\n\n') })
 

@@ -6,9 +6,9 @@ const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 var Dolly = require('../../game/js/objects/dolly');
 var Cursors = require('../controls/cursors');
 
-let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey, grid, selector;
-let wasdCursors, arrowCursors;
-let lastRotTime = 0;
+var gusSpawn, rotateCounterKey, routateClockwiseKey, selector;
+var wasdCursors, arrowCursors;
+var lastRotTime = 0;
 
 function tileToNum(tile) {
 	for (let n in NUM_TO_TILES)
@@ -53,6 +53,31 @@ function initCreateState() {
 		selector.anchor.setTo(.5,.5);
 	}
 
+	state.drawGrid = function() {
+		const game = window.game;
+
+		// THIS IS TERRIBLE
+		if ( PIXI.blendModesWebGL !== undefined ) window.__tempBlendModes = PIXI.blendModesWebGL;
+		else if ( window.__tempBlendModes ) {
+			console.error( "PIXI blend modes were undefined but we restored them from a previous cache" );
+			PIXI.blendModesWebGL = window.__tempBlendModes;
+		} else return game.text.add( 0, 0, "FATAL: PIXI blend modes are undefined. Tell a programmer." );
+
+		state.grid = game.add.graphics();
+		state.grid.blendMode = PIXI.blendModes.NORMAL;
+		state.grid.lineStyle( 2, 0x000, 0.2 );
+		var length = game.camera.width * 0.625; // 3:4 res :. a,b,c=3,4,5 :. c=1.25b :. b=0.5*1.25=0.625
+		for ( var y = parseCoordinate( game.dolly.position.y - length ) - 16; y < game.dolly.position.y + length + 16; y += 32 ) {
+			state.grid.moveTo( game.dolly.position.x - length - 32, y );
+			state.grid.lineTo( game.dolly.position.x + length + 32, y );
+		}
+
+		for ( var x = parseCoordinate( game.dolly.position.x - length ) - 16; x < game.dolly.position.x + length + 16; x += 32 ) {
+			state.grid.moveTo( x, game.dolly.position.y - length - 32 );
+			state.grid.lineTo( x, game.dolly.position.y + length + 32 );
+		}
+	}
+
 	state.create = function() {
 		const game = window.game;
 		gusSpawn = gusSpawn || game.add.sprite('0', '0', 'Gus');
@@ -62,17 +87,7 @@ function initCreateState() {
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-		grid = game.add.graphics();
-		grid.lineStyle( 2, 0x000, 0.2 );
-		for ( var y = parseCoordinate( game.dolly.position.y - (game.camera.width / 2) ) - 16; y < game.dolly.position.y + (game.camera.width / 2) + 16; y += 32 ) {
-			grid.moveTo( game.dolly.position.x - (game.camera.width / 2) - 32, y );
-			grid.lineTo( game.dolly.position.x + (game.camera.width / 2) + 32, y );
-		}
-
-		for ( var x = parseCoordinate( game.dolly.position.x - (game.camera.width / 2) ) - 16; x < game.dolly.position.x + (game.camera.width / 2) + 16; x += 32 ) {
-			grid.moveTo( x, game.dolly.position.y - (game.camera.width / 2) - 32 );
-			grid.lineTo( x, game.dolly.position.y + (game.camera.width / 2) + 32 );
-		}
+		this.drawGrid();
 
 		// Set Keyboard input
 		wasdCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.W ),
@@ -89,7 +104,7 @@ function initCreateState() {
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-		eventEmitter.on('change active tool', (tool) => {
+		eventEmitter.only('change active tool', (tool) => {
 			game.activeTool = tool
 		});
 
@@ -109,16 +124,16 @@ function initCreateState() {
 
 				for (let y in unparsedTileMap[x]) {
 					if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
-					if (unparsedTileMap[x][y] && unparsedTileMap[x][y]['tile']) {
-						if(unparsedTileMap[x][y]['tile'] === 'Gus') {
-							if(x != gusSpawn.x || y != gusSpawn.y) {
+					if (unparsedTileMap[x][y] && unparsedTileMap[x][y].tile) {
+						if(unparsedTileMap[x][y].tile === 'Gus') {
+							if(x !== gusSpawn.x || y !== gusSpawn.y) {
 								continue;
 							}
 						}
 						parsedTileMap.push({
 							x: x,
 							y: y,
-							t: tileToNum(unparsedTileMap[x][y]['tile']),
+							t: tileToNum(unparsedTileMap[x][y].tile),
 							r: unparsedTileMap[x][y].sprite.angle ? unparsedTileMap[x][y].sprite.angle : undefined
 						})
 					}
@@ -132,19 +147,19 @@ function initCreateState() {
 			eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
 		}
 
-		eventEmitter.on('request tile map', handleTileMapRequest)
+		eventEmitter.only('request tile map', handleTileMapRequest)
 
-			eventEmitter.on('request screenshot', function() {
-				var screenshot = game.canvas.toDataURL();
-				eventEmitter.emit('send screenshot', screenshot);
-			})
+		eventEmitter.only('request screenshot', function() {
+			var screenshot = game.canvas.toDataURL();
+			eventEmitter.emit('send screenshot', screenshot);
+		})
 
-		eventEmitter.on('stop input capture', function() {
+		eventEmitter.only('stop input capture', function() {
 			game.input.enabled = false;
 			game.input.reset();
 		})
 
-		eventEmitter.on('start input capture', function() {
+		eventEmitter.only('start input capture', function() {
 			game.input.enabled = true;
 			game.input.reset();
 		})
@@ -160,10 +175,12 @@ function initCreateState() {
 		selector.x = parseCoordinate( convertedMousePoint.x );
 		selector.y = parseCoordinate( convertedMousePoint.y );
 
+		if ( state.grid ) {
 
+			state.grid.position.x = parseCoordinate( game.dolly.position.x );
+			state.grid.position.y = parseCoordinate( game.dolly.position.y );
 
-		grid.position.x = parseCoordinate( game.dolly.position.x );
-		grid.position.y = parseCoordinate( game.dolly.position.y );
+		}
 
 		if (game.input.activePointer.isDown) {
 			const clickPoint = new Phaser.Point( game.input.mousePointer.x + (16 * cosine + sine), game.input.mousePointer.y + (16 * cosine - sine) );
@@ -175,6 +192,7 @@ function initCreateState() {
 			if (game.activeTool) {
 				placedTool = game.add.sprite(x, y, game.activeTool);
 				placedTool.anchor.setTo(0.5, 0.5);
+				game.world.sendToBack(placedTool);
 			}
 
 			if (game.activeTool === 'Spike') {
@@ -226,7 +244,7 @@ function initCreateState() {
 				return;
 			}
 
-			if (unparsedTileMap[x] && unparsedTileMap[x][y] && unparsedTileMap[x][y]['sprite']) unparsedTileMap[x][y]['sprite'].kill()
+			if (unparsedTileMap[x] && unparsedTileMap[x][y] && unparsedTileMap[x][y].sprite) unparsedTileMap[x][y].sprite.kill()
 
 				if (!unparsedTileMap[x]) unparsedTileMap[x] = {};
 			unparsedTileMap[x][y] = {
@@ -234,6 +252,10 @@ function initCreateState() {
 				tile: game.activeTool
 					// r: game.activeTool === 'Spike' ? placedTool.angle : undefined
 			};
+
+			if ( state.grid ) game.world.bringToTop( state.grid );
+			selector.bringToTop();
+
 		}
 
 		function move(xDiff, yDiff) {
