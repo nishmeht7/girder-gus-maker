@@ -8,7 +8,8 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 
 	$scope.testing = false;
 	$scope.error = false;
-	$scope.levelId = $stateParams.levelId;
+	var levelId = $stateParams.levelId;
+	var sentId = false;
 	console.log($scope.levelId);
 
 	$scope.toolArr = {
@@ -78,7 +79,12 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 	});
 
 	eventEmitter.only('I need both the maps!', function() {
-		eventEmitter.emit('found maps!', [unparsedLevelArr, parsedLevelArr]);
+		if(!levelId && !sentId) {
+			eventEmitter.emit('found maps!', ['levelArr', unparsedLevelArr, parsedLevelArr]);
+		} else { 
+			sentId = true;
+			eventEmitter.emit('found maps!', ['levelId', levelId]);
+		}
 	});
 
 	$scope.getScreenshot = function() {
