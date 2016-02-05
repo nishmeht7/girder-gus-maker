@@ -15,7 +15,7 @@ class GhostGus extends Gus {
     super(x, y, false);
     this.sprite.alpha = 0.5;
 
-    this.compressedRecord = [0, 89, 2, 19, 0, 21, 2, 93, 3, 1, 2, 25, 0, 108];
+    this.compressedRecord = [2, 173, 1, 49, 2, 79, 0, 46, 2, 10, 0, 14, 2, 16, 0, 39, 3, 1, 0, 22, 2, 35, 0, 129];
 
     this.setCollision();
     this.uncompressRecord();
@@ -65,10 +65,10 @@ class GhostGus extends Gus {
   }
 
   update() {
-    this.marker.update();
 
     // clear horizontal movement
     const currentMove = this.uncompressedRecord.pop();
+    this.marker.update(currentMove);
 
     if (Math.abs(Math.cos(this.rotation)) > EPSILON) this.sprite.body.velocity.x = 0;
     else this.sprite.body.velocity.y = 0;
