@@ -6,7 +6,7 @@ const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 var Dolly = require('../../game/js/objects/dolly');
 var Cursors = require('../controls/cursors');
 
-let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey, grid;
+let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey, grid, selector;
 let wasdCursors, arrowCursors;
 let lastRotTime = 0;
 
@@ -18,7 +18,7 @@ function tileToNum(tile) {
 }
 
 function parseCoordinate(n) {
-  return Math.floor(n / 32) * 32
+	return Math.floor(n / 32) * 32
 }
 
 function initCreateState() {
@@ -43,12 +43,14 @@ function initCreateState() {
 			if(unparTiMa.tile === 'Gus') {
 				gusSpawn = sprite;
 			}
-			sprite.anchor.setTo(.5,.5); 
-			unparTiMa.sprite = sprite;
-			if(unparTiMa !== undefined)
-				unparTiMa.sprite.angle = obj.r;
+		sprite.anchor.setTo(.5,.5); 
+		unparTiMa.sprite = sprite;
+		if(unparTiMa !== undefined)
+			unparTiMa.sprite.angle = obj.r;
 		});
 		game.activeTool = 'RedBrickBlock';
+		selector = game.add.sprite('0', '0', 'Select');
+		selector.anchor.setTo(.5,.5);
 	}
 
 	state.create = function() {
@@ -60,27 +62,27 @@ function initCreateState() {
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
-    grid = game.add.graphics();
-    grid.lineStyle( 2, 0x000, 0.2 );
-    for ( var y = parseCoordinate( game.dolly.position.y - (game.camera.width / 2) ) - 16; y < game.dolly.position.y + (game.camera.width / 2) + 16; y += 32 ) {
-      grid.moveTo( game.dolly.position.x - (game.camera.width / 2) - 32, y );
-      grid.lineTo( game.dolly.position.x + (game.camera.width / 2) + 32, y );
-    }
+		grid = game.add.graphics();
+		grid.lineStyle( 2, 0x000, 0.2 );
+		for ( var y = parseCoordinate( game.dolly.position.y - (game.camera.width / 2) ) - 16; y < game.dolly.position.y + (game.camera.width / 2) + 16; y += 32 ) {
+			grid.moveTo( game.dolly.position.x - (game.camera.width / 2) - 32, y );
+			grid.lineTo( game.dolly.position.x + (game.camera.width / 2) + 32, y );
+		}
 
-    for ( var x = parseCoordinate( game.dolly.position.x - (game.camera.width / 2) ) - 16; x < game.dolly.position.x + (game.camera.width / 2) + 16; x += 32 ) {
-      grid.moveTo( x, game.dolly.position.y - (game.camera.width / 2) - 32 );
-      grid.lineTo( x, game.dolly.position.y + (game.camera.width / 2) + 32 );
-    }
+		for ( var x = parseCoordinate( game.dolly.position.x - (game.camera.width / 2) ) - 16; x < game.dolly.position.x + (game.camera.width / 2) + 16; x += 32 ) {
+			grid.moveTo( x, game.dolly.position.y - (game.camera.width / 2) - 32 );
+			grid.lineTo( x, game.dolly.position.y + (game.camera.width / 2) + 32 );
+		}
 
 		// Set Keyboard input
-    wasdCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.W ),
-                               game.input.keyboard.addKey( Phaser.KeyCode.A ),
-                               game.input.keyboard.addKey( Phaser.KeyCode.S ),
-                               game.input.keyboard.addKey( Phaser.KeyCode.D ) );
-    arrowCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.UP ),
-                                game.input.keyboard.addKey( Phaser.KeyCode.LEFT ),
-                                game.input.keyboard.addKey( Phaser.KeyCode.DOWN ),
-                                game.input.keyboard.addKey( Phaser.KeyCode.RIGHT ) );
+		wasdCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.W ),
+				game.input.keyboard.addKey( Phaser.KeyCode.A ),
+				game.input.keyboard.addKey( Phaser.KeyCode.S ),
+				game.input.keyboard.addKey( Phaser.KeyCode.D ) );
+		arrowCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.UP ),
+				game.input.keyboard.addKey( Phaser.KeyCode.LEFT ),
+				game.input.keyboard.addKey( Phaser.KeyCode.DOWN ),
+				game.input.keyboard.addKey( Phaser.KeyCode.RIGHT ) );
 		rotateCounterKey = game.input.keyboard.addKey(Phaser.KeyCode.Q);
 		routateClockwiseKey = game.input.keyboard.addKey(Phaser.KeyCode.E);
 
@@ -92,7 +94,7 @@ function initCreateState() {
 		});
 
 		var handleTileMapRequest = function() {
-				const parsedTileMap = [];
+			const parsedTileMap = [];
 
 			if(!unparsedTileMap[gusSpawn.x]) {
 				unparsedTileMap[gusSpawn.x] = {};
@@ -123,39 +125,47 @@ function initCreateState() {
 				}
 			}
 			/*if (gusSpawn) parsedTileMap.push({
-				x: gusSpawn.x,
-			y: gusSpawn.y,
-			t: tileToNum('Gus')
-			});*/
+			  x: gusSpawn.x,
+			  y: gusSpawn.y,
+			  t: tileToNum('Gus')
+			  });*/
 			eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
 		}
 
 		eventEmitter.on('request tile map', handleTileMapRequest)
 
-		eventEmitter.on('request screenshot', function() {
-			var screenshot = game.canvas.toDataURL();
-			eventEmitter.emit('send screenshot', screenshot);
+			eventEmitter.on('request screenshot', function() {
+				var screenshot = game.canvas.toDataURL();
+				eventEmitter.emit('send screenshot', screenshot);
+			})
+
+		eventEmitter.on('stop input capture', function() {
+			game.input.enabled = false;
+			game.input.reset();
 		})
 
-    eventEmitter.on('stop input capture', function() {
-      game.input.enabled = false;
-      game.input.reset();
-    })
-
-    eventEmitter.on('start input capture', function() {
-      game.input.enabled = true;
-      game.input.reset();
-    })
+		eventEmitter.on('start input capture', function() {
+			game.input.enabled = true;
+			game.input.reset();
+		})
 
 	}
 
 	state.update = function() {
 
-    grid.position.x = parseCoordinate( game.dolly.position.x );
-    grid.position.y = parseCoordinate( game.dolly.position.y );
+		const cosine = Math.cos( game.dolly.rotation ), sine = Math.sin( game.dolly.rotation );
+
+		const mousePoint = new Phaser.Point( game.input.mousePointer.x + (16 * cosine + sine), game.input.mousePointer.y + (16 * cosine - sine) );
+		const convertedMousePoint = game.dolly.screenspaceToWorldspace( mousePoint );
+		selector.x = parseCoordinate( convertedMousePoint.x );
+		selector.y = parseCoordinate( convertedMousePoint.y );
+
+
+
+		grid.position.x = parseCoordinate( game.dolly.position.x );
+		grid.position.y = parseCoordinate( game.dolly.position.y );
 
 		if (game.input.activePointer.isDown) {
-      const cosine = Math.cos( game.dolly.rotation ), sine = Math.sin( game.dolly.rotation );
 			const clickPoint = new Phaser.Point( game.input.mousePointer.x + (16 * cosine + sine), game.input.mousePointer.y + (16 * cosine - sine) );
 			const targetPoint = game.dolly.screenspaceToWorldspace( clickPoint );
 			const x = parseCoordinate( targetPoint.x );
@@ -241,14 +251,14 @@ function initCreateState() {
 
 		const moveAmount = 64;
 
-    var vec;
+		var vec;
 		if ( arrowCursors.isDown() ) {
-      vec = arrowCursors.getVector();
-      move( vec.x * moveAmount, vec.y * moveAmount );
-    } else if ( wasdCursors.isDown() ) {
-      vec = wasdCursors.getVector();
-      move( vec.x * moveAmount, vec.y * moveAmount );
-    }
+			vec = arrowCursors.getVector();
+			move( vec.x * moveAmount, vec.y * moveAmount );
+		} else if ( wasdCursors.isDown() ) {
+			vec = wasdCursors.getVector();
+			move( vec.x * moveAmount, vec.y * moveAmount );
+		}
 
 		if (rotateCounterKey.isDown) rotate(1);
 		if (routateClockwiseKey.isDown) rotate(-1);
