@@ -50,7 +50,7 @@ const schema = new mongoose.Schema({
     ref: 'User'
   },
   map: map,
-  dateCreate: {
+  dateCreated: {
     type: Date,
     default: Date.now()
   },
@@ -61,11 +61,22 @@ const schema = new mongoose.Schema({
 });
 //difficulty was mentioned, but not part of MVP imo
 
+
+// sets a levels star count based on how many users have like it
+schema.methods.setStars = function() {
+  var self = this;
+  return User.find({ likedLevels : { $in: [self._id] } })
+    .then(function(users) {
+      self.starCount = users.length;
+      return self.save();
+    })
+}
+
 // note whether level is new before saving
 schema.pre('save', function(next) {
   this.wasNew = this.isNew;
   next();
-})
+});
 
 // add level to creator's createdLevels if level is new
 schema.post('save', function(doc, next) {
@@ -80,7 +91,7 @@ schema.post('save', function(doc, next) {
   } else {
     next();
   }
-})
+});
 
 // post-save hook to set total star count of associated user
 schema.post('save', function(doc, next) {
@@ -95,7 +106,7 @@ schema.post('save', function(doc, next) {
       console.error(error);
       next();
     });
-})
+});
 
 // hook to remove deleted level from creator's level list and
 //   set users's new total star count
@@ -109,6 +120,14 @@ schema.post('remove', function(doc) {
     .then(function(user) {
       return user.setStars();
     })
-})
+});
+
+schema.virtual('screenshot').get(function() {
+  return 'images/screenshots/'+this._id+'.png';
+});
+
+schema.virtual('user').get(function() {
+  return this.creator;
+});
 
 mongoose.model('Level', schema);

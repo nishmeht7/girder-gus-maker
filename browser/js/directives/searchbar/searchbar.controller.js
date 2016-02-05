@@ -13,14 +13,14 @@ app.controller('SearchbarCtrl', function($scope, $state) {
     
     $scope.starBy = $scope.params.sort !== 'starCount' ? 'desc' : $scope.params.by ? $scope.params.by : 'desc';
     $scope.textBy = $scope.params.sort !== 'title' ? 'asc' : $scope.params.by ? $scope.params.by : 'asc';
-    $scope.dateBy = $scope.params.sort !== 'dateCreate' ? 'desc' : $scope.params.by ? $scope.params.by : 'desc';
+    $scope.dateBy = $scope.params.sort !== 'dateCreated' ? 'desc' : $scope.params.by ? $scope.params.by : 'desc';
 
     $scope.search = function() {
         console.log($scope.sort);
         var type = $scope.searchbar.type.$modelValue.value;
         var params = {
             sort: $scope.searchbar.order.$modelValue.value,
-            by: $scope.searchbar.order.$modelValue.value === 'title' ? $scope.searchbar.textBy.$modelValue : $scope.searchbar.order.$modelValue.value === 'dateCreate' ? $scope.searchbar.dateBy.$modelValue : $scope.searchbar.order.$modelValue.value === 'starCount' ? $scope.searchbar.starBy.$modelValue : undefined,
+            by: $scope.searchbar.order.$modelValue.value === 'title' ? $scope.searchbar.textBy.$modelValue : $scope.searchbar.order.$modelValue.value === 'dateCreated' ? $scope.searchbar.dateBy.$modelValue : $scope.searchbar.order.$modelValue.value === 'starCount' ? $scope.searchbar.starBy.$modelValue : undefined,
             page: undefined,
             limit: undefined
         };
