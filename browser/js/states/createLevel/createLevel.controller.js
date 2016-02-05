@@ -53,14 +53,14 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		eventEmitter.emit('request tile map', '');
 	}
 
-	eventEmitter.on('game ended', function(data) {
+	eventEmitter.only('game ended', function(data) {
 		console.log(data);
 		$scope.beaten = true;
 		$scope.beatenLevel = parsedLevelArr;
 		$scope.$digest();
 	});
 
-	eventEmitter.on('send tile map', (mapArr) => {
+	eventEmitter.only('send tile map', (mapArr) => {
 		if(nextMapUse === 'log') {
 			console.log('recieved.');
 			console.dir(mapArr);
@@ -74,7 +74,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		}
 	});
 
-	eventEmitter.on('I need both the maps!', function() {
+	eventEmitter.only('I need both the maps!', function() {
 		eventEmitter.emit('found maps!', [unparsedLevelArr, parsedLevelArr]);
 	});
 
@@ -118,12 +118,12 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		})()
 	}
 
-	eventEmitter.on('send screenshot', (screenshot) => {
+	eventEmitter.only('send screenshot', (screenshot) => {
 		console.log('screenshot');
 		console.log(screenshot);
 	})
 
-	eventEmitter.on('what level to play', (data) => {
+	eventEmitter.only('what level to play', (data) => {
 		console.log(data);
 		if(parsedLevelArr) {
 			eventEmitter.emit('play this level', ['levelArr', {
