@@ -12,7 +12,6 @@ function initGameState() {
 
   var gus, ghostGus, marker, generator, restartTimeout, hudCounters, levelStarted, startingGirderCount;
 
-  var fpsCounter;
   var gameEndingEmitted= false;
   const game = window.game;
   const eventEmitter = window.eventEmitter;
@@ -69,7 +68,6 @@ function initGameState() {
     game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( function() { gus.doom() }, this, 0 );
 
     // make hud icons
-    fpsCounter = game.add.text( 0, 0, "60 FPS", { font: "9pt mono" });
     hudCounters = [
       { icon: game.add.sprite( 41, 41, "Tool" ), value: function() { return game.toolsRemaining } },
       { icon: game.add.sprite( 181, 41, "Girder" ), value: function() { return gus.girders } },
@@ -169,10 +167,6 @@ function initGameState() {
     }
 
     // render HUD
-    var rate = game.time.fps;
-    fpsCounter.position = game.dolly.screenspaceToWorldspace( {x:0,y:0} );
-    fpsCounter.rotation = game.dolly.rotation;
-    fpsCounter.text = rate + " FPS" + ( rate < 30 ? "!!!!" : " :)" );
 
     hudCounters.forEach( function( counter ) {
 
