@@ -15,11 +15,13 @@ class GhostGus extends Gus {
     super(x, y, false);
     this.sprite.alpha = 0.5;
 
-    this.startTime = game.time.now;
+    this.startTime = game.time.now + 500;
+    this.timingTolerance = -5; // in ms
 
     console.log(this.startTime);
 
-    this.records = [{"INPUT":[],"ENDTIME":9438},{"INPUT":[2],"ENDTIME":8521},{"INPUT":[],"ENDTIME":8421},{"INPUT":[3],"ENDTIME":8321},{"INPUT":[],"ENDTIME":8221},{"INPUT":[2],"ENDTIME":7504},{"INPUT":[1,2],"ENDTIME":7487},{"INPUT":[1],"ENDTIME":6286},{"INPUT":[],"ENDTIME":6270},{"INPUT":[2],"ENDTIME":5019},{"INPUT":[1,2],"ENDTIME":5002},{"INPUT":[1],"ENDTIME":3835},{"INPUT":[],"ENDTIME":3819},{"INPUT":[2],"ENDTIME":2735},{"INPUT":[1,2],"ENDTIME":2718},{"INPUT":[1],"ENDTIME":1701},{"INPUT":[],"ENDTIME":1668},{"INPUT":[2],"ENDTIME":801},{"INPUT":[],"ENDTIME":0}];
+    this.records =
+[{"INPUT":[2],"ENDTIME":12317},{"INPUT":[0],"ENDTIME":11517},{"INPUT":[1],"ENDTIME":11167},{"INPUT":[0],"ENDTIME":10883},{"INPUT":[2],"ENDTIME":10850},{"INPUT":[0],"ENDTIME":9100},{"INPUT":[1],"ENDTIME":8883},{"INPUT":[0],"ENDTIME":8433},{"INPUT":[2],"ENDTIME":8400},{"INPUT":[0],"ENDTIME":7550},{"INPUT":[1],"ENDTIME":7133},{"INPUT":[0],"ENDTIME":6783},{"INPUT":[2],"ENDTIME":6733},{"INPUT":[0],"ENDTIME":6450},{"INPUT":[1],"ENDTIME":6033},{"INPUT":[0],"ENDTIME":5650},{"INPUT":[2],"ENDTIME":5633},{"INPUT":[0],"ENDTIME":883}];
 
     this.currentRecord = this.records.pop();
 
@@ -31,17 +33,52 @@ class GhostGus extends Gus {
     console.log('Ghost Gus (a.k.a girder ghost) created.')
   }
 
+  evaluateRecord() {
+    if (this.currentRecord) {
+      this.currentRecord.INPUT.forEach(action => {
+        switch (action) {
+          case 1:
+            this.walk('left');
+            console.log('LEFT')
+            console.log(this.getTime())
+            break;
+          case 2:
+            this.walk('right');
+            console.log('RIGHT');
+            console.log(this.getTime())
+            break;
+          case 3:
+            // debugger;
+            this.marker.placeGirder();
+            console.log(this.getTime())
+            break;
+          default:
+            console.log('nothing')
+            this.stop();
+            break;
+        }
+      });
+
+      if (this.isRecordExpired()) {
+        console.log('current: ', this.currentRecord)
+        this.currentRecord = this.records.pop();
+        console.log('time: ', this.getTime())
+
+        console.log('new: ', this.currentRecord)
+      }
+    }
+  }
+
   getTime() {
-    return
+    return game.time.now - this.startTime;
   }
 
   isRecordExpired() {
-    const tolerance = 10 // in ms
-    const currentTime = game.time.now - this.startTime;
+    const currentTime = this.getTime();
     const currentRecordEnd = this.currentRecord.ENDTIME;
-    console.log(currentTime, currentRecordEnd);
+    // console.log(currentTime, currentRecordEnd);
 
-    return currentTime > currentRecordEnd - tolerance;
+    return currentTime >= currentRecordEnd - this.timingTolerance;
   }
 
   // diff from Gus's doom: doesn't unlock the dolly
@@ -67,9 +104,11 @@ class GhostGus extends Gus {
   update() {
     if (Math.abs(Math.cos(this.rotation)) > EPSILON) this.sprite.body.velocity.x = 0;
     else this.sprite.body.velocity.y = 0;
+    this.evaluateRecord();
 
     // check to see if we're rotating
     if (this.rotating) {
+      console.log('hey')
 
       // stop all movement
       this.stop();
@@ -97,48 +136,7 @@ class GhostGus extends Gus {
         this.rotationSensor.needsCollisionData = false;
       }
 
-      // evaluate INPUT
-      if (this.currentRecord) {
-        this.currentRecord.INPUT.forEach(action => {
-          this.marker.update(action);
-
-          // movement
-          switch (action) {
-            case 1:
-              this.walk('left');
-              break;
-            case 2:
-              this.walk('right');
-              break;
-            case 3:
-              this.marker.placeGirder(action);
-              break;
-            default:
-              this.stop();
-              break;
-          }
-          if (action === 1) {
-            this.walk("left");
-            // console.log('walking left')
-          } else if (action === 2) {
-            this.walk("right");
-            // console.log('walking right')
-          } else {
-            this.stop();
-          }
-
-          // girder placement
-          if (action === 3) {
-            this.marker.placeGirder();
-          }
-        })
-
-
-        if (this.isRecordExpired()) {
-          this.currentRecord = this.records.pop();
-        }
-      }
-
+      this.marker.update()
 
       if (!this.isTouching("down")) {
         this.fallTime += game.time.physicsElapsedMS;
