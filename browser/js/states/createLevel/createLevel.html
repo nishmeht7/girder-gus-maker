@@ -11,8 +11,8 @@
 	<nav>
 	<ul id='tool-bar'>
 		<li ng-repeat='tool in toolArr'>
-      <a ng-click='changeActiveTool(tool)'><img style='height: 32px' ng-src='{{tool.img}}' /></a>
-    </li>
+		<a ng-click='changeActiveTool(tool)'><img style='height: 32px' ng-src='{{tool.img}}' /></a>
+		</li>
 	</ul>
 	</nav>
 	</header>
@@ -24,10 +24,16 @@
 	<div ng-if=testing>
 		<game-view ng-mouseenter="startInputCapture()" ng-mouseleave="stopInputCapture()"></game-view>
 	</div>
-  <br>
-  <button class='btn' ng-click='testTesting()'>Show Game</button>
+	<br>
+	<div ng-if='error'>
+		<p class='text-danger'>Error: There was a problem submitting your level, please ensure all required information is provided.</p>
+	</div>
+	<button class='btn' ng-click='testTesting()'>Show Game</button>
 	<button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
 	<div ng-if='beaten'>
 		<button ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor)'>Submit</button>
+	</div>
+	<div ng-if='testing'>
+		<button ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor, false)'>Save Progress</button>
 	</div>
 </div>

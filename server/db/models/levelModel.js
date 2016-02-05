@@ -54,6 +54,10 @@ const schema = new mongoose.Schema({
     type: Date,
     default: Date.now()
   },
+  published: {
+	 type: Boolean,
+	 default: true
+ },
   starCount: {
     type: Number,
     default: 0
