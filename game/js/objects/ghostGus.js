@@ -16,14 +16,17 @@ class GhostGus extends Gus {
     this.sprite.alpha = 0.5;
 
     this.startTime = game.time.now + 500;
-    this.timingTolerance = -5; // in ms
+    this.timingTolerance = -20; // in ms
 
     console.log(this.startTime);
 
     this.records =
-[{"INPUT":[2],"ENDTIME":12317},{"INPUT":[0],"ENDTIME":11517},{"INPUT":[1],"ENDTIME":11167},{"INPUT":[0],"ENDTIME":10883},{"INPUT":[2],"ENDTIME":10850},{"INPUT":[0],"ENDTIME":9100},{"INPUT":[1],"ENDTIME":8883},{"INPUT":[0],"ENDTIME":8433},{"INPUT":[2],"ENDTIME":8400},{"INPUT":[0],"ENDTIME":7550},{"INPUT":[1],"ENDTIME":7133},{"INPUT":[0],"ENDTIME":6783},{"INPUT":[2],"ENDTIME":6733},{"INPUT":[0],"ENDTIME":6450},{"INPUT":[1],"ENDTIME":6033},{"INPUT":[0],"ENDTIME":5650},{"INPUT":[2],"ENDTIME":5633},{"INPUT":[0],"ENDTIME":883}];
+
+    [{"INPUT":[2],"ENDTIME":10867},{"INPUT":[1],"ENDTIME":9817},{"INPUT":[0],"ENDTIME":9517},{"INPUT":[2],"ENDTIME":9167},{"INPUT":[1],"ENDTIME":8667},{"INPUT":[0],"ENDTIME":8367},{"INPUT":[1],"ENDTIME":7634},{"INPUT":[2],"ENDTIME":7317},{"INPUT":[0],"ENDTIME":6867},{"INPUT":[1],"ENDTIME":6667},{"INPUT":[0],"ENDTIME":6317},{"INPUT":[2],"ENDTIME":6284},{"INPUT":[0],"ENDTIME":5817},{"INPUT":[2],"ENDTIME":5550},{"INPUT":[1],"ENDTIME":4967},{"INPUT":[0],"ENDTIME":4667},{"INPUT":[2],"ENDTIME":4267},{"INPUT":[1],"ENDTIME":3817},{"INPUT":[0],"ENDTIME":3367},{"INPUT":[2],"ENDTIME":2734},{"INPUT":[0],"ENDTIME":800}];
 
     this.currentRecord = this.records.pop();
+
+    this.currentRecord.hasBeenExecuted = false;
 
     this.setCollision();
 
@@ -34,7 +37,19 @@ class GhostGus extends Gus {
   }
 
   evaluateRecord() {
+
     if (this.currentRecord) {
+
+      if (this.isRecordExpired() && this.currentRecord.hasBeenExecuted) {
+        console.log('current: ', this.currentRecord)
+        this.currentRecord = this.records.pop();
+        console.log('time: ', this.getTime())
+
+        console.log('new: ', this.currentRecord)
+      }
+
+      if (!this.currentRecord) return;
+
       this.currentRecord.INPUT.forEach(action => {
         switch (action) {
           case 1:
@@ -59,13 +74,7 @@ class GhostGus extends Gus {
         }
       });
 
-      if (this.isRecordExpired()) {
-        console.log('current: ', this.currentRecord)
-        this.currentRecord = this.records.pop();
-        console.log('time: ', this.getTime())
-
-        console.log('new: ', this.currentRecord)
-      }
+      this.currentRecord.hasBeenExecuted = true;
     }
   }
 
