@@ -13,11 +13,16 @@ app.factory('LevelsFactory', function($http) {
                     return res.data;
                 });
         },
-        likeLevel: function(userId, levelId) {
-            //
-        },
-        unlikeLevel: function(userId, levelId) {
-            //
+        levelLiker: function(levelId, func) {
+            return $http.get('api/levels/like', {
+                params: {
+                    args: levelId,
+                    func: func }
+                })
+                .then(function(res) {
+                    console.log(res);
+                    return res.data;
+                });
         }
     }
 })

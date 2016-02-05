@@ -156,16 +156,15 @@ schema.methods.likeLevel = function(levelId) {
         .then(function(data) {
             var user = data[0];
             var level = data[1];
-            return [{
-                _id: user._id,
-                likedLevels: user.likedLevels,
-                totalLikedLevels: user.totalLikedLevels
-            },
-            {
-                _id: level._id,
-                starCount: level.starCount
-            }];
-        })
+            return {
+                user: {
+                    _id: user._id,
+                    likedLevels: user.likedLevels,
+                    totalLikedLevels: user.totalLikedLevels
+                },
+                level: level
+            };
+        });
 };
 
 schema.methods.unlikeLevel = function(levelId) {
@@ -186,15 +185,14 @@ schema.methods.unlikeLevel = function(levelId) {
         .then(function(data) {
             var user = data[0];
             var level = data[1];
-            return [{
-                _id: user._id,
-                likedLevels: user.likedLevels,
-                totalLikedLevels: user.totalLikedLevels
-            },
-            {
-                _id: level._id,
-                starCount: level.starCount
-            }]
+            return {
+                user: {
+                    _id: user._id,
+                    likedLevels: user.likedLevels,
+                    totalLikedLevels: user.totalLikedLevels
+                },
+                level: level
+            }
         })
 }
 

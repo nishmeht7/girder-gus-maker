@@ -9,7 +9,8 @@ import {
     getDocAndSend,
     getDocsAndSend,
     getDocAndUpdateIfOwnerOrAdmin,
-    getDocAndDeleteIfOwnerOrAdmin
+    getDocAndDeleteIfOwnerOrAdmin,
+    getUserDocAndRunFunction
 } from './helpers/crud';
 
 import { mustBeLoggedIn } from './helpers/permissions';
@@ -20,8 +21,8 @@ router.post('/', mustBeLoggedIn, createDoc('Level', 'creator'));
 // guest can see all levels
 router.get('/', getDocsAndSend('Level', ['title', 'creator', 'dateCreated', 'starCount'], [{path: 'creator', select: 'name'}]));
 
-// guest can see all levels with creators
-router.get('/users', getDocsAndSend('Level', null, ['creator']));
+// user can like level
+router.get('/like', mustBeLoggedIn, getUserDocAndRunFunction());
 
 // guest can see level
 router.get('/:id', getDocAndSend('Level', ['-map'], ['creator']));
