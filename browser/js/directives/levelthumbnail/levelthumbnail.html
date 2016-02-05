@@ -1,7 +1,7 @@
 <div class="level-box">
     <div>
         <a ui-sref="levels.details({ levelId: level._id })">
-            <img ng-src="/images/mapthumbs/{{ level._id }}.png">
+            <img ng-src="/images/mapthumbs/{{ level._id }}.png" onerror="this.src='/images/mapthumbs/placeholder.png'">
             <div>
                 <h5 class="star-count"><span class="glyphicon glyphicon-star"></span> {{ level.starCount }}</h5>
                 <h5>{{ level.title }}</a></h5>
