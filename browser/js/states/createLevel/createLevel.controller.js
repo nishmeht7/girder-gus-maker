@@ -1,13 +1,15 @@
 const _ = require('lodash');
 const eventEmitter = window.eventEmitter
 
-app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
+app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $stateParams) {
 	var nextMapUse = null;
 	var unparsedLevelArr = null;
 	var parsedLevelArr = [];
 
 	$scope.testing = false;
 	$scope.error = false;
+	$scope.levelId = $stateParams.levelId;
+	console.log($scope.levelId);
 
 	$scope.toolArr = {
 		'Eraser' : {

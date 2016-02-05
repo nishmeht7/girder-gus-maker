@@ -1,6 +1,6 @@
 const eventEmitter = window.eventEmitter
 
-app.controller('LevelDetailsCtrl', function ($scope, data) {
+app.controller('LevelDetailsCtrl', function ($scope, data, $state) {
     $scope.level = data;
     $scope.liked = false;
 
@@ -19,6 +19,10 @@ app.controller('LevelDetailsCtrl', function ($scope, data) {
         $scope.level.creator.totalStars--;
         $scope.liked = false;
     }
+
+	$scope.edit = function() {
+		$state.go('createLevel', {levelId: $scope.level._id});
+	}
 
     eventEmitter.on('what level to play', (data) => {
         console.log(data);
