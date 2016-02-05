@@ -6,6 +6,7 @@ const chalk = require('chalk');
 var mongoose = require('mongoose');
 var oldMongoose = false;
 var db = mongoose.connect('mongodb://gus:gusIsGreat@ds051655.mongolab.com:51655/ggmng');
+//var db = mongoose.connect('mongodb://gus:gus@ds055535.mongolab.com:55535/girder-gus');
 if ( db.connection !== undefined ) {
   db = db.connection;
   oldMongoose = true;

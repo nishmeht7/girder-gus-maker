@@ -7,11 +7,17 @@ app.factory('LevelsFactory', function($http) {
                     return res.data;
                 });
         },
-        fetchById: function(id) {
-            return $http.get('api/levels/'+id)
+        fetchById: function(levelId) {
+            return $http.get('api/levels/'+levelId)
                 .then(function(res) {
                     return res.data;
                 });
+        },
+        likeLevel: function(userId, levelId) {
+            //
+        },
+        unlikeLevel: function(userId, levelId) {
+            //
         }
     }
 })

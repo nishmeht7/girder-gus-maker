@@ -55,14 +55,14 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [])
     if(!isNaN(req.query.starCount)) query.starCount = { $gte: req.query.starCount };
 
     // acceptable sort parameters for levels
-    if(req.query.sort === 'title' || req.query.sort === 'dateCreate' || req.query.sort === 'starCount') {
+    if(req.query.sort === 'title' || req.query.sort === 'dateCreated' || req.query.sort === 'starCount') {
       if(req.query.by === 'asc' || req.query.by === 'desc' || req.query.by === 'ascending' || req.query.by === 'descending' || req.query.by === 1 || req.query.by === -1) {
         sort[req.query.sort] = req.query.by;
       } else {
         sort[req.query.sort] = 'desc';
       }
     } else {
-      sort.dateCreate = 'desc';
+      sort.dateCreated = 'desc';
     }
   }
 
@@ -199,6 +199,35 @@ export const getDocAndUpdateIfOwnerOrAdmin = ModelStr => (req, res, next) => {
     })
     .then(document => res.status(200).json(document))
     .then(null, next)
+};
+
+export const getDocAndRunFunction = (ModelStr, func) => (req, res, next) => {
+  const id = req.params.id;
+  const Model = mongoose.model(ModelStr);
+
+  Model.findById(id)
+    .then(document=> {
+      if(!document) next();
+      else return document[func](req.body.input);
+    })
+    .then(document => res.status(200).json(document))
+    .then(null, next);
+};
+
+//
+export const getDocAndRunFunctionIfOwnerOrAdmin = (ModelStr, func) => (req, res, next) => {
+  const id = req.params.id;
+  const Model = mongoose.model(ModelStr);
+
+  Model.findById(id)
+    .then(document=> {
+      if(!document) next();
+      if(ownerOrAdmin(document, req.user)) {
+        return document[func](req.body.input);
+      } else res.status(401).end();
+    })
+    .then(document => res.status(200).json(document))
+    .then(null, next);
 };
 
 export const getDocs = (ModelStr, refPropName = false) => (req, res, next) => {
