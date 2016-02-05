@@ -119,7 +119,7 @@ GirderMarker.prototype.getTargetPos = function () {
       // Gus is standing on something, check to see if we can place on it
       var standingOnUnplaceable = false;
       hitBelow.forEach( function( box ) {
-        if ( box.parent.collidesWith.indexOf( COLLISION_GROUPS.PLAYER_SENSOR ) === -1 ) standingOnUnplaceable = true;
+        if ( box.parent.collidesWith.indexOf( playerSensor ) === -1 ) standingOnUnplaceable = true;
       });
       if ( standingOnUnplaceable ) return undefined;
 

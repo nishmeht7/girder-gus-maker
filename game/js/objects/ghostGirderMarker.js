@@ -59,10 +59,10 @@ class GhostGirderMarker extends GirderMarker {
         this.sprite.visible = true;
         this.placeable = true;
 
-        // if we're holding space, build a bridge
-        if (targetPos.isBottom && currentMove === 3) {
-          this.placeGirder();
-        }
+        // // if we're holding space, build a bridge
+        // if (targetPos.isBottom && currentMove === 3) {
+        //   this.placeGirder();
+        // }
 
       } else {
 
