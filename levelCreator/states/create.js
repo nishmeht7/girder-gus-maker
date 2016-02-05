@@ -4,8 +4,10 @@ const COLORS = require('../../game/js/consts/colors');
 const NUM_TO_TILES = require('../../game/js/consts/tilemap');
 
 var Dolly = require('../../game/js/objects/dolly');
+var Cursors = require('../controls/cursors');
 
-let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey;
+let gusSpawn, upKey, downKey, leftKey, rightKey, rotateCounterKey, routateClockwiseKey, grid;
+let wasdCursors, arrowCursors;
 let lastRotTime = 0;
 
 function tileToNum(tile) {
@@ -13,6 +15,10 @@ function tileToNum(tile) {
 		if (NUM_TO_TILES[n] === tile) return +n;
 
 	throw new Error('Tile not found!')
+}
+
+function parseCoordinate(n) {
+  return Math.floor(n / 32) * 32
 }
 
 function initCreateState() {
@@ -54,13 +60,29 @@ function initCreateState() {
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
 
+    grid = game.add.graphics();
+    grid.lineStyle( 2, 0x000, 0.2 );
+    for ( var y = parseCoordinate( game.dolly.position.y - (game.camera.width / 2) ) - 16; y < game.dolly.position.y + (game.camera.width / 2) + 16; y += 32 ) {
+      grid.moveTo( game.dolly.position.x - (game.camera.width / 2) - 32, y );
+      grid.lineTo( game.dolly.position.x + (game.camera.width / 2) + 32, y );
+    }
+
+    for ( var x = parseCoordinate( game.dolly.position.x - (game.camera.width / 2) ) - 16; x < game.dolly.position.x + (game.camera.width / 2) + 16; x += 32 ) {
+      grid.moveTo( x, game.dolly.position.y - (game.camera.width / 2) - 32 );
+      grid.lineTo( x, game.dolly.position.y + (game.camera.width / 2) + 32 );
+    }
+
 		// Set Keyboard input
-		upKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-		downKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
-		leftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-		rightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
-		rotateCounterKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-		routateClockwiseKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
+    wasdCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.W ),
+                               game.input.keyboard.addKey( Phaser.KeyCode.A ),
+                               game.input.keyboard.addKey( Phaser.KeyCode.S ),
+                               game.input.keyboard.addKey( Phaser.KeyCode.D ) );
+    arrowCursors = new Cursors( game.input.keyboard.addKey( Phaser.KeyCode.UP ),
+                                game.input.keyboard.addKey( Phaser.KeyCode.LEFT ),
+                                game.input.keyboard.addKey( Phaser.KeyCode.DOWN ),
+                                game.input.keyboard.addKey( Phaser.KeyCode.RIGHT ) );
+		rotateCounterKey = game.input.keyboard.addKey(Phaser.KeyCode.Q);
+		routateClockwiseKey = game.input.keyboard.addKey(Phaser.KeyCode.E);
 
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
@@ -117,9 +139,9 @@ function initCreateState() {
 	}
 
 	state.update = function() {
-		function parseCoordinate(n) {
-			return Math.floor(n / 32) * 32
-		}
+
+    grid.position.x = parseCoordinate( game.dolly.position.x );
+    grid.position.y = parseCoordinate( game.dolly.position.y );
 
 		if (game.input.activePointer.isDown) {
       const cosine = Math.cos( game.dolly.rotation ), sine = Math.sin( game.dolly.rotation );
@@ -208,10 +230,14 @@ function initCreateState() {
 
 		const moveAmount = 64;
 
-		if (upKey.isDown) move(0, moveAmount);
-		if (downKey.isDown) move(0, -moveAmount);
-		if (leftKey.isDown) move(moveAmount, 0);
-		if (rightKey.isDown) move(-moveAmount, 0);
+    var vec;
+		if ( arrowCursors.isDown() ) {
+      vec = arrowCursors.getVector();
+      move( vec.x * moveAmount, vec.y * moveAmount );
+    } else if ( wasdCursors.isDown() ) {
+      vec = wasdCursors.getVector();
+      move( vec.x * moveAmount, vec.y * moveAmount );
+    }
 
 		if (rotateCounterKey.isDown) rotate(1);
 		if (routateClockwiseKey.isDown) rotate(-1);
