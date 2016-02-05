@@ -22,11 +22,9 @@ function startGame( phaser ) {
 }
 
 (function checkPhaserExists( phaser ) {
-  if ( phaser && !window.game ) { 
-
-		console.log( "Phaser runtime initialized, starting...")
+  if ( phaser && !window.game ) {
+	console.log( "Phaser runtime initialized, starting...");
 	startGame( phaser );
-
 	} else {
 		setTimeout( function() { checkPhaserExists( window.Phaser ) }, 100 );
 	}

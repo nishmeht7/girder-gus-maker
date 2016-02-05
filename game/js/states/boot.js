@@ -22,6 +22,9 @@ function initBootState() {
       COLLISION_GROUPS[key] = game.physics.p2.createCollisionGroup();
     }
 
+    console.log( "Activating ghost state..." )
+    game.ghost = true;
+
     console.log( "Bootstrap complete" );
 
     game.state.start( "load" );

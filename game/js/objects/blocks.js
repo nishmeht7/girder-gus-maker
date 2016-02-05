@@ -1,4 +1,4 @@
-var ParticleBurst = require( "../particles/burst" ); 
+var ParticleBurst = require( "../particles/burst" );
 
 var COLLISION_GROUPS = require( "../consts/collisionGroups" );
 var TAU = require( "../consts" ).TAU;
@@ -25,7 +25,7 @@ function RedBrickBlock( x, y ) {
   Block.call( this, x, y, "BrickRed" );
 
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.BLOCK_ROTATE );
-  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.GHOST_PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR, COLLISION_GROUPS.GHOST_PLAYER_SENSOR ] );
 
 }
 RedBrickBlock.prototype = Block;
@@ -45,20 +45,22 @@ function BlackBrickBlock( x, y ) {
   Block.call( this, x, y, "BrickBlack" );
 
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.BLOCK_SOLID );
-  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.GHOST_PLAYER_SOLID ] );
 
 }
 BlackBrickBlock.prototype = Block;
 
 var breakingBlocks = [];
-function BreakBrickBlock( x, y ) {
+function BreakBrickBlock( x, y, setCollisions ) {
+
+  if ( setCollisions === undefined ) setCollisions = true;
 
   Block.call( this, x, y, "BrickBreak" );
 
   this.collapseTime = 1000;
   this.countCollapseTime = 0;
 
-  this.setCollisions();
+  if ( setCollisions ) this.setCollisions();
 
   breakingBlocks.push( this );
 
@@ -66,10 +68,9 @@ function BreakBrickBlock( x, y ) {
 BreakBrickBlock.prototype = Object.create( Block.prototype );
 
 BreakBrickBlock.prototype.setCollisions = function () {
-
   this.sprite.body.setRectangle( 32, 32 );
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.BLOCK_ROTATE );
-  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR ] );
+  this.sprite.body.collides( [ COLLISION_GROUPS.PLAYER_SOLID, COLLISION_GROUPS.PLAYER_SENSOR, COLLISION_GROUPS.GHOST_PLAYER_SENSOR ] );
   this.sprite.body.onBeginContact.add( BreakBrickBlock.prototype.startCollapsing, this );
 
 }

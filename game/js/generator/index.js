@@ -1,5 +1,8 @@
 var blockIds = require( "./blockIds" );
 var defaultSkyColor = require( "../consts/colors" ).DEFAULT_SKY;
+var tilemap = require('../consts/tilemap');
+
+var GhostBreakBrickBlock = require('../objects/ghostBlocks').GhostBreakBrickBlock;
 
 function LevelGenerator( levelData ) {
 
@@ -24,12 +27,15 @@ LevelGenerator.prototype.parseObjects = function() {
   var objDefList = this.levelData.objects;
   var blocks = this.blockIds;
 
+  console.log("logging objdef");
+  console.log(objDefList);
   objDefList.forEach( function( objDef ) {
 
     // find the object definition function for this id
     var createFunction = undefined;
     if ( objDef.t !== undefined && blocks[ objDef.t ] !== undefined ) {
       createFunction = blocks[ objDef.t ].onLoad;
+
     } else {
       console.log( "[LVGN] No tile found for", objDef.t );
     }
@@ -40,7 +46,13 @@ LevelGenerator.prototype.parseObjects = function() {
     }
 
     // create it!
+
     levelObjects.push( createFunction( objDef ) );
+
+    // account for ghost mode
+    if ( tilemap[objDef.t] === 'BreakBrickBlock' ) {
+      levelObjects.push( new GhostBreakBrickBlock( objDef.x, objDef.y ))
+    }
 
   });
 
