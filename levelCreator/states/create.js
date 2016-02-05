@@ -54,14 +54,14 @@ function initCreateState() {
 	}
 
 	state.drawGrid = function() {
+		const game = window.game;
+
 		// THIS IS TERRIBLE
 		if ( PIXI.blendModesWebGL !== undefined ) window.__tempBlendModes = PIXI.blendModesWebGL;
 		else if ( window.__tempBlendModes ) {
 			console.error( "PIXI blend modes were undefined but we restored them from a previous cache" );
 			PIXI.blendModesWebGL = window.__tempBlendModes;
 		} else return game.text.add( 0, 0, "FATAL: PIXI blend modes are undefined. Tell a programmer." );
-
-		const game = window.game;
 
 		state.grid = game.add.graphics();
 		state.grid.blendMode = PIXI.blendModes.NORMAL;
