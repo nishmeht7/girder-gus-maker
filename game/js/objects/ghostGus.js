@@ -99,6 +99,9 @@ class GhostGus extends Gus {
     if (Math.abs(Math.cos(this.rotation)) > EPSILON) this.sprite.body.velocity.x = 0;
     else this.sprite.body.velocity.y = 0;
     this.evaluateRecord();
+    // this.sprite.body.x = 400;
+    // this.sprite.body.y = 400;
+    debugger;
 
     // check to see if we're rotating
     if (this.rotating) {
