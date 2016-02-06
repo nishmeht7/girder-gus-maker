@@ -4,8 +4,7 @@
   "description": "[![Built at Fullstack Academy](https://img.shields.io/badge/Built%20at-Fullstack%20Academy-red.svg?style=round-square)](http://fullstackacademy.com)",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch server -e js,html server/start.js",
-    "postinstall": "gulp build"
+    "start": "nodemon --watch server -e js,html server/start.js"
   },
   "repository": {
     "type": "git",
