@@ -5,3 +5,4 @@ require('./login');
 require('./users');
 require('./builder');
 require('./createLevel');
+require('./stuff');
