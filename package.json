@@ -4,8 +4,7 @@
   "description": "[![Built at Fullstack Academy](https://img.shields.io/badge/Built%20at-Fullstack%20Academy-red.svg?style=round-square)](http://fullstackacademy.com)",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch server -e js,html server/start.js",
-    "postinstall": "gulp build"
+    "start": "nodemon --watch server -e js,html server/start.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +30,7 @@
     "body-parser": "^1.14.2",
     "bootstrap": "^3.3.6",
     "browserify": "^13.0.0",
+    "canvas": "^1.3.9",
     "chalk": "^1.1.1",
     "connect-mongo": "^1.1.0",
     "cookie-parser": "^1.4.1",
