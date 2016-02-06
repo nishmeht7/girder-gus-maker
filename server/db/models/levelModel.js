@@ -139,17 +139,17 @@ schema.post('save', function(doc, next) {
 schema.post('save', function(doc, next) {
 
   // find gus's position in the map
-  var gusDef = doc.map.objects.reduce( function( gus, objDef ) { 
+  var gusDef = doc.map.objects.reduce( function( gus, objDef ) {
     if ( objDef.t === 1 ) return objDef;
     return gus;
   }, undefined );
-  
+
   // now let's start making beautiful pictures
-  var outName = path.join( __dirname, "../../../public/images/mapthumbs/" ) + doc._id + ".png";
+  var outName = path.join( __dirname, "../../../browser/images/mapthumbs/" ) + doc._id + ".png";
   mapToCanvas( doc.map, gusDef.x, gusDef.y, 250, 150, 0.5 )
   .then( function( canvas ) {
     var pngStream = convert.canvasToPNG( canvas );
-    
+
     convert.streamToFile( pngStream, outName )
     .then( next );
   })
