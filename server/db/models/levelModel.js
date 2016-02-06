@@ -5,6 +5,8 @@ const path = require('path');
 
 const convert = require('../../imaging/convert');
 const mapToCanvas = require('../../imaging/mapToCanvas');
+const uploadMapThumb = require('../../imaging/upload')
+const removeLocalMapThumb = require('../../imaging/delete')
 
 // Calculate number of tiles for data validation
 var TILE_MAP = require( "../../../game/js/consts/tilemap" );
@@ -145,13 +147,19 @@ schema.post('save', function(doc, next) {
   }, undefined );
 
   // now let's start making beautiful pictures
-  var outName = path.join( __dirname, "../../../browser/images/mapthumbs/" ) + doc._id + ".png";
+  var outPath = path.join( __dirname, "../../../public/" ) + doc._id + ".png";
   mapToCanvas( doc.map, gusDef.x, gusDef.y, 250, 150, 0.5 )
   .then( function( canvas ) {
     var pngStream = convert.canvasToPNG( canvas );
 
-    convert.streamToFile( pngStream, outName )
-    .then( next );
+    convert.streamToFile( pngStream, outPath )
+    .then( () => {
+      return uploadMapThumb( outPath, doc._id )
+    })
+    .then( () => {
+      return removeLocalMapThumb( outPath );
+    })
+    .then( next, console.error.bind(console) );
   })
   .then( null, next );
 
@@ -172,7 +180,7 @@ schema.post('remove', function(doc) {
 });
 
 schema.virtual('screenshot').get(function() {
-  return 'images/screenshots/'+this._id+'.png';
+  return 'https://s3.amazonaws.com/girder-gus/'+this._id+'.png';
 });
 
 schema.virtual('user').get(function() {
