@@ -3,7 +3,6 @@ app.factory('LevelsFactory', function($http) {
         fetchAll: function(params) {
             return $http.get('api/levels', { params: params })
                 .then(function(res) {
-                    console.log(res);
                     return res.data;
                 });
         },

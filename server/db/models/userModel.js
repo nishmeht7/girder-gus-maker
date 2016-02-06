@@ -32,7 +32,7 @@ var schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Level'
     }],
-    totallikedLevels: {
+    totalLikedLevels: {
         type: Number,
         default: 0
     },
