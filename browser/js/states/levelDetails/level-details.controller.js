@@ -1,6 +1,6 @@
 const eventEmitter = window.eventEmitter
 
-app.controller('LevelDetailsCtrl', function ($scope, data, user, $state, SocialFactory) {
+app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialFactory) {
     $scope.level = {
         _id: data._id,
         dateCreated: data.dateCreated,
