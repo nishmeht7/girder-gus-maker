@@ -6,6 +6,9 @@ window.app.config(function ($stateProvider) {
         resolve: {
             data: function(LevelsFactory, $stateParams) {
                 return LevelsFactory.fetchById($stateParams.levelId);
+            },
+            user: function(AuthService) {
+                return AuthService.getLoggedInUser();
             }
         },
         link: function(s, e, a) {

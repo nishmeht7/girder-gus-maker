@@ -21,8 +21,8 @@ const allowedHost = "http://127.0.0.1:1337";
  * INTERNAL HELPERS
  */
 const ownerOrAdmin = (doc, user) => {
-  if (!user) return;
-  return doc.user === user._id || user.isAdmin
+  if (!user) return false;
+  return doc.user.equals(user._id) || user.isAdmin
 }
 
 const sendDocIfOwnerOrAdmin = (doc, user, res) => {
@@ -139,7 +139,7 @@ export const getDocAndSend = (ModelStr, selectParams=[], populateParams=[]) => (
 
   Model.findById(id)
     .select( selectParams.join(" ") )
-    .populate(populateParams.join(" "))
+    .populate(populateParams)
     .then(document => res.status(200).header("Access-Control-Allow-Origin",allowedHost).json(document))
     .then(null, next);
 }
@@ -208,13 +208,13 @@ export const getDocAndRunFunction = (ModelStr, func) => (req, res, next) => {
   Model.findById(id)
     .then(document=> {
       if(!document) next();
-      else return document[func](req.body.input);
+      else return document[func](req.body.args);
     })
     .then(document => res.status(200).json(document))
     .then(null, next);
 };
 
-//
+
 export const getDocAndRunFunctionIfOwnerOrAdmin = (ModelStr, func) => (req, res, next) => {
   const id = req.params.id;
   const Model = mongoose.model(ModelStr);
@@ -223,12 +223,25 @@ export const getDocAndRunFunctionIfOwnerOrAdmin = (ModelStr, func) => (req, res,
     .then(document=> {
       if(!document) next();
       if(ownerOrAdmin(document, req.user)) {
-        return document[func](req.body.input);
+        return document[func](req.body.args);
       } else res.status(401).end();
     })
     .then(document => res.status(200).json(document))
     .then(null, next);
 };
+
+export const getUserDocAndRunFunction = (func) => (req, res, next) => {
+  const id = req.user._id;
+  const User = mongoose.model('User');
+
+  User.findById(id)
+    .then(document=> {
+      if(!document) next();
+      else return document[req.body.func](req.body.args);
+    })
+    .then(document => res.status(200).json(document))
+    .then(null, next);
+}
 
 export const getDocs = (ModelStr, refPropName = false) => (req, res, next) => {
   const Model = mongoose.model(ModelStr);
