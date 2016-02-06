@@ -1,11 +1,6 @@
 const eventEmitter = window.eventEmitter
 
-<<<<<<< HEAD
-app.controller('LevelDetailsCtrl', function ($scope, data, $state) {
-    $scope.level = data;
-    $scope.liked = false;
-=======
-app.controller('LevelDetailsCtrl', function ($scope, data, user, SocialFactory) {
+app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialFactory) {
     $scope.level = {
         _id: data._id,
         dateCreated: data.dateCreated,
@@ -22,7 +17,6 @@ app.controller('LevelDetailsCtrl', function ($scope, data, user, SocialFactory) 
         } else return false;
     })();
     $scope.pending = false;
->>>>>>> master
 
     $scope.starLevel = function() {
         if(user !== null) {
