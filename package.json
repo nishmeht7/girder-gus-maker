@@ -65,6 +65,8 @@
     "phaser": "^2.4.4",
     "phaser-debug": "^1.1.8",
     "run-sequence": "^1.1.5",
+    "s3": "^4.4.0",
+    "serve-favicon": "^2.3.0",
     "slick-carousel": "^1.5.9",
     "util": "^0.10.3",
     "vinyl-source-stream": "^1.1.0"
