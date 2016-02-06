@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import Promise from 'Bluebird';
+import Promise from 'bluebird';
 import s3 from 's3';
 
 

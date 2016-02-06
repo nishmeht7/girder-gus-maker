@@ -1,6 +1,6 @@
 const chalk = require( 'chalk' );
 const fs = require( 'fs' );
-const Promise = require( 'Bluebird' );
+const Promise = require( 'bluebird' );
 
 function deleteLocalMapThumb( path ) {
   return new Promise( (resolve, reject ) => {
