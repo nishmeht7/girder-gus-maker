@@ -59,6 +59,18 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 		eventEmitter.emit('request tile map', '');
 	}
 
+	var sendSkyColor = function() {
+		console.log( "Sending new sky color" );
+		eventEmitter.emit('here\'s sky color', $scope.skyColor);
+	}
+
+	$scope.$watch( 'skyColor', function() {
+		console.log( "Sky color changed to", $scope.skyColor );
+		sendSkyColor();
+	}, true );
+
+	eventEmitter.only('need sky color', sendSkyColor);
+
 	eventEmitter.only('game ended', function(data) {
 		console.log(data);
 		$scope.beaten = true;

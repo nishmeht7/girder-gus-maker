@@ -70,9 +70,9 @@ function initCreateState() {
 		for( var i = 0, e = 1; i < 6; ++i, e *= 16 ) {
 			numSlice.push( Math.floor(( hex % ( e * 16 )) / e ));
 		}
-		return numSlice.reduce( function( sum, colv, idx ) {
-			return sum + (idx % 2 ? colv : colv * 16);
-		}, 0 )
+		return numSlice.reduce( function( avg, colv, idx ) {
+			return avg + (idx % 2 ? colv : colv * 16);
+		}, 0 ) / 3;
 	}
 
 	state.drawGrid = function() {
@@ -85,9 +85,11 @@ function initCreateState() {
 			PIXI.blendModesWebGL = window.__tempBlendModes;
 		} else return console.error( "PIXI blend modes are undefined and we have no previous cache. Tell a programmer." );
 
+		if ( state.grid ) state.grid.destroy();
+
 		state.grid = game.add.graphics();
 		state.grid.blendMode = PIXI.blendModes.NORMAL;
-		var color = intToRGBValue( hexStringToInt( game.stage.backgroundColor )) < 300 ? 0xFFFFFF : 0x0;
+		var color = intToRGBValue( hexStringToInt( game.stage.backgroundColor )) < 100 ? 0xFFFFFF : 0x0;
 		state.grid.lineStyle( 2, color, 0.2 );
 		var length = game.camera.width * 0.625; // 3:4 res :. a,b,c=3,4,5 :. c=1.25b :. b=0.5*1.25=0.625
 		for ( var y = parseCoordinate( game.dolly.position.y - length ) - 16; y < game.dolly.position.y + length + 16; y += 32 ) {
@@ -105,10 +107,15 @@ function initCreateState() {
 		const game = window.game;
 		gusSpawn = gusSpawn || game.add.sprite('0', '0', 'Gus');
 		gusSpawn.anchor.setTo(.5,.5);
-		game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
-
 		game.dolly = new Dolly( game.camera );
 		game.dolly.targetPos = new Phaser.Point( 0, 0 );
+
+		game.stage.setBackgroundColor(COLORS.DEFAULT_SKY);
+		eventEmitter.on( "here's sky color", function( color ) {
+			game.stage.setBackgroundColor( color );
+			state.drawGrid();
+		});
+		eventEmitter.emit( "need sky color" );
 
 		this.drawGrid();
 
