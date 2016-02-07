@@ -44,9 +44,9 @@ export const createDoc = (ModelStr, tieToUser = false) => (req, res, next) => {
 }
 
 // returns middleware. No auth. Optionally also gets docs based on req.params.id
-export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = []) => (req, res, next) => {
+export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [], q) => (req, res, next) => {
   const Model = mongoose.model(ModelStr);
-  let query = {};
+  let query = q || {};
   let sort = {};
 
   if(ModelStr === 'Level') {

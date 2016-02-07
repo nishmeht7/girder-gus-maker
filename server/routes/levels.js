@@ -16,10 +16,18 @@ import {
 import { mustBeLoggedIn } from './helpers/permissions';
 
 // user can create level
-router.post('/', mustBeLoggedIn, createDoc('Level', 'creator'));
+router.post('/', 
+  mustBeLoggedIn, 
+  createDoc('Level', 'creator'));
 
 // guest can see all levels
-router.get('/', getDocsAndSend('Level', ['title', 'creator', 'dateCreated', 'starCount'], [{path: 'creator', select: 'name'}]));
+router.get('/', 
+  getDocsAndSend('Level', 
+    ['title', 'creator', 'dateCreated', 'starCount'], 
+    [{path: 'creator', select: 'name'}],
+    // change { $in: [null, true] } to just true to drop malformed docs
+    {published: { $in: [null, true] }})
+);
 
 // guest can see level
 router.get('/:id', getDocAndSend('Level', ['-map'], [{path: 'creator', select: 'name totalStars totalFollowers totalCreatedLevels'}]));
