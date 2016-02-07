@@ -44,6 +44,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 	}
 	}
 	$scope.skyColor = defaultSky;
+	$scope.girdersAllowed = 10;
 
 	$scope.activeToolImg = $scope.toolArr['Red Brick'].img;
 
