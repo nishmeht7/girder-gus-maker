@@ -10,7 +10,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 	$scope.error = false;
 	var levelId = $stateParams.levelId;
 	var sentId = false;
-	console.log($scope.levelId);
+	console.log("LEVELID:", $scope.levelId);
 
 	$scope.toolArr = {
 		'Eraser' : {

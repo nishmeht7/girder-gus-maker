@@ -55,7 +55,6 @@ app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialF
     eventEmitter.on('what level to play', (data) => {
         var whatToPlay = ['notFound'];
         if ($scope.level._id) whatToPlay = ['levelId', $scope.level._id];
-        console.log("PLAY THIS!!!!!", whatToPlay)
         eventEmitter.emit('play this level', whatToPlay);
     });
 });
