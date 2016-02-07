@@ -29,6 +29,13 @@ router.get('/',
     {published: { $in: [null, true] }})
 );
 
+router.get('/drafts/', function (req, res, next) {
+  getDocsAndSend('Level',
+    ['title', 'dateCreated', 'starCount'],
+    [],
+    {published: false, creator: req.user._id})(req,res,next);
+});
+
 // guest can see level
 router.get('/:id', getDocAndSend('Level', ['-map'], [{path: 'creator', select: 'name totalStars totalFollowers totalCreatedLevels'}]));
 
