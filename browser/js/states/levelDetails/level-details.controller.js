@@ -1,6 +1,6 @@
 const eventEmitter = window.eventEmitter
 
-app.controller('LevelDetailsCtrl', function ($scope, data, user, SocialFactory) {
+app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialFactory) {
     $scope.level = {
         _id: data._id,
         dateCreated: data.dateCreated,
@@ -45,6 +45,10 @@ app.controller('LevelDetailsCtrl', function ($scope, data, user, SocialFactory) 
                 });
         }
     }
+
+	$scope.edit = function() {
+		$state.go('createLevel', {levelId: $scope.level._id});
+	}
 
     eventEmitter.on('what level to play', (data) => {
         console.log(data);
