@@ -2,13 +2,16 @@ const _ = require('lodash');
 const defaultSky = require('../../../../game/js/consts/colors').DEFAULT_SKY;
 const eventEmitter = window.eventEmitter
 
-app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
+app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $stateParams) {
 	var nextMapUse = null;
 	var unparsedLevelArr = null;
 	var parsedLevelArr = [];
 
 	$scope.testing = false;
 	$scope.error = false;
+	var levelId = $stateParams.levelId;
+	var sentId = false;
+	console.log($scope.levelId);
 
 	$scope.toolArr = {
 		'Eraser' : {
@@ -78,7 +81,12 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 	});
 
 	eventEmitter.only('I need both the maps!', function() {
-		eventEmitter.emit('found maps!', [unparsedLevelArr, parsedLevelArr]);
+		if(!levelId && !sentId) {
+			eventEmitter.emit('found maps!', ['levelArr', unparsedLevelArr, parsedLevelArr]);
+		} else { 
+			sentId = true;
+			eventEmitter.emit('found maps!', ['levelId', levelId]);
+		}
 	});
 
 	$scope.getScreenshot = function() {
