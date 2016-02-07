@@ -128,7 +128,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 		window.game.destroy();
 
 		(function checkGameDestroyed() {
-			if ( window.game.state === null ) {
+			if ( window.game.isBooted === false ) {
 
 				window.game = null;
 				nextMapUse = 'switchToGame';

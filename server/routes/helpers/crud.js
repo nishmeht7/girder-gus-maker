@@ -135,11 +135,12 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [],
 }
 
 // returns middleware. No auth.
-export const getDocAndSend = (ModelStr, selectParams=[], populateParams=[]) => (req, res, next) => {
+export const getDocAndSend = (ModelStr, selectParams=[], populateParams=[], query) => (req, res, next) => {
   const id = req.params.id;
   const Model = mongoose.model(ModelStr);
 
   Model.findById(id)
+    .and(query || {})
     .select( selectParams.join(" ") )
     .populate(populateParams)
     .then(document => res.status(200).header("Access-Control-Allow-Origin",allowedHost).json(document))

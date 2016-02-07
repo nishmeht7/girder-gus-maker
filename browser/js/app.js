@@ -44,7 +44,7 @@ window.app.run(function($rootScope, AuthService, $state) {
         if ( window.game ) {
             console.log( "Cleaning up old game..." );
             window.game.destroy();
-            window.game = null;
+            //window.game = null;
         }
 
         // remove events from our emitter
