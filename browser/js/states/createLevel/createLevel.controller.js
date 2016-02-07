@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const defaultSky = require('../../../../game/js/consts/colors').DEFAULT_SKY;
 const eventEmitter = window.eventEmitter
 
 app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
@@ -39,6 +40,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		tile: 'Tool'
 	}
 	}
+	$scope.skyColor = defaultSky;
 
 	$scope.activeToolImg = $scope.toolArr['Red Brick'].img;
 
