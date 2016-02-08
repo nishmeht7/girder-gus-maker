@@ -1,5 +1,5 @@
 <div class="minicard">
-  <img class="profile-pic" ng-src="creator.profilePic" ng-click="checkCreator()"></img>
+  <img class="profile-pic" ng-src="creator.profilePic" onerror="this.src='/images/gus.png'" ng-click="checkCreator()"></img>
   <div class="star-count"><span class="glyphicon glyphicon-star"></span> {{ creator.totalStars }}</div>
   <h3>{{ creator.name }}</h3>
   <p>{{ creator.totalFollowers }} follower<span ng-show="creator.totalFollowers !== 1">s</span></p>
