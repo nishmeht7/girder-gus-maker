@@ -8,8 +8,8 @@ function startGame( phaser ) {
 	// initialize the game
 	window.game = new phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'game-container', undefined, undefined, false );
 
-  game.ghostMode = true || process.env.GHOST_MODE;
-  game.recordingMode = true || process.env.RECORDING_MODE;
+  game.ghostMode = process.env.GHOST_MODE;
+  game.recordingMode = process.env.RECORDING_MODE;
 
 	var bootState = require( "./states/boot" );
 	var gameState = require( "./states/game" );
