@@ -5,6 +5,7 @@ const util = require('util');
 
 const rootPath = path.join(__dirname, '../../');
 const indexPath = path.join(rootPath, './server/views/index.html');
+const faviconPath = path.join(rootPath, './browser/favicon.ico');
 const env = require(path.join(rootPath, './server/env'));
 
 const logMiddleware = function (req, res, next) {
@@ -20,4 +21,5 @@ module.exports = function (app) {
     app.setValue('projectRoot', rootPath);
     app.setValue('indexHTMLPath', indexPath);
     app.setValue('log', logMiddleware);
+    app.setValue('faviconPath', faviconPath);
 };

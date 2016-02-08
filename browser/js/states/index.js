@@ -6,3 +6,4 @@ require('./users');
 require('./builder');
 require('./createLevel');
 require('./stuff');
+require('./top-creators');

@@ -7,7 +7,7 @@ app.directive('ggHeader', ($rootScope, AuthService, AUTH_EVENTS, $state) => {
       scope.menuItems = [
         { title: 'Levels', state: 'levels.list' },
         { title: 'Builder', state: 'builder' },
-        { title: 'Users', state: 'users' },
+        { title: 'Top Creators', state: 'topCreators' },
         { title: 'Stuff', state: 'stuff' }
       ];
 
