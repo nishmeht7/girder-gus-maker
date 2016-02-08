@@ -51,7 +51,7 @@ class RecordingGus extends Gus {
   kill() {
     this.records = this.records.reverse();
 
-    document.getElementById('arr').textContent = JSON.stringify(this.records);
+    // document.getElementById('arr').textContent = JSON.stringify(this.records);
     // document.getElementById('arr').textContent = this.records;
     new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "GusHead", {
       lifetime: 5000,
