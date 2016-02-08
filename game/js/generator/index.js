@@ -35,8 +35,6 @@ LevelGenerator.prototype.parseObjects = function() {
   var game = window.game;
   var spriteBatches = this.spriteBatches;
 
-  console.log("logging objdef");
-  console.log(objDefList);
   objDefList.forEach( function( objDef ) {
 
     // find the object definition function for this id

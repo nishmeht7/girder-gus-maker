@@ -100,8 +100,7 @@ class GhostGus extends Gus {
     else this.sprite.body.velocity.y = 0;
     this.evaluateRecord();
     // this.sprite.body.x = 400;
-    // this.sprite.body.y = 400;
-    debugger;
+    // this.sprite.body.y = 400;;
 
     // check to see if we're rotating
     if (this.rotating) {
