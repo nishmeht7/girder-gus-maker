@@ -15,16 +15,65 @@ class GhostGus extends Gus {
     super(x, y, false);
     this.sprite.alpha = 0.5;
 
-    this.compressedRecord = [2, 173, 1, 49, 2, 79, 0, 46, 2, 10, 0, 14, 2, 16, 0, 39, 3, 1, 0, 22, 2, 35, 0, 129];
+    this.startTime = game.time.now + 500;
+    this.timingTolerance = -20; // in ms
+
+
+    this.records = [{"INPUT":[2],"ENDTIME":10867},{"INPUT":[1],"ENDTIME":9817},{"INPUT":[0],"ENDTIME":9517},{"INPUT":[2],"ENDTIME":9167},{"INPUT":[1],"ENDTIME":8667},{"INPUT":[0],"ENDTIME":8367},{"INPUT":[1],"ENDTIME":7634},{"INPUT":[2],"ENDTIME":7317},{"INPUT":[0],"ENDTIME":6867},{"INPUT":[1],"ENDTIME":6667},{"INPUT":[0],"ENDTIME":6317},{"INPUT":[2],"ENDTIME":6284},{"INPUT":[0],"ENDTIME":5817},{"INPUT":[2],"ENDTIME":5550},{"INPUT":[1],"ENDTIME":4967},{"INPUT":[0],"ENDTIME":4667},{"INPUT":[2],"ENDTIME":4267},{"INPUT":[1],"ENDTIME":3817},{"INPUT":[0],"ENDTIME":3367},{"INPUT":[2],"ENDTIME":2734},{"INPUT":[0],"ENDTIME":800}];
+
+    this.currentRecord = this.records.pop();
+
+    this.currentRecord.hasBeenExecuted = false;
 
     this.setCollision();
-    this.uncompressRecord();
 
     this.marker = new GhostGirderMarker();
-    this.marker.setMaster( this );
+    this.marker.setMaster(this);
 
     console.log('Ghost Gus (a.k.a girder ghost) created.')
-}
+  }
+
+  evaluateRecord() {
+
+    if (this.currentRecord) {
+
+      if (this.isRecordExpired() && this.currentRecord.hasBeenExecuted) {
+        this.currentRecord = this.records.pop();
+      }
+
+      if (!this.currentRecord) return;
+
+      this.currentRecord.INPUT.forEach(action => {
+        switch (action) {
+          case 1:
+            this.walk('left');
+            break;
+          case 2:
+            this.walk('right');
+            break;
+          case 3:
+            this.marker.placeGirder();
+            break;
+          default:
+            this.stop();
+            break;
+        }
+      });
+
+      this.currentRecord.hasBeenExecuted = true;
+    }
+  }
+
+  getTime() {
+    return game.time.now - this.startTime;
+  }
+
+  isRecordExpired() {
+    const currentTime = this.getTime();
+    const currentRecordEnd = this.currentRecord.ENDTIME;
+
+    return currentTime >= currentRecordEnd - this.timingTolerance;
+  }
 
   // diff from Gus's doom: doesn't unlock the dolly
   doom() {
@@ -46,36 +95,13 @@ class GhostGus extends Gus {
     this.sprite.body.collides([COLLISION_GROUPS.GHOST_BLOCK_ROTATE, COLLISION_GROUPS.BLOCK_SOLID, COLLISION_GROUPS.BLOCK_ROTATE, COLLISION_GROUPS.ITEM, COLLISION_GROUPS.SPIKES]);
   }
 
-  uncompressRecord() {
-    const compressedRecord = this.compressedRecord;
-
-    const reversedUncompressedRecord = [];
-
-    const compressedRecordStartLength = compressedRecord.length;
-
-    for (let i = 0; i < compressedRecordStartLength; i += 2) {
-
-      let numTimes = compressedRecord.pop();
-      let key = compressedRecord.pop();
-
-      for (let j = 0; j < numTimes; j++) reversedUncompressedRecord.push(key);
-    }
-
-    this.uncompressedRecord = reversedUncompressedRecord.reverse();
-  }
-
   update() {
-
-    // clear horizontal movement
-    const currentMove = this.uncompressedRecord.pop();
-    this.marker.update(currentMove);
-
     if (Math.abs(Math.cos(this.rotation)) > EPSILON) this.sprite.body.velocity.x = 0;
     else this.sprite.body.velocity.y = 0;
+    this.evaluateRecord();
 
     // check to see if we're rotating
     if (this.rotating) {
-
       // stop all movement
       this.stop();
       this.sprite.body.velocity.y = 0;
@@ -102,18 +128,7 @@ class GhostGus extends Gus {
         this.rotationSensor.needsCollisionData = false;
       }
 
-      // check for input
-      if (currentMove === 1) {
-        this.walk("left");
-      } else if (currentMove === 2) {
-        this.walk("right");
-      } else {
-        this.stop();
-      }
-
-      if (currentMove === 3) {
-        this.marker.placeGirder();
-      }
+      this.marker.update()
 
       if (!this.isTouching("down")) {
         this.fallTime += game.time.physicsElapsedMS;

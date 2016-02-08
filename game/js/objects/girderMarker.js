@@ -78,7 +78,7 @@ GirderMarker.prototype.masterPos = function () {
 
 GirderMarker.prototype.getTargetPos = function () {
 
-  var playerSensor = this.ghost ? COLLISION_GROUPS.GHOST_PLAYER_SENSOR : COLLISION_GROUPS.PLAYER_SENSOR
+  var playerSensor = this.ghost ? COLLISION_GROUPS.GHOST_PLAYER_SENSOR : COLLISION_GROUPS.PLAYER_SENSOR;
 
   // get our position factory based on the player's facing
   var posFactory = this.masterPos();
@@ -119,7 +119,7 @@ GirderMarker.prototype.getTargetPos = function () {
       // Gus is standing on something, check to see if we can place on it
       var standingOnUnplaceable = false;
       hitBelow.forEach( function( box ) {
-        if ( box.parent.collidesWith.indexOf( COLLISION_GROUPS.PLAYER_SENSOR ) === -1 ) standingOnUnplaceable = true;
+        if ( box.parent.collidesWith.indexOf( playerSensor ) === -1 ) standingOnUnplaceable = true;
       });
       if ( standingOnUnplaceable ) return undefined;
 
@@ -151,12 +151,6 @@ GirderMarker.prototype.placeGirder = function () {
     // spawn a new girder and set its rotation
     var newGirder = new Girder( this.sprite.position.x, this.sprite.position.y );
     newGirder.sprite.rotation = this.master.sprite.rotation;
-
-    // add placeGirder action if Gus is recording
-    if ( this.master.constructor.name === 'RecordingGus' ) {
-      this.master.uncompressedRecord.push(3); // 3 corresponds to placeGirder
-    }
-
 
     // do a little bookkeeping
     this.girdersPlaced.push( newGirder );
