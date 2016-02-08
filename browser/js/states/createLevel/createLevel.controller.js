@@ -1,13 +1,17 @@
 const _ = require('lodash');
+const defaultSky = require('../../../../game/js/consts/colors').DEFAULT_SKY;
 const eventEmitter = window.eventEmitter
 
-app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
+app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $stateParams) {
 	var nextMapUse = null;
 	var unparsedLevelArr = null;
 	var parsedLevelArr = [];
 
 	$scope.testing = false;
 	$scope.error = false;
+	var levelId = $stateParams.levelId;
+	var sentId = false;
+	console.log($scope.levelId);
 
 	$scope.toolArr = {
 		'Eraser' : {
@@ -39,6 +43,8 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		tile: 'Tool'
 	}
 	}
+	$scope.skyColor = defaultSky;
+	$scope.girdersAllowed = 10;
 
 	$scope.activeToolImg = $scope.toolArr['Red Brick'].img;
 
@@ -53,6 +59,18 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 		console.log('requesting tile map...');
 		eventEmitter.emit('request tile map', '');
 	}
+
+	var sendSkyColor = function() {
+		console.log( "Sending new sky color" );
+		eventEmitter.emit('here\'s sky color', $scope.skyColor);
+	}
+
+	$scope.$watch( 'skyColor', function() {
+		console.log( "Sky color changed to", $scope.skyColor );
+		sendSkyColor();
+	}, true );
+
+	eventEmitter.only('need sky color', sendSkyColor);
 
 	eventEmitter.only('game ended', function(data) {
 		console.log(data);
@@ -76,7 +94,12 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory) {
 	});
 
 	eventEmitter.only('I need both the maps!', function() {
-		eventEmitter.emit('found maps!', [unparsedLevelArr, parsedLevelArr]);
+		if(!levelId && !sentId) {
+			eventEmitter.emit('found maps!', ['levelArr', unparsedLevelArr, parsedLevelArr]);
+		} else { 
+			sentId = true;
+			eventEmitter.emit('found maps!', ['levelId', levelId]);
+		}
 	});
 
 	$scope.getScreenshot = function() {

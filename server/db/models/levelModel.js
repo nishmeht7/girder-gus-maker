@@ -1,6 +1,12 @@
 'use strict';
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
+const path = require('path');
+
+const convert = require('../../imaging/convert');
+const mapToCanvas = require('../../imaging/mapToCanvas');
+const uploadMapThumb = require('../../imaging/upload')
+const removeLocalMapThumb = require('../../imaging/delete')
 
 // Calculate number of tiles for data validation
 var TILE_MAP = require( "../../../game/js/consts/tilemap" );
@@ -74,6 +80,24 @@ schema.methods.setStars = function() {
       self.starCount = users.length;
       return self.save();
     })
+    .then(function(level) {
+      return level.populate({
+        path: 'creator',
+        select: 'totalStars'
+      }).execPopulate();
+    })
+    .then(function(level) {
+      return {
+        level: {
+          _id: level._id,
+          starCount: level.starCount
+        },
+        creator: {
+          _id: level.creator._id,
+          totalStars: level.creator.totalStars
+        }
+      };
+    })
 }
 
 // note whether level is new before saving
@@ -106,10 +130,39 @@ schema.post('save', function(doc, next) {
     })
     .then(function(user) {
       next();
-    }).then(null, function(error) {
+    })
+    .then(null, function(error) {
       console.error(error);
       next();
     });
+});
+
+// post-save hook to save a screenshot of the level
+schema.post('save', function(doc, next) {
+
+  // find gus's position in the map
+  var gusDef = doc.map.objects.reduce( function( gus, objDef ) {
+    if ( objDef.t === 1 ) return objDef;
+    return gus;
+  }, undefined );
+
+  // now let's start making beautiful pictures
+  var outPath = path.join( __dirname, "../../../public/" ) + doc._id + ".png";
+  mapToCanvas( doc.map, gusDef.x, gusDef.y, 250, 150, 0.5 )
+  .then( function( canvas ) {
+    var pngStream = convert.canvasToPNG( canvas );
+
+    convert.streamToFile( pngStream, outPath )
+    .then( () => {
+      return uploadMapThumb( outPath, doc._id )
+    })
+    .then( () => {
+      return removeLocalMapThumb( outPath );
+    })
+    .then( next, console.error.bind(console) );
+  })
+  .then( null, next );
+
 });
 
 // hook to remove deleted level from creator's level list and
@@ -127,7 +180,7 @@ schema.post('remove', function(doc) {
 });
 
 schema.virtual('screenshot').get(function() {
-  return 'images/screenshots/'+this._id+'.png';
+  return 'https://s3.amazonaws.com/girder-gus/'+this._id+'.png';
 });
 
 schema.virtual('user').get(function() {
