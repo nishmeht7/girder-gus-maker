@@ -10,7 +10,6 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 	$scope.error = false;
 	var levelId = $stateParams.levelId;
 	var sentId = false;
-	console.log("LEVELID:", $scope.levelId);
 
 	$scope.toolArr = {
 		'Eraser' : {
@@ -79,7 +78,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 	});
 
 	eventEmitter.only('I need both the maps!', function() {
-		if(!levelId && !sentId) {
+		if(!levelId || sentId) {
 			eventEmitter.emit('found maps!', ['levelArr', unparsedLevelArr, parsedLevelArr]);
 		} else { 
 			sentId = true;
@@ -125,22 +124,21 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 	}
 
 	$scope.testTesting = function() {
+		nextMapUse = 'switchToGame';
+		$scope.activeToolImg = $scope.toolArr['Red Brick'].img;
+		if(!$scope.testing) {
+			eventEmitter.emit('request tile map', '');
+		} else {
+			$scope.testing = !$scope.testing;
+			$scope.beatenLevel = null;
+			$scope.beaten = false;
+		}
+
 		window.game.destroy();
 
 		(function checkGameDestroyed() {
 			if ( window.game.isBooted === false ) {
-
 				window.game = null;
-				nextMapUse = 'switchToGame';
-				$scope.activeToolImg = $scope.toolArr['Red Brick'].img;
-				if(!$scope.testing) {
-					eventEmitter.emit('request tile map', '');
-				} else {
-					$scope.testing = !$scope.testing;
-					$scope.beatenLevel = null;
-					$scope.beaten = false;
-				}
-
 			} else {
 				setTimeout( checkGameDestroyed, 100 );
 			}

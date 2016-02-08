@@ -125,11 +125,12 @@ function initCreateState() {
 				for (let y in unparsedTileMap[x]) {
 					if (!unparsedTileMap[x].hasOwnProperty(y)) continue;
 					if (unparsedTileMap[x][y] && unparsedTileMap[x][y].tile) {
-						if(unparsedTileMap[x][y].tile === 'Gus') {
-							if(x !== gusSpawn.x || y !== gusSpawn.y) {
-								continue;
-							}
-						}
+						// if(unparsedTileMap[x][y].tile === 'Gus') {
+						// 	if(gusSpawn === undefined || x !== gusSpawn.position.x || y !== gusSpawn.position.y) {
+						// 		continue;
+						// 	}
+						// }
+						
 						parsedTileMap.push({
 							x: x,
 							y: y,
@@ -139,11 +140,11 @@ function initCreateState() {
 					}
 				}
 			}
-			/*if (gusSpawn) parsedTileMap.push({
-			  x: gusSpawn.x,
-			  y: gusSpawn.y,
-			  t: tileToNum('Gus')
-			  });*/
+			// if (gusSpawn) parsedTileMap.push({
+			//   x: gusSpawn.x,
+			//   y: gusSpawn.y,
+			//   t: tileToNum('Gus')
+			// });
 			eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
 		}
 
