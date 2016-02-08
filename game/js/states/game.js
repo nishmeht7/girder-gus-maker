@@ -1,5 +1,4 @@
 var Dolly = require( "../objects/dolly" );
-var Gus = require( "../objects/recordingGus" );
 var GirderMarker = require( "../objects/girderMarker" );
 var LevelGenerator = require( "../generator" );
 var ParticleBurst = require( "../particles/burst" );
@@ -14,8 +13,12 @@ function initGameState() {
 
   var fpsCounter;
   var gameEndingEmitted= false;
-  const game = window.game;
-  const eventEmitter = window.eventEmitter;
+  var game = window.game;
+  var eventEmitter = window.eventEmitter;
+
+  // Choose between Gus & Recording Gus
+  if ( game.recordingMode ) Gus = require( "../objects/recordingGus" );
+  else Gus = require( "../objects/gus" )
 
   state.preload = function () {
 
@@ -47,15 +50,21 @@ function initGameState() {
       game.gusStartPos = { x: 0, y: 0 };
     }
 
-    const GhostGus = require('../objects/ghostGus');
-    ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y )
-    ghostGus.girders = generator.getStartingGirders();
-
     gus = new Gus( game.gusStartPos.x, game.gusStartPos.y );
     gus.girders = generator.getStartingGirders();
     startingGirderCount = gus.girders;
     marker = new GirderMarker();
     marker.setMaster( gus );
+
+    // create ghost if ghostMode
+    if ( game.ghostMode ) {
+      console.log( 'Creating Ghost Gus...' )
+
+      var GhostGus = require('../objects/ghostGus');
+
+      ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y )
+      ghostGus.girders = generator.getStartingGirders();
+    }
 
     game.dolly = new Dolly( game.camera );
     game.dolly.lockTo( gus.sprite );
@@ -118,7 +127,7 @@ function initGameState() {
 
     // update actors
     gus.update();
-    ghostGus.update();
+    if (game.ghostMode) ghostGus.update();
     marker.update();
     game.toolsToCollect.forEach( function( tool ) { tool.update() });
 
