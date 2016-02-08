@@ -174,7 +174,9 @@ function initGameState() {
     } else if ( gus.isDead && restartTimeout === undefined ) {
       game.dolly.unlock();
 
-      restartTimeout = setTimeout( function() { state.restartLevel() }, 500 );
+      restartTimeout = setTimeout( function() {
+        state.restartLevel();
+      }, 500 )
     }
 
     // render HUD
@@ -212,30 +214,41 @@ function initGameState() {
       game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.remove( state.restartLevel, this );
     }
 
+    gus.sprite.position = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
+    //gus.sprite.body.clearCollision();
+    gus.sprite.visible = false;
+
     game.toolsToCollect.forEach( function( tool ) { tool.reset() });
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
     BreakBrickBlock.reset();
 
-    gus.respawn();
-    gus.rotationSpeed = 0;
-    game.dolly.lockTo( gus.sprite );
-    gus.girders = generator.getStartingGirders();
-
     game.camera.scale.x = 1;
     game.camera.scale.y = 1;
 
-    restartTimeout = undefined;
-    levelStarted = game.time.now;
-    gameEndingEmitted = false;
+    game.dolly.lockTarget = null;
+    game.dolly.targetPos = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
+    game.dolly.targetAng = 0;
 
+    (function checkRestart() { setTimeout( function() {
+      if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) return checkRestart();
+      
+      gus.respawn();
+      gus.rotationSpeed = 0;
+      game.dolly.lockTo( gus.sprite );
+      gus.girders = generator.getStartingGirders();
+
+      restartTimeout = undefined;
+      levelStarted = game.time.now;
+      gameEndingEmitted = false;
+    }, 100 )})();
   }
 
   state.postBroadphase = function ( body1, body2 ) {
 
-    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation ) {
+    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false ) {
       body2.sprite.owner.collect();
       return false;
-    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation ) {
+    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation && gus.isDead === false ) {
       body1.sprite.owner.collect();
       return false;
     }
