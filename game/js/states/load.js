@@ -32,12 +32,18 @@ function initLoadState() {
     (function gotoStart() { if ( game.state ) game.state.start( "game" ); else setTimeout( gotoStart, 100 ) })();
   }
 
+  var danceInstead = function ( loadText, gus, err ) {
+    loadText.text = err || "Level not found!";
+    gus.animations.play( 'dance' );
+  }
+
   state.create = function () {
 
     console.log( "Starting world..." );
     game.world.setBounds( -400, -300, 800, 600 ); // fullscreen???
     game.physics.p2.setBoundsToWorld();
-    game.add.sprite( -16, -16, "Gus" );
+    var gus = game.add.sprite( -16, -16, "Gus" );
+    gus.animations.add('dance', [3,4,6,7], 5, true);
     var loadText = game.add.text( 0, 32, "Loading assets...", { font: "12pt \"Arial\", sans-serif", fill: "white" })
     loadText.anchor = { x: 0.5, y: 0 };
 
@@ -92,6 +98,8 @@ function initLoadState() {
 				};
         state.gotoStart();
       } else if (data[0] === 'levelId') {
+        if ( data[1] === undefined ) return danceInstead( loadText, gus );
+
         loadText.text = "Downloading level...";
 
         var levelData = "";
@@ -120,16 +128,17 @@ function initLoadState() {
           res.on( "end", function() {
             loadText.text = "Downloading level (100%)...";
             levelData = JSON.parse( levelData );
+            console.log("LEVELDATA:", levelData)
 
             if ( levelData === null || typeof levelData.map !== 'object' ) {
-              console.log( "Mapdata not found!" );
+              return danceInstead( loadText, gus );
             } else if ( levelData.map ) {
               // check checksum here
 
 
               game.level = levelData.map;
             } else {
-              console.log( "Mapdata invalid!" );
+              return danceInstead( loadText, gus, "Mapdata was malformed" );
             }
 
             state.gotoStart();
@@ -142,6 +151,8 @@ function initLoadState() {
 
         req.end();
 
+      } else if ( data[0] === 'notFound' ) {
+        return danceInstead( loadText, gus );
       } else {
         state.gotoStart();
       }

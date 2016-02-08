@@ -1,21 +1,23 @@
 const eventEmitter = window.eventEmitter
 
 app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialFactory) {
-    $scope.level = {
-        _id: data._id,
-        dateCreated: data.dateCreated,
-        starCount: data.starCount,
-        title: data.title
-    };
-    $scope.creator = data.creator;
+    if ( data ) {
+        $scope.level = {
+            _id: data._id,
+            dateCreated: data.dateCreated,
+            starCount: data.starCount,
+            title: data.title
+        };
+        $scope.creator = data.creator;
+        $scope.liked = (function() {
+            if(user !== null) {
+                console.log('liked',user.likedLevels.indexOf(data._id));
+                return user.likedLevels.indexOf(data._id) !== -1;
+            } else return false;
+        })();
+    }
     console.log('data',data);
     $scope.user = user;
-    $scope.liked = (function() {
-        if(user !== null) {
-            console.log('liked',user.likedLevels.indexOf(data._id));
-            return user.likedLevels.indexOf(data._id) !== -1;
-        } else return false;
-    })();
     $scope.pending = false;
 
     $scope.starLevel = function() {
@@ -51,7 +53,8 @@ app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialF
 	}
 
     eventEmitter.on('what level to play', (data) => {
-        console.log(data);
-        eventEmitter.emit('play this level', ['levelId', $scope.level._id]);
+        var whatToPlay = ['notFound'];
+        if ($scope.level._id) whatToPlay = ['levelId', $scope.level._id];
+        eventEmitter.emit('play this level', whatToPlay);
     });
 });

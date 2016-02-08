@@ -18,8 +18,8 @@ class RecordingGus extends Gus {
     this.startTime = game.time.now;
 
     this.inputRecords = [];
-    this.courseCorrectionRecords = [];
 
+    this.courseCorrectionRecords = [];
     this.framesSinceCourseCorrectionRecord = 0;
 
     this.currentRecord = { input: [0] };
@@ -57,8 +57,37 @@ class RecordingGus extends Gus {
   kill() {
     this.inputRecords = this.inputRecords.reverse();
 
-    document.getElementById('arr').textContent = JSON.stringify(this.inputRecords);
+    // document.getElementById('arr').textContent = JSON.stringify(this.inputRecords);
     // document.getElementById('arr').textContent = this.inputRecords;
+  }
+
+  recordInput() {
+    const input = [];
+    const spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+    // not sure what's supposed to happen if both are held down,
+    // but I'm defaulting to the 'right' action
+    if (game.cursors.left.isDown) input.push(1);
+    if (game.cursors.right.isDown) input.push(2);
+    if (spacebar.isDown) input.push(3);
+    if (!input.length) input.push(0);
+    if (!_.isEqual(this.currentRecord.input, input)){
+      this.inputRecords.push({
+        input: this.currentRecord.input,
+        endTime: this.getTime()
+      });
+      this.currentRecord.input = input;
+      console.log('\n',this.currentRecord, '\n')
+    }
+
+  }
+
+  kill() {
+    this.inputRecords = this.inputRecords.reverse();
+
+    document.getElementById('arr').textContent = JSON.stringify(this.inputRecords);
+    // document.getElementById('arr').textContent = this.records;
+
     new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "GusHead", {
       lifetime: 5000,
       count: 14,

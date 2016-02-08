@@ -1,19 +1,25 @@
 <div>
 	<form id='create-level-form' ng-click="stopInputCapture()">
-		<label for='text' name='level-title'>Level Title</label>
-		<input type='text' class='level-title' name='level-title' ng-model='levelTitle' />
-		<label for='number' name='girder-count'>Number of Girders Available to Gus</label>
-		<input type='number' class='girder-count' name='girder-count' ng-model='girdersAllowed' ng-init=10 />
-		<label for='color' name='sky-color'>Pick Sky Color</label>
-		<input type='color' class='sky-color' name='sky-color' ng-model='skyColor' value='#ebebeb'/>
+		<div class="level-title">
+			<label for='text' name='level-title'>Level Title</label>
+			<input type='text' class='level-title-input' name='level-title' ng-model='levelTitle' />
+		</div>
+		<div class="girder-count">
+			<label for='number' name='girder-count'>Starting Girders</label>
+			<input type='number' class='girder-count-input' name='girder-count' ng-model='girdersAllowed' ng-init=10 />
+		</div>
+		<div class="sky-color">
+			<label for='color' name='sky-color'>Pick Sky Color</label>
+			<input type='color' class='sky-color-input' name='sky-color' ng-model='skyColor'/>
+		</div>
 	</form>
 	<header id='tool-bar-container'>
 	<nav>
-	<ul id='tool-bar'>
-		<li ng-repeat='tool in toolArr'>
-		<a ng-click='changeActiveTool(tool)'><img style='height: 32px' ng-src='{{tool.img}}' /></a>
-		</li>
-	</ul>
+		<ul id='tool-bar'>
+			<li ng-repeat='tool in toolArr'>
+			<a ng-click='changeActiveTool(tool)'><img style='height: 32px' ng-src='{{tool.img}}' /></a>
+			</li>
+		</ul>
 	</nav>
 	</header>
 
@@ -28,12 +34,11 @@
 	<div ng-if='error'>
 		<p class='text-danger'>Error: There was a problem submitting your level, please ensure all required information is provided.</p>
 	</div>
-	<button class='btn' ng-click='testTesting()'>Show Game</button>
-	<button ng-click='requestParsedTileMap()'>GET TILE MAP</button>
-	<div ng-if='beaten'>
-		<button ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor)'>Submit</button>
-	</div>
-	<div ng-if='testing'>
-		<button ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor, false)'>Save Progress</button>
+
+	<div id="editor-controls">
+		<a class='btn' ng-show="!testing" ng-click='testTesting()'>Test Level</button>
+		<a class='btn' ng-show="testing" ng-click='testTesting()'>Edit Level</button>
+		<a class='btn btn-create' ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor, false)'>Save Draft</button>
+		<a class='btn btn-create' ng-show="beaten" ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor)'>Submit Level</button>
 	</div>
 </div>

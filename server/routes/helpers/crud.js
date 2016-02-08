@@ -44,9 +44,9 @@ export const createDoc = (ModelStr, tieToUser = false) => (req, res, next) => {
 }
 
 // returns middleware. No auth. Optionally also gets docs based on req.params.id
-export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = []) => (req, res, next) => {
+export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [], q) => (req, res, next) => {
   const Model = mongoose.model(ModelStr);
-  let query = {};
+  let query = q || {};
   let sort = {};
 
   if(ModelStr === 'Level') {
@@ -135,11 +135,12 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [])
 }
 
 // returns middleware. No auth.
-export const getDocAndSend = (ModelStr, selectParams=[], populateParams=[]) => (req, res, next) => {
+export const getDocAndSend = (ModelStr, selectParams=[], populateParams=[], query) => (req, res, next) => {
   const id = req.params.id;
   const Model = mongoose.model(ModelStr);
 
   Model.findById(id)
+    .and(query || {})
     .select( selectParams.join(" ") )
     .populate(populateParams)
     .then(document => res.status(200).header("Access-Control-Allow-Origin",allowedHost).json(document))
