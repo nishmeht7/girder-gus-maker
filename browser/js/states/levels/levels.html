@@ -2,19 +2,19 @@
     <searchbar sorts="sorts" search-types="searchTypes" params="params"></searchbar>
     <div class="levels-list">
         <div class="row" ng-repeat="levelRow in levels">
-            <level-thumbnail ng-repeat="level in levelRow" level="level" show-creator="true"></level-thumbnail>
+            <level-thumbnail ng-repeat="level in levelRow" level="level"></level-thumbnail>
         </div>
     </div>
-    <nav>
+    <nav ng-show="pages.length > 1">
       <ul class="pagination">
         <li ng-class="{disabled: currentPage === 1}">
-            <a href ng-click="toPage(currentPage-1)">« Prev</a>
+            <a ng-click="toPage(currentPage-1)">« Prev</a>
         </li>
         <li ng-repeat="page in pages" ng-class="{active: page === currentPage}">
-            <a href ng-class="{disabled: page === currentPage}" ng-click="toPage(page)">{{ page }}</a>
+            <a ng-class="{disabled: page === currentPage}" ng-click="toPage(page)">{{ page }}</a>
         </li>
         <li ng-class="{disabled: currentPage === pages.length}">
-          <a href ng-click="toPage(currentPage+1)">Next »</a>
+          <a ng-click="toPage(currentPage+1)">Next »</a>
         </li>
       </ul>
     </nav>

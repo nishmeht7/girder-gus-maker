@@ -5,7 +5,6 @@ app.directive('levelThumbnail', function( $state ) {
         controller: 'LevelThumbnailCtrl',
         scope: {
             level: '=',
-            showCreator: '=',
             edit: '='
         },
         link: function( scope ) {
