@@ -1,7 +1,6 @@
 'use strict';
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
-const deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 var schema = new mongoose.Schema({
     name: {
@@ -254,7 +253,5 @@ schema.methods.unlikeLevel = function(levelId) {
 schema.virtual('user').get(function() {
   return this._id;
 });
-
-schema.plugin(deepPopulate);
 
 var User = mongoose.model('User', schema);
