@@ -13,8 +13,16 @@ class GhostBreakBrickBlock extends BreakBrickBlock {
     // set collisions
     this.sprite.body.setCollisionGroup(COLLISION_GROUPS.GHOST_BLOCK_ROTATE);
     this.sprite.body.collides( [ COLLISION_GROUPS.GHOST_PLAYER_SOLID, COLLISION_GROUPS.GHOST_PLAYER_SENSOR ] );
-    this.sprite.body.onBeginContact.add( BreakBrickBlock.prototype.startCollapsing, this );
+    this.sprite.body.onBeginContact.add( this.startCollapsing, this );
 
+  }
+
+  startCollapsing(target) {
+    var targetConstructorName = target.sprite.body.gameObject.constructor.name;
+
+    if ( targetConstructorName === 'GhostGus' ) {
+      this.countCollapseTime = this.countCollapseTime || game.time.physicsElapsedMS;
+    }
   }
 }
 
