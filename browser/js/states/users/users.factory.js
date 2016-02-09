@@ -11,6 +11,23 @@ app.factory('UsersFactory', function($http) {
                 .then(function(res) {
                     return res.data;
                 })
+        },
+        fetchOwnProfile: function() {
+            return $http.get('api/users/profile')
+                .then(function(res) {
+                    return res.data;
+                })
+        },
+        fetchProfileLevels: function(levelType, page) {
+            return $http.get('api/users/profile/levels', {
+                params: {
+                    levelType: levelType,
+                    page: page
+                }
+            })
+            .then(function(res) {
+                return res.data;
+            })
         }
     }
 })

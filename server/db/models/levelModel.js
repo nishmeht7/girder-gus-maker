@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const path = require('path');
+const deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 const convert = require('../../imaging/convert');
 const mapToCanvas = require('../../imaging/mapToCanvas');
@@ -191,5 +192,7 @@ schema.virtual('screenshot').get(function() {
 schema.virtual('user').get(function() {
   return this.creator;
 });
+
+schema.plugin(deepPopulate);
 
 mongoose.model('Level', schema);

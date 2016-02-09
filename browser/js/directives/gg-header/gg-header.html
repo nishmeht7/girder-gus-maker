@@ -13,6 +13,7 @@
   <div>
     <a ng-href='/auth/google' ng-hide='user' id='login'>Log in with Google</a>
     <p ng-show='user'>Hello, {{ user.name }}.
+    <a href='#' ng-click='stateChange("profile")'>Your Profile</a>
     <a id='logout' ng-click='logout()'>Logout</a></p>
 	<div ng-show = 'promptUser && !user'>
 		<p class='danger'>You need to sign in to access that feature!</p>

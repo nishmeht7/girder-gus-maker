@@ -11,7 +11,10 @@ import {
     getDocAndDeleteIfOwnerOrAdmin,
     getDocAndRunFunction,
     getDocAndRunFunctionIfOwnerOrAdmin,
-    getUserDocAndRunFunction
+    getUserDocAndRunFunction,
+    getDocAndSendIfOwnerOrAdmin,
+    getUserProfileAndSend,
+    getUserLevelsByTypeAndSend
 } from './helpers/crud';
 
 import { mustBeLoggedIn } from './helpers/permissions';
@@ -21,6 +24,12 @@ router.post('/', createDoc('User'));
 
 // guest can see all users
 router.get('/', getDocsAndSend('User', ['name', 'followers', 'createdLevels', 'totalStars', 'totalFollowers', 'totalCreatedLevels', 'profilePic'], [{path: 'createdLevels', select: 'title dateCreated starCount'}]));
+
+// user can get own profile
+router.get('/profile', mustBeLoggedIn, getUserProfileAndSend());
+
+// user can get levels from own profile
+router.get('/profile/levels', mustBeLoggedIn, getUserLevelsByTypeAndSend());
 
 // guest can see user
 router.get('/:id', getDocAndSend('User'));

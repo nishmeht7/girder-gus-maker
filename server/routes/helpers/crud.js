@@ -14,6 +14,8 @@
 
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
+const User = mongoose.model('User');
+const Level = mongoose.model('Level');
 
 const allowedHost = "http://127.0.0.1:1337";
 
@@ -28,6 +30,85 @@ const ownerOrAdmin = (doc, user) => {
 const sendDocIfOwnerOrAdmin = (doc, user, res) => {
   if (ownerOrAdmin(doc, user)) res.json(doc);
   else res.status(401).end();
+};
+
+const getLevelsByType = (userPromise, levelType, page) => {
+  var levelPromise;
+  var options = {
+    sort: {
+      dateCreated: 'desc'
+    },
+    limit: 8,
+    skip: page*8
+  };
+
+  if(levelType === 'created') {
+    levelPromise = userPromise
+      .then(user => {
+        var count = user.createdLevels.length;
+        user = user.populate({
+          path: 'createdLevels',
+          select: 'title dateCreated starCount',
+          options: options
+        })
+        .execPopulate();
+
+        return Promise.all([user, count])
+      })
+      .then(data => {
+        return [data[0].createdLevels,data[1]];
+      })
+    // levelPromise = Level.find({ creator: id }).limit(8).skip(page*8).sort({ dateCreated: 'desc' });
+  } else if(levelType === 'following') {
+    levelPromise = userPromise
+      .then(user => {
+        if(!user) return next();
+        var following = user.following.map(function(creator) {
+          return { creator: creator };
+        });
+        var levels = Level.find({ $or: following, published: true })
+          .limit(8)
+          .skip(page*8)
+          .select('title creator dateCreated starCount')
+          .populate({
+            path: 'creator',
+            select: 'name'
+          })
+          .sort({ dateCreated: 'desc' });
+
+        var count = Level.count({ $or: following, published: true });
+        levels = Promise.all(levels);
+
+        return Promise.all([levels, count]);
+      })
+  } else if(levelType === 'liked') {
+    levelPromise = userPromise
+      .then(user => {
+        var count = user.likedLevels.length;
+        user = user.populate({
+          path: 'likedLevels',
+          select: 'title creator datedCreated starCount',
+          populate: {
+            path: 'creator',
+            select: 'name'
+          },
+          options: options
+        })
+        .execPopulate();
+
+        return Promise.all([user, count])
+      })
+      .then(data => {
+        return [data[0].likedLevels,data[1]];
+      })
+  }
+
+  return levelPromise.then(data => {
+    return {
+      levels: data[0],
+      pages: Math.ceil(data[1]/8)
+    };
+  })
 };
 
 /**
@@ -85,8 +166,6 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [],
     }
   }
 
-  console.log(sort);
-
   // allow users to specify results per page and to step through
   //    results by page number
   let page = !isNaN(req.query.page) ? parseInt(req.query.page)-1 : 0;
@@ -100,7 +179,7 @@ export const getDocsAndSend = (ModelStr, selectParams = [], populateParams = [],
   let queryPromise;
 
   if(ModelStr === 'Level' && req.query.creator !== undefined) {
-    queryPromise = mongoose.model('User')
+    queryPromise = User
       .find({ name: { $regex: req.query.creator, $options: 'i' }})
       .then(function(users) {
         let creators = users.map(function(user) {
@@ -173,11 +252,12 @@ export const getDocAndDelete = ModelStr => (req, res, next) => {
 }
 
 // returns middleware
-export const getDocAndSendIfOwnerOrAdmin = (ModelStr, populateParams = []) => (req, res, next) => {
+export const getDocAndSendIfOwnerOrAdmin = (ModelStr, selectParams = [], populateParams = []) => (req, res, next) => {
   const id = req.params.id;
   const Model = mongoose.model(ModelStr);
 
-  Model.findById(id).populate(populateParams.join(" "))
+  Model.findById(id)
+    .populate(populateParams.join(' '))
     .then(document => {
 
       if (!document) next();
@@ -233,9 +313,55 @@ export const getDocAndRunFunctionIfOwnerOrAdmin = (ModelStr, func) => (req, res,
     .then(null, next);
 };
 
+export const getUserLevelsByTypeAndSend = () => (req, res, next) => {
+  const id = req.user !== undefined ? req.user._id : "56b0cccbd629fe4c81b15d54";
+  const page = req.query.page !== undefined ? req.query.page-1 : 0;
+  var userPromise = User.findById(id);
+
+  getLevelsByType(userPromise, req.query.levelType, page)
+    .then(data => {
+      res.json(data);
+    })
+    .then(null, next);
+}
+
+export const getUserProfileAndSend = () => (req, res, next) => {
+  const id = req.user._id;
+  var userPromise = User.findById(id);
+  var created = getLevelsByType(userPromise, 'created', 0);
+  var following = getLevelsByType(userPromise, 'following', 0);
+  var liked = getLevelsByType(userPromise, 'liked', 0);
+
+  Promise.all([userPromise, created, following, liked])
+    .spread((user, created, following, liked) => {
+      user = user.populate({ path: 'followers', select: 'name', options: { limit: 5 }})
+        .populate({ path: 'following', select: 'name', options: { limit: 5 }})
+        .execPopulate();
+        return Promise.all([user, created, following, liked]);
+    })
+    .spread((user, created, following, liked) => {
+      res.json({
+        user: {
+          name: user.name,
+          email: user.email,
+          following: user.following,
+          totalFollowing: user.totalFollowing,
+          followers: user.followers,
+          totalFollowers: user.totalFollowers,
+          totalLikedLevels: user.totalLikedLevels,
+          totalCreatedLevels: user.totalCreatedLevels,
+          totalStars: user.totalStars
+        },
+        createdLevels: created,
+        followingLevels: following,
+        likedLevels: liked
+      })
+    })
+    .then(null, next);
+}
+
 export const getUserDocAndRunFunction = (func) => (req, res, next) => {
   const id = req.user._id;
-  const User = mongoose.model('User');
 
   User.findById(id)
     .then(document=> {
