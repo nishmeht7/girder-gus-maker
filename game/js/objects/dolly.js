@@ -32,7 +32,7 @@ Dolly.prototype.update = function () {
   if ( this.lockTarget && !game.freeLookKey.isDown ) {
     this.targetPos = this.lockTarget.position;
     this.targetAng = this.lockTarget.rotation;
-  } else if ( game.freeLookKey.isDown ) {
+  } else if ( game.freeLookKey && game.toolsRemaining > 0 && game.freeLookKey.isDown ) {
     if ( !this.targetPos.safeToMove ) {
       this.targetPos = new Phaser.Point( this.targetPos.x, this.targetPos.y );
       this.targetPos.safeToMove = true;
