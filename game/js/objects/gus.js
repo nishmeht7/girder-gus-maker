@@ -105,7 +105,7 @@ Gus.prototype.respawn = function() {
 
 Gus.prototype.doom = function() {
 
-  if ( this.isDoomed || this.isDead ) return;
+  if ( this.isDoomed || this.isDead || this.rotating ) return;
 
   this.isDoomed = true;
 
@@ -190,7 +190,7 @@ Gus.prototype.isTouching = function( side ) {
 
 Gus.prototype.rotate = function( dir ) {
 
-  if ( this.rotating ) return;
+  if ( this.rotating || this.isDoomed ) return;
 
   // find the angle to rotate by
   var rot = 0;
