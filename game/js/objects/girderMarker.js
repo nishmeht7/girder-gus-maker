@@ -152,7 +152,6 @@ GirderMarker.prototype.placeGirder = function () {
   if ( this.master.girders === 0 || this.master.isDead ) return;
 
   // check that we're placeable
-  console.log(this.placeable)
   if ( this.placeable ) {
 
     // spawn a new girder and set its rotation
