@@ -34,6 +34,9 @@
 	<div ng-if='error'>
 		<p class='text-danger'>Error: There was a problem submitting your level, please ensure all required information is provided.</p>
 	</div>
+	<div ng-if='success'>
+		<p class='text-success'>Level was successfully saved!</p>
+	</div>
 
 	<div id="editor-controls">
 		<a class='btn' ng-show="!testing" ng-click='testTesting()'>Test Level</button>

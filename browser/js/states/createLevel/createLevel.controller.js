@@ -2,7 +2,7 @@ const _ = require('lodash');
 const defaultSky = require('../../../../game/js/consts/colors').DEFAULT_SKY;
 const eventEmitter = window.eventEmitter
 
-app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $stateParams) {
+app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $stateParams) {
 	var nextMapUse = null;
 	var unparsedLevelArr = null;
 	var parsedLevelArr = [];
@@ -123,9 +123,14 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish);
 		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish, levelId).then(function(data) {
 				$scope.error = false;
+				$scope.success = true;
+				if(shouldPublish) {
+					$state.go('levels.details', {levelId: data._id});
+				}
 				console.log(data);
 			}).then(null, function(err) {
 				$scope.error = true;
+				$scope.success = false;
 				console.error(err);
 			});
 	}
