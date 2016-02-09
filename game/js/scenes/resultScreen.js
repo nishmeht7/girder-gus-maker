@@ -19,16 +19,20 @@ ResultScreen.prototype.draw = function() {
   this.headerText = game.make.text( 0, 0, "YOU DID IT!", { font: "bold 32pt \"Press Start 2P\", sans-serif", fill: "#FFFFFF" });
   this.headerText.anchor = middle;
 
-  this.girderCount = game.make.text( 0, 0, "Girders Placed: " + this.girdersPlaced.toString(), { font: "bold 18pt Arial, sans-serif", fill: "#FFFFFF" });
+  var textStyle = { font: "bold 18pt Arial, sans-serif", fill: "#FFFFFF" };
+  this.girderCount = game.make.text( 0, 0, "Girders Placed: " + this.girdersPlaced.toString(), textStyle);
   this.girderCount.anchor = middle;
 
   var seconds = (this.timeTaken % 60000) / 1000;
   var time = Math.floor( this.timeTaken / 60000 ) + ":" + ( seconds < 10 ? '0' + seconds : seconds );
-  this.timerCount = game.make.text( 0, 0, "Time Taken: " + time.toString(), { font: "bold 18pt Arial, sans-serif", fill: "#FFFFFF" });
+  this.timerCount = game.make.text( 0, 0, "Time Taken: " + time.toString(), textStyle);
   this.timerCount.anchor = middle;
 
-  this.pressAnyKey = game.make.text( 0, 0, "Press R to restart", { font: "bold 18pt Arial, sans-serif", fill: "#FFFFFF" });
+  this.pressAnyKey = game.make.text( 0, 0, "Press R to restart", textStyle);
   this.pressAnyKey.anchor = middle;
+
+  this.nextLevel = game.make.text( 0, 0, "Press SPACE to go to the next level", textStyle);
+  this.nextLevel.anchor = middle;
 
   this.bitmapData.draw( this.headerText, game.width/2, 150 );
 
@@ -61,7 +65,9 @@ ResultScreen.prototype.update = function() {
   }
 
   if ( this.lifespan > 4 && this.pressAnyKey.blitted === undefined ) {
-    this.bitmapData.draw( this.pressAnyKey, game.width/2, 414 );
+    this.bitmapData.draw( this.pressAnyKey, game.width/2, 446 );
+    // TODO: change this to use whatever playlist logic
+    if ( window.playlist ) this.bitmapData.draw( this.nextLevel, game.width/2, 478 );
     this.pressAnyKey.blitted = true;
   }
 
