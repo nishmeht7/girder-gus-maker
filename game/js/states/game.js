@@ -214,7 +214,7 @@ function initGameState() {
     if ( this.resultScreen ) {
       this.resultScreen.texture.visible = false;
       game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.remove( state.restartLevel, this );
-      game.input.keyboard.addKey( Phaser.KeyCode.SPACE ).onDown.remove( state.goToNextLevel, this );
+      game.input.keyboard.addKey( Phaser.KeyCode.SPACEBAR ).onDown.remove( state.goToNextLevel, this );
     }
 
     gus.sprite.position = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
