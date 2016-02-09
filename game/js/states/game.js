@@ -231,7 +231,7 @@ function initGameState() {
 
     (function checkRestart() { setTimeout( function() {
       if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) return checkRestart();
-      
+
       gus.respawn();
       gus.rotationSpeed = 0;
       game.dolly.lockTo( gus.sprite );
@@ -245,10 +245,10 @@ function initGameState() {
 
   state.postBroadphase = function ( body1, body2 ) {
 
-    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false ) {
+    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false && body1.gameObject.constructor.name !== 'GhostGus' ) {
       body2.sprite.owner.collect();
       return false;
-    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation && gus.isDead === false ) {
+    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation && gus.isDead === false && body2.gameObject.constructor.name !== 'GhostGus' ) {
       body1.sprite.owner.collect();
       return false;
     }
