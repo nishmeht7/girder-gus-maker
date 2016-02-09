@@ -147,6 +147,7 @@ function initGameState() {
 
       gus.rotationSpeed = gus.rotationSpeed || 0;
       gus.rotationSpeed += game.time.physicsElapsed;
+      if ( gus.rotationSpeed > Math.PI ) gus.rotationSpeed = Math.PI;
       gus.sprite.rotation += gus.rotationSpeed * game.time.physicsElapsed;
 
       game.camera.scale.x *= 1 + ( game.time.physicsElapsed / 5 );

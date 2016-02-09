@@ -121,11 +121,17 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $statePar
 		if(!girdersAllowed) girdersAllowed = 0;
 		if(!skyColor) skyColor = '#000000';
 		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish);
-		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish).then(function(data) {
+		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish, levelId).then(function(data) {
 				$scope.error = false;
-				console.log(data);
+				if(shouldPublish) {
+					console.log('redirecting to single level page');
+					
+				} else {
+					$scope.success = true;
+				}
 			}).then(null, function(err) {
 				$scope.error = true;
+				$scope.success = false;
 				console.error(err);
 			});
 	}
