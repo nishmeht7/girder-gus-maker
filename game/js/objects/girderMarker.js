@@ -92,7 +92,13 @@ GirderMarker.prototype.getTargetPos = function () {
   var front = posFactory.front();
   front.isBottom = false;
 
-  if ( game.physics.p2.hitTest( front ).length ) return undefined;
+  var frontTarget = game.physics.p2.hitTest( front );
+
+  if ( frontTarget.length ) {
+    if ( frontTarget.length > 1 || frontTarget[0].parent.sprite.key !== 'GhostGirder' ) {
+        return undefined
+    }
+  }
 
   // test to see if there's anything in the way of this girder
   var hitBoxes = game.physics.p2.hitTest( bottom );
@@ -178,7 +184,6 @@ GirderMarker.prototype.update = function () {
   // if we have a master with girders, try to reposition the marker
   if ( this.master && !this.master.rotating && this.master.girders > 0 ) {
     var targetPos = this.getTargetPos();
-
     // if we found a valid position and our master is on the ground, show the marker
     if ( targetPos && this.master.isTouching( "down" ) ) {
 

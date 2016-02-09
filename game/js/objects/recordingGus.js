@@ -11,6 +11,8 @@ const COLLISION_GROUPS = require( "../consts/collisionGroups" );
 const EPSILON = require( "../consts" ).EPSILON;
 const TAU = require( "../consts" ).TAU;
 
+const FRAMES_PER_COURSE_CORRECTION = 10;
+
 class RecordingGus extends Gus {
   constructor(x, y) {
     super(x, y);
@@ -51,14 +53,11 @@ class RecordingGus extends Gus {
   }
 
   recordCourseCorrection() {
-    this.courseCorrectionRecords.push([this.sprite.x, this.sprite.y])
-  }
-
-  kill() {
-    this.inputRecords = this.inputRecords.reverse();
-
-    // document.getElementById('arr').textContent = JSON.stringify(this.inputRecords);
-    // document.getElementById('arr').textContent = this.inputRecords;
+    this.courseCorrectionRecords.push({
+      x: this.sprite.x,
+      y: this.sprite.y,
+      time: this.getTime()
+    })
   }
 
   recordInput() {
@@ -77,16 +76,16 @@ class RecordingGus extends Gus {
         endTime: this.getTime()
       });
       this.currentRecord.input = input;
-      console.log('\n',this.currentRecord, '\n')
     }
 
   }
 
   kill() {
     this.inputRecords = this.inputRecords.reverse();
+    this.courseCorrectionRecords = this.courseCorrectionRecords.reverse();
 
-    // document.getElementById('arr').textContent = JSON.stringify(this.inputRecords);
-    // document.getElementById('arr').textContent = this.records;
+    const recordNode = document.getElementById('arr');
+    if (recordNode) recordNode.textContent = JSON.stringify(this.inputRecords) + '\n\n' + JSON.stringify(this.courseCorrectionRecords);
 
     new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "GusHead", {
       lifetime: 5000,
@@ -108,7 +107,7 @@ class RecordingGus extends Gus {
   update() {
     this.recordInput();
 
-    if (this.framesSinceCourseCorrectionRecord === 3) {
+    if (this.framesSinceCourseCorrectionRecord === FRAMES_PER_COURSE_CORRECTION) {
       this.recordCourseCorrection();
       this.framesSinceCourseCorrectionRecord = 0;
     } else {
