@@ -2,7 +2,14 @@ const express    = require('express');
 const bodyParser = require('body-parser');
 const path       = require('path');
 
+
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'development';
+  require('../secrets');
+}
+
 require('./db');
+
 
 const app = express();
 
