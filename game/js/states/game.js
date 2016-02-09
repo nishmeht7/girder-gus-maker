@@ -34,6 +34,7 @@ function initGameState() {
 
     // generate the rest of the fucking level
     console.log( "Generating level from level data..." );
+    game.toolsToCollect = [];
     generator.parseObjects();
 
     if ( game.toolsToCollect !== undefined ) {
@@ -120,6 +121,8 @@ function initGameState() {
     })
 
     levelStarted = game.time.now;
+    game.camera.scale.x = 1;
+    game.camera.scale.y = 1;
 
   }
 
@@ -159,14 +162,11 @@ function initGameState() {
         gameEndingEmitted = true;
         eventEmitter.emit('game ended', [(startingGirderCount - gus.girders), (game.time.now - levelStarted)]);
 
-        console.log( "YOU DID IT!" );
-        console.log( "Girders placed:", startingGirderCount - gus.girders );
-        console.log( "Time taken:", game.time.now - levelStarted );
-
         state.resultScreen = new ResultScreen( startingGirderCount - gus.girders, game.time.now - levelStarted, function() { state.restartLevel(); } );
         state.resultScreen.draw();
 
         game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( state.restartLevel, this, 0 );
+        game.input.keyboard.addKey( Phaser.KeyCode.SPACEBAR ).onDown.add( state.goToNextLevel, this, 0 );
 
       }
 
@@ -213,6 +213,7 @@ function initGameState() {
     if ( this.resultScreen ) {
       this.resultScreen.texture.visible = false;
       game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.remove( state.restartLevel, this );
+      game.input.keyboard.addKey( Phaser.KeyCode.SPACE ).onDown.remove( state.goToNextLevel, this );
     }
 
     gus.sprite.position = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
@@ -242,6 +243,28 @@ function initGameState() {
       levelStarted = game.time.now;
       gameEndingEmitted = false;
     }, 100 )})();
+  }
+
+  state.goToNextLevel = function () {
+
+    if ( window.playlist === undefined ) return;
+
+    console.log("TIME FOR THE NEXT LEVEL");
+    gameEndingEmitted = false;
+    eventEmitter.emit( "goto next level" );
+
+    game.dolly.unlock();
+    game.dolly.position = new Phaser.Point( 0, 0 );
+    game.dolly.rotation = 0;
+    game.camera.displayObject.position = game.dolly.position;
+    game.camera.displayObject.rotation = game.dolly.rotation;
+
+    //game.world.destroy();
+    game.state.clearCurrentState();
+    game.stage.setBackgroundColor( "#000" );
+
+    game.state.start( "boot" );
+
   }
 
   state.postBroadphase = function ( body1, body2 ) {

@@ -62,6 +62,10 @@ function BreakBrickBlock( x, y, setCollisions ) {
 
   if ( setCollisions ) this.setCollisions();
 
+  breakingBlocks = breakingBlocks.filter( function( block ) {
+    return block.sprite.body !== null;
+  });
+
   breakingBlocks.push( this );
 
 }
