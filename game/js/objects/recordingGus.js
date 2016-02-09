@@ -76,7 +76,6 @@ class RecordingGus extends Gus {
         endTime: this.getTime()
       });
       this.currentRecord.input = input;
-      console.log('\n',this.currentRecord, '\n')
     }
 
   }

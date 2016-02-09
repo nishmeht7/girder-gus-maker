@@ -13,6 +13,7 @@ function initLoadState() {
     game.load.image('BrickBlack', '/assets/images/brick_black.png');
     game.load.image('BrickBreak', '/assets/images/brick_break.png');
     game.load.image('BrickRed', '/assets/images/brick_red.png');
+    game.load.image('GhostGirder', '/assets/images/girder.png');
     game.load.image('Girder', '/assets/images/girder.png');
     game.load.image('Spike', '/assets/images/spike.png');
     game.load.image('Tool', '/assets/images/tool.png');
@@ -54,7 +55,7 @@ function initLoadState() {
       objects: [
       { t: 4, x: 0, y: 0 }, { t: 4, x: 32, y: 0 }, { t: 4, x: 64, y: 0 }, { t: 4, x: 96, y: 0 }, { t: 4, x: 128, y: 0 }, { t: 4, x: 160, y: 0 }, { t: 4, x: 192, y: 0 }, { t: 4, x: 224, y: 0 },
       { t: 4, x: 0, y: 32 }, { t: 4, x: 32, y: 32 }, { t: 4, x: 64, y: 32 }, { t: 4, x: 96, y: 32 }, { t: 4, x: 128, y: 32 }, { t: 4, x: 160, y: 32 }, { t: 4, x: 192, y: 32 }, { t: 4, x: 224, y: 32 },
-      { t: 2, x: 96, y: -32 }, { t: 2, x: 96, y: 64 },  
+      { t: 2, x: 96, y: -32 }, { t: 2, x: 96, y: 64 },
 
       { t: 2, x: 512, y: -32 },
       { t: 3, x: 416, y: 0 }, { t: 3, x: 448, y: 0 }, { t: 3, x: 480, y: 0 }, { t: 3, x: 512, y: 0 }, { t: 3, x: 544, y: 0 }, { t: 3, x: 576, y: 0 }, { t: 3, x: 608, y: 0 },
