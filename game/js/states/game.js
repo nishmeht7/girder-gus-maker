@@ -76,6 +76,7 @@ function initGameState() {
 
     game.cursors = game.input.keyboard.createCursorKeys();
     marker.setPlaceGirderButton( game.input.keyboard.addKey( Phaser.KeyCode.SPACEBAR ) );
+    game.freeLookKey = game.input.keyboard.addKey( Phaser.KeyCode.SHIFT );
     game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( function() { gus.doom() }, this, 0 );
 
     // make hud icons

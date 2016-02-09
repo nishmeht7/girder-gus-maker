@@ -4,6 +4,7 @@ function Dolly ( camera ) {
 
   this.movementFactor = 2;
   this.rotationFactor = 4;
+  this.freeLookSpeed = 5;
 
   this.camera = camera;
   this.position = camera.displayObject.position;
@@ -28,9 +29,20 @@ function midpoint( p1, p2 ) {
 
 Dolly.prototype.update = function () {
 
-  if ( this.lockTarget ) {
+  if ( this.lockTarget && !game.freeLookKey.isDown ) {
     this.targetPos = this.lockTarget.position;
     this.targetAng = this.lockTarget.rotation;
+  } else if ( game.freeLookKey.isDown ) {
+    if ( !this.targetPos.safeToMove ) {
+      this.targetPos = new Phaser.Point( this.targetPos.x, this.targetPos.y );
+      this.targetPos.safeToMove = true;
+    }
+
+    if ( game.cursors.left.isDown ) this.targetPos.x -= this.freeLookSpeed;
+    if ( game.cursors.up.isDown ) this.targetPos.y -= this.freeLookSpeed;
+    if ( game.cursors.right.isDown ) this.targetPos.x += this.freeLookSpeed;
+    if ( game.cursors.down.isDown ) this.targetPos.y += this.freeLookSpeed;
+
   }
 
   if ( this.targetPos !== null ) {

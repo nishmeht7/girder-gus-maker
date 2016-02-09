@@ -20,15 +20,18 @@ window.app.controller( 'HomeCtrl', function( $scope, $timeout ) {
      "Gus can walk into girders to rotate the world",
      "You can't place girders on black bricks",
      "Pay attention to how many girders you have! You can see your current girder count in the top left",
+     "You can hold down SPACE while placing girders to keep building a bridge in front of Gus",
      "Collect all the tools in this level to continue"],
     ["Cracked blocks will collapse shortly after you step on them",
-     "You can hold down SPACE while placing girders to keep building a bridge in front of Gus",
+     "You can stand on and rotate onto cracked blocks until they break",
      "Collect all the tools in this level to continue"],
     ["Spikes are dangerous. Don't touch them!",
      "If Gus touches a wall while falling, he'll rotate towards it. Try walking off a ledge and quickly changing direction",
+     "Hold shift and use the arrow keys to look around",
      "Collect all the tools in this level to continue"],
     ["You're almost done with the tutorial! Try solving this puzzle to test your skills",
      "If you get stuck, you can press R to restart",
+     "Remember that you can use SHIFT to look around!",
      "Collect all the tools in this level to finish the tutorial"]
   ]
   $scope.tips = tipText[0];
