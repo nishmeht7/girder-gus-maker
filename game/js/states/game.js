@@ -263,6 +263,8 @@ function initGameState() {
     game.camera.displayObject.position = game.dolly.position;
     game.camera.displayObject.rotation = game.dolly.rotation;
 
+    this.resultScreen = undefined;
+
     //game.world.destroy();
     game.state.clearCurrentState();
     game.stage.setBackgroundColor( "#000" );
@@ -273,13 +275,11 @@ function initGameState() {
 
   state.postBroadphase = function ( body1, body2 ) {
 
-    if ( state.resultScreen ) return true;
-
     if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false && body1.gameObject.constructor.name !== 'GhostGus' ) {
-      body2.sprite.owner.collect();
+      if ( body1.sprite.position.distance( body2.sprite.position ) < 32 ) body2.sprite.owner.collect();
       return false;
     } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation && gus.isDead === false && body2.gameObject.constructor.name !== 'GhostGus' ) {
-      body1.sprite.owner.collect();
+      if ( body1.sprite.position.distance( body2.sprite.position ) < 32 )body1.sprite.owner.collect();
       return false;
     }
 
