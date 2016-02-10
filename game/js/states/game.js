@@ -237,8 +237,6 @@ function initGameState() {
               return checkRestart();
            }
 
-      console.log( game.time.now - levelStarted );
-
       gus.respawn();
       gus.rotationSpeed = 0;
       game.dolly.lockTo( gus.sprite );
