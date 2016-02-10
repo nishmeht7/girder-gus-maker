@@ -69,7 +69,10 @@ function initGameState() {
     game.cursors = game.input.keyboard.createCursorKeys();
     marker.setPlaceGirderButton( game.input.keyboard.addKey( Phaser.KeyCode.SPACEBAR ) );
     game.freeLookKey = game.input.keyboard.addKey( Phaser.KeyCode.SHIFT );
-    game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( function() { gus.doom() }, this, 0 );
+    game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( function() {
+      if ( ghostGus && !ghostGus.isDestroyed ) ghostGus.destroy();
+      gus.doom();
+     }, this, 0 );
 
     // make hud icons
     fpsCounter = game.add.text( 0, 0, "60 FPS", { font: "9pt mono" });
@@ -123,7 +126,7 @@ function initGameState() {
 
     // update actors
     gus.update();
-    if (game.ghostMode) ghostGus.update();
+    if ( ghostGus && !ghostGus.isDestroyed ) ghostGus.update();
     marker.update();
     game.toolsToCollect.forEach( function( tool ) { tool.update() });
 
@@ -155,7 +158,9 @@ function initGameState() {
         gameEndingEmitted = true;
         eventEmitter.emit('game ended', [(startingGirderCount - gus.girders), (game.time.now - levelStarted)]);
 
-        state.resultScreen = new ResultScreen( startingGirderCount - gus.girders, game.time.now - levelStarted, function() { state.restartLevel(); } );
+        state.resultScreen = new ResultScreen( startingGirderCount - gus.girders, game.time.now - levelStarted, function() {
+          state.restartLevel();
+        } );
         state.resultScreen.draw();
 
         ///////////////////////////////////
@@ -242,7 +247,7 @@ function initGameState() {
         courseCorrectionRecords = gus.courseCorrectionRecords;
 
         game.ghostMode = true;
-        if ( ghostGus ) ghostGus.destroy(); // destroys ghost girders too
+        if ( ghostGus && !ghostGus.isDestroyed ) ghostGus.destroy(); // destroys ghost girders too
 
 
         ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y );

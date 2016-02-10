@@ -77,8 +77,11 @@ class GhostGus extends Gus {
     }
 
   destroy() {
-    this.marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
+    this.marker.girdersPlaced.forEach( ( girder ) => { girder.sprite.destroy() });
+    this.marker.sprite.destroy();
     this.sprite.destroy();
+
+    this.isDestroyed = true;
   }
 
   evaluateInputRecord() {
