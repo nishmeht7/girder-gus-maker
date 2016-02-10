@@ -185,8 +185,6 @@ schema.methods.likeLevel = function(levelId) {
     var Level = mongoose.model('Level');
     return Level.findById(levelId)
         .then(function(level) {
-            console.dir(level.creator)
-            console.dir(self._id);
             if(level === null) {
                 var err = new Error( "Cannot like level: Level does not exist");
                 err.status = 404;
