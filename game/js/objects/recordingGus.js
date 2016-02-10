@@ -17,6 +17,8 @@ class RecordingGus extends Gus {
   constructor(x, y) {
     super(x, y);
 
+    this.sprite.name = 'Recordig Gus';
+
     this.spawnTime = game.time.now;
 
     this.inputRecords = [];
@@ -63,12 +65,14 @@ class RecordingGus extends Gus {
 
     const input = [];
     const spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    const r = game.input.keyboard.addKey(Phaser.Keyboard.R);
 
     // not sure what's supposed to happen if both are held down,
     // but I'm defaulting to the 'right' action
     if (game.cursors.left.isDown) input.push(1);
     if (game.cursors.right.isDown) input.push(2);
     if (spacebar.isDown) input.push(3);
+    if (r.isDown) input.push(4);
     if (!input.length) input.push(0);
     if (!_.isEqual(this.currentRecord.input, input)){
       this.inputRecords.push({

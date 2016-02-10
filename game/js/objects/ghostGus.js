@@ -13,6 +13,9 @@ const TAU = require("../consts").TAU;
 class GhostGus extends Gus {
   constructor(x, y) {
     super(x, y, false);
+
+    this.sprite.name = 'Ghost Gus';
+
     this.sprite.alpha = 0.5;
 
     this.spawnTime = game.time.now;
@@ -35,9 +38,7 @@ class GhostGus extends Gus {
   }
 
   setInputRecords(inputRecords) {
-
     if (!this.inputRecordsSet) {
-      debugger;
 
       this.inputRecords = inputRecords;
       if (this.inputRecords.length) {
@@ -51,14 +52,19 @@ class GhostGus extends Gus {
   }
 
   correctCourse() {
+    if (this.isScrewed) return;
     console.log(this.currentCourseCorrectionRecord);
     if (this.currentCourseCorrectionRecord) {
       this.sprite.body.x = this.currentCourseCorrectionRecord.x;
       this.sprite.body.y = this.currentCourseCorrectionRecord.y;
     }
 
-    if (this.courseCorrectionRecords.length)
+    if (this.courseCorrectionRecords.length) {
       this.currentCourseCorrectionRecord = this.courseCorrectionRecords.pop();
+    }
+    else {
+      this.destroy();
+    }
   }
 
     // diff from Gus's doom: doesn't unlock the dolly
@@ -85,6 +91,8 @@ class GhostGus extends Gus {
   }
 
   evaluateInputRecord() {
+    if (this.isScrewed) return;
+
     if (this.currentInputRecord) {
       console.log(this.currentInputRecord)
 
@@ -102,26 +110,24 @@ class GhostGus extends Gus {
           console.log('walkin right')
         } else if (action === 3) {
           this.marker.placeGirder();
-        } else {
-          this.stop
-        }
+        } else if (action === 4) {
 
-        // switch (action) {
-        //   case 1:
-        //     console.log('LEFT')
-        //     this.walk('left');
-        //     break;
-        //   case 2:
-        //     console.log('RIGHT')
-        //     this.walk('right');
-        //     break;
-        //   case 3:
-        //     this.marker.placeGirder();
-        //     break;
-        //   default:
-        //     this.stop();
-        //     break;
-        // }
+          this.isScrewed = true;
+          var respawnBurst = new ParticleBurst( this.sprite.x, this.sprite.y, "GusHead", {
+            lifetime: 3000,
+            count: 14,
+            scaleMin: 0.2,
+            scaleMax: 1.0,
+            rotMin: 0,
+            rotMax: 360,
+            speed: 100,
+            fadeOut: true
+          });
+
+          this.doom();
+        } else {
+          this.stop()
+        }
       });
 
       this.currentInputRecord.hasBeenExecuted = true;
@@ -150,6 +156,8 @@ class GhostGus extends Gus {
   }
 
   update() {
+    if (this.isDestroyed) return;
+
     if (Math.abs(Math.cos(this.rotation)) > EPSILON) this.sprite.body.velocity.x = 0;
     else this.sprite.body.velocity.y = 0;
     this.evaluateInputRecord();

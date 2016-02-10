@@ -298,12 +298,15 @@ function initGameState() {
 
   }
 
+  // BUG WHERE REC GUS & GHOST GUS & TOOL ALL COLLIDE
   state.postBroadphase = function ( body1, body2 ) {
 
-    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false && body1.gameObject.constructor.name !== 'GhostGus' ) {
+    if ( !body1.sprite || !body2.sprite ) return true;
+
+    if ( body1.sprite.name !== "Ghost Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false ) {
       body2.sprite.owner.collect();
       return false;
-    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation && gus.isDead === false && body2.gameObject.constructor.name !== 'GhostGus' ) {
+    } else if ( body1.sprite.name === "Tool" && body2.sprite.name !== "Ghost Gus" && body2.fixedRotation && gus.isDead === false ) {
       body1.sprite.owner.collect();
       return false;
     }
