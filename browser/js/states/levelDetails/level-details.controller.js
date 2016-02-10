@@ -39,6 +39,9 @@ app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialF
                     $scope.liked = res.user.likedLevels.indexOf(data._id) !== -1;
                     $scope.pending = false;
                 }
+            })
+            .then(null,function(err) {
+                console.log(err);
             });
     }
 
