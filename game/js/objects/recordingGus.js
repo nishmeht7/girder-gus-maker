@@ -11,7 +11,7 @@ const COLLISION_GROUPS = require( "../consts/collisionGroups" );
 const EPSILON = require( "../consts" ).EPSILON;
 const TAU = require( "../consts" ).TAU;
 
-const FRAMES_PER_COURSE_CORRECTION = 10;
+const FRAMES_PER_COURSE_CORRECTION = 1;
 
 class RecordingGus extends Gus {
 	constructor(x, y) {
@@ -47,53 +47,53 @@ class RecordingGus extends Gus {
 
 	compressRecord() {
 		this.compressed = [];
-		var ccr = this.courseCorrectionRecords;
+		var ccr = this.courseCorrectionRecords.reverse();
 		var lastFallingFrame = 0;
 		for(var i = 0; i < ccr.length-1; i++) {
-			if(ccr[i+1].x > ccr[i].x && ccr[i+1].y == ccr[i+1].y) {
+			if(ccr[i+1].x > ccr[i].x && ccr[i+1].y == ccr[i+1].y && ccr[i].f) {
 				//moving right and not falling
 				var j = i+1;
-				while(j < ccr.length && ccr[j-1].x < ccr[j++].x && ccr[i+1].y == ccr[i+1].y) {};
+				while(j < ccr.length && ccr[j-1].x < ccr[j].x && ccr[i+1].y == ccr[i+1].y && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
 					end: ccr[j]
 				});
 				i=j;
 			}
-			else if(ccr[i+1].x < ccr[i].x && ccr[i+1].y == ccr[i+1].y) {
+			else if(ccr[i+1].x < ccr[i].x && ccr[i+1].y == ccr[i+1].y && ccr[i].f) {
 				//moving left and not falling
 				var j = i+1;
-				while(j < ccr.length && ccr[j-1].x > ccr[j++].x && ccr[i+1].y == ccr[i+1].y) {};
+				while(j < ccr.length && ccr[j-1].x > ccr[j].x && ccr[i+1].y == ccr[i+1].y && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
 					end: ccr[j]
 				});
 				i=j;
 			}
-			else if(ccr[i+1].y < ccr[i].y && ccr[i+1].x == ccr[i+1].x) {
+			else if(ccr[i+1].y < ccr[i].y && ccr[i+1].x == ccr[i+1].x && ccr[i].f) {
 				//moving down and not falling
 				var j = i+1;
-				while(j < ccr.length && ccr[j-1].y > ccr[j++].y && ccr[i+1].x == ccr[i+1].x) {};
+				while(j < ccr.length && ccr[j-1].y > ccr[j].y && ccr[i+1].x == ccr[i+1].x && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
 					end: ccr[j]
 				});
 				i=j;
 			}
-			else if(ccr[i+1].y > ccr[i].y && ccr[i+1].x == ccr[i+1].x) {
+			else if(ccr[i+1].y > ccr[i].y && ccr[i+1].x == ccr[i+1].x && ccr[i].f) {
 				//moving up and not falling
 				var j = i+1;
-				while(j < ccr.length && ccr[j-1].y < ccr[j++].y && ccr[i+1].x == ccr[i+1].x) {};
+				while(j < ccr.length && ccr[j-1].y < ccr[j].y && ccr[i+1].x == ccr[i+1].x && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
 					end: ccr[j]
 				});
 				i=j;
 			}
-			else if(ccr[i+1].y == ccr[i].y && ccr[i+1].x == ccr[i+1].x) {
+			else if(ccr[i+1].y == ccr[i].y && ccr[i+1].x == ccr[i+1].x && ccr[i].f) {
 				//stationary
 				var j = i+1;
-				while(j < ccr.length && ccr[j-1].y == ccr[j++].y && ccr[i+1].x == ccr[i+1].x) {};
+				while(j < ccr.length && ccr[j-1].y == ccr[j].y && ccr[i+1].x == ccr[i+1].x && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
 					end: ccr[j]
@@ -116,7 +116,6 @@ class RecordingGus extends Gus {
 
 	respawn() {
 		super.respawn();
-		console.log(this.courseCorrectionRecords.reverse().slice(0,100));
 		this.compressRecord();
 		console.log(this.compressed);
 	}
