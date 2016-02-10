@@ -111,7 +111,7 @@ function initLoadState() {
         var req = http.request({
           hostname: window.location.hostname,  // change this to our actual hostname
           path: "/api/levels/" + id + "/map",
-          port: window.location.port || 1337
+          port: window.location.port || 80
         }, function( res ) {
           // get data from the response
           res.setEncoding( "utf8" );
