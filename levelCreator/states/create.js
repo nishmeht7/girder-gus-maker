@@ -138,7 +138,7 @@ function initCreateState() {
 			game.activeTool = tool
 		});
 
-		var handleTileMapRequest = function() {
+		var handleTileMapRequest = function(need) {
 			const parsedTileMap = [];
 
 			if(!unparsedTileMap[gusSpawn.x]) {
@@ -175,10 +175,19 @@ function initCreateState() {
 			//   y: gusSpawn.y,
 			//   t: tileToNum('Gus')
 			// });
-			eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
+			if(need === 'draft save') {
+				console.log('draft map sending now');
+				eventEmitter.emit('map for draft save', parsedTileMap);
+			} else {
+				eventEmitter.emit('send tile map', [parsedTileMap, unparsedTileMap]);
+			}
 		}
 
 		eventEmitter.only('request tile map', handleTileMapRequest)
+		eventEmitter.only('request tile map for draft save', function() {
+			console.log('phaser got request for a draft map');
+			handleTileMapRequest('draft save');
+		});
 
 		eventEmitter.only('request screenshot', function() {
 			var screenshot = game.canvas.toDataURL();

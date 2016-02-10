@@ -6,11 +6,14 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 	var nextMapUse = null;
 	var unparsedLevelArr = null;
 	var parsedLevelArr = [];
+	var draftSaveObj;
 
 	$scope.testing = false;
 	$scope.error = false;
 	var levelId = $stateParams.levelId;
 	var sentId = false;
+	$scope.readyToSave = true;
+
 
 	$scope.toolArr = {
 		'Eraser' : {
@@ -105,9 +108,30 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 		eventEmitter.emit('request screenshot');
 	}
 
+	eventEmitter.only('map for draft save', function(data) {
+		console.log(data);
+		CreateLevelFactory.submitLevel(data, draftSaveObj.levelTitle, draftSaveObj.girdersAllowed, draftSaveObj.skyColor, draftSaveObj.shouldPublish, draftSaveObj.levelId).then(function(data) {
+				$scope.error = false;
+				$scope.success = true;
+				if(draftSaveObj.shouldPublish) {
+					$state.go('levels.details', {levelId: data._id});
+				}
+				console.log(data);
+				$scope.readyToSave = true;
+			}).then(null, function(err) {
+				$scope.error = true;
+				$scope.success = false;
+				console.error(err);
+				$scope.readyToSave = true;
+			});
+	});
+
+
 	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish) {
+		$scope.readyToSave = false;
 		//shouldPublish indicates if the level is being saved permenantly or simply for future editing
 		if(typeof shouldPublish !== 'boolean') shouldPublish = true;
+		shouldPublish = shouldPublish || false;
 		if(!levelArrayBeaten && !shouldPublish) {
 			levelArrayBeaten = parsedLevelArr;
 		}
@@ -116,11 +140,15 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 			console.log('something is missing');
 			console.log(levelArrayBeaten);
 			console.log(levelTitle);
+			$scope.readyToSave = true;
 			return;
 		}
 		if(!girdersAllowed) girdersAllowed = 0;
 		if(!skyColor) skyColor = '#000000';
 		console.log(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish);
+		console.log($scope.testing);
+		if($scope.testing) {
+			console.log('submit based on scope variable');
 		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish, levelId).then(function(data) {
 				$scope.error = false;
 				$scope.success = true;
@@ -128,11 +156,25 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 					$state.go('levels.details', {levelId: data._id});
 				}
 				console.log(data);
+				$scope.readyToSave = true;
 			}).then(null, function(err) {
 				$scope.error = true;
 				$scope.success = false;
 				console.error(err);
+				$scope.readyToSave = true;
 			});
+		} else {
+			console.log('going to submit after getting level creator result');
+			draftSaveObj = {
+				levelTitle: levelTitle,
+				girdersAllowed: girdersAllowed,
+				skyColor: skyColor,
+				shouldPublish: shouldPublish,
+				levelId: levelId
+			}
+			nextMapUse = 'saveGameProgress';
+			eventEmitter.emit('request tile map for draft save', '');
+		}
 	}
 
 	$scope.stopInputCapture = function() {
