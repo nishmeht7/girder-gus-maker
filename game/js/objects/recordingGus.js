@@ -17,7 +17,7 @@ class RecordingGus extends Gus {
   constructor(x, y) {
     super(x, y);
 
-    this.sprite.name = 'Recordig Gus';
+    this.sprite.name = 'Recording Gus';
 
     this.spawnTime = game.time.now;
 
