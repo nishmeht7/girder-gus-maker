@@ -3,13 +3,16 @@ var GirderMarker = require( "../objects/girderMarker" );
 var LevelGenerator = require( "../generator" );
 var ParticleBurst = require( "../particles/burst" );
 var BreakBrickBlock = require( "../objects" ).BreakBrickBlock;
+var GhostBreakBrickBlock = require( "../objects" ).GhostBreakBrickBlock;
 var ResultScreen = require( "../scenes/resultScreen" );
+var GhostGus = require( '../objects/ghostGus' );
 
 function initGameState() {
 
   var state = {};
 
-  var gus, ghostGus, marker, generator, restartTimeout, hudCounters, levelStarted, startingGirderCount;
+  var gus, ghostGus, marker, generator, restartTimeout, hudCounters, levelStarted, startingGirderCount,
+    courseCorrectionRecords, inputRecords;
 
   var fpsCounter;
   var gameEndingEmitted= false;
@@ -56,17 +59,6 @@ function initGameState() {
     startingGirderCount = gus.girders;
     marker = new GirderMarker();
     marker.setMaster( gus );
-
-    // create ghost if ghostMode
-    if ( game.ghostMode ) {
-      console.log( 'Creating Ghost Gus...' )
-
-      var GhostGus = require('../objects/ghostGus');
-
-      ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y )
-      ghostGus.girders = generator.getStartingGirders();
-    }
-
     game.dolly = new Dolly( game.camera );
     game.dolly.lockTo( gus.sprite );
 
@@ -166,6 +158,11 @@ function initGameState() {
         state.resultScreen = new ResultScreen( startingGirderCount - gus.girders, game.time.now - levelStarted, function() { state.restartLevel(); } );
         state.resultScreen.draw();
 
+        ///////////////////////////////////
+        // game.ghostMode = false;
+        // if (ghostGus) ghostGus.destroy();
+        ///////////////////////////////////
+
         game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( state.restartLevel, this, 0 );
         game.input.keyboard.addKey( Phaser.KeyCode.SPACEBAR ).onDown.add( state.goToNextLevel, this, 0 );
 
@@ -210,7 +207,6 @@ function initGameState() {
   }
 
   state.restartLevel = function () {
-
     if ( this.resultScreen ) {
       this.resultScreen.texture.visible = false;
       game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.remove( state.restartLevel, this );
@@ -235,11 +231,37 @@ function initGameState() {
     (function checkRestart() { setTimeout( function() {
       if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) return checkRestart();
 
+      if ( gameEndingEmitted ) {
+
+      }
+
+      // ghost logic
+      if ( game.recordingMode ) {
+
+        inputRecords = gus.inputRecords;
+        courseCorrectionRecords = gus.courseCorrectionRecords;
+
+        game.ghostMode = true;
+        if ( ghostGus ) ghostGus.destroy(); // destroys ghost girders too
+
+
+        ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y );
+
+        ghostGus.girders = generator.getStartingGirders();
+        ghostGus.setInputRecords( inputRecords );
+        ghostGus.setCourseCorrectionRecords( courseCorrectionRecords );
+        ghostGus.respawn();
+
+        GhostBreakBrickBlock.reset();
+      }
+
+      // gus logic
       gus.respawn();
       gus.rotationSpeed = 0;
       game.dolly.lockTo( gus.sprite );
       gus.girders = generator.getStartingGirders();
 
+      // game logic
       restartTimeout = undefined;
       levelStarted = game.time.now;
       gameEndingEmitted = false;

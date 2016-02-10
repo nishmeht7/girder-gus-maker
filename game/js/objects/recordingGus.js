@@ -17,7 +17,7 @@ class RecordingGus extends Gus {
   constructor(x, y) {
     super(x, y);
 
-    this.startTime = game.time.now;
+    this.spawnTime = game.time.now;
 
     this.inputRecords = [];
 
@@ -28,35 +28,23 @@ class RecordingGus extends Gus {
 
   }
 
-  getTime() {
-    return game.time.now - this.startTime;
+  getCourseCorrectionRecords() {
+    return this.courseCorrectionRecords;
   }
 
-  recordInput() {
-    const input = [];
-    const spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  getInputRecords() {
+    return this.inputRecords;
+  }
 
-    // not sure what's supposed to happen if both are held down,
-    // but I'm defaulting to the 'right' action
-    if (game.cursors.left.isDown) input.push(1);
-    if (game.cursors.right.isDown) input.push(2);
-    if (spacebar.isDown) input.push(3);
-    if (!input.length) input.push(0);
-    if (!_.isEqual(this.currentRecord.input, input)){
-      this.inputRecords.push({
-        input: this.currentRecord.input,
-        endTime: this.getTime()
-      });
-      this.currentRecord.input = input;
-    }
-
+  timeSinceSpawn() {
+    return game.time.now - this.spawnTime;
   }
 
   recordCourseCorrection() {
     this.courseCorrectionRecords.push({
       x: this.sprite.x,
       y: this.sprite.y,
-      time: this.getTime()
+      time: this.timeSinceSpawn()
     })
   }
 
@@ -73,17 +61,24 @@ class RecordingGus extends Gus {
     if (!_.isEqual(this.currentRecord.input, input)){
       this.inputRecords.push({
         input: this.currentRecord.input,
-        endTime: this.getTime()
+        endTime: this.timeSinceSpawn()
       });
       this.currentRecord.input = input;
     }
 
   }
 
+  resetSpawnTime() {
+    this.spawnTime = game.time.now;
+  }
+
   kill() {
     this.inputRecords = this.inputRecords.reverse();
     this.courseCorrectionRecords = this.courseCorrectionRecords.reverse();
 
+    console.log(JSON.stringify(this.inputRecords) + '\n\n' + JSON.stringify(this.courseCorrectionRecords))
+
+    // for development
     const recordNode = document.getElementById('arr');
     if (recordNode) recordNode.textContent = JSON.stringify(this.inputRecords) + '\n\n' + JSON.stringify(this.courseCorrectionRecords);
 
@@ -102,6 +97,15 @@ class RecordingGus extends Gus {
     this.sprite.body.velocity.x = 0;
     this.sprite.body.velocity.y = 0;
 
+  }
+
+  respawn() {
+    super.respawn()
+
+    this.resetSpawnTime();
+    this.inputRecords = [];
+    this.courseCorrectionRecords = [];
+    this.framesSinceCourseCorrectionRecord = 0;
   }
 
   update() {
