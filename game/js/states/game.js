@@ -211,6 +211,8 @@ function initGameState() {
 
   state.restartLevel = function () {
 
+    if ( !gus.isDead || gus.sprite.visible === false ) return;
+
     if ( this.resultScreen ) {
       this.resultScreen.texture.visible = false;
       game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.remove( state.restartLevel, this );
@@ -232,8 +234,14 @@ function initGameState() {
     game.dolly.targetPos = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
     game.dolly.targetAng = 0;
 
-    (function checkRestart() { setTimeout( function() {
-      if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) return checkRestart();
+    (function checkRestart() { 
+    restartTimeout = setTimeout( function() {
+      if ( restartTimeout === undefined ) return;
+      if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) {
+              return checkRestart();
+           }
+
+      console.log( game.time.now - levelStarted );
 
       gus.respawn();
       gus.rotationSpeed = 0;
@@ -241,9 +249,10 @@ function initGameState() {
       gus.girders = generator.getStartingGirders();
 
       restartTimeout = undefined;
+      state.resultScreen = undefined;
       levelStarted = game.time.now;
       gameEndingEmitted = false;
-    }, 100 )})();
+    }, 1 )})();
   }
 
   state.goToNextLevel = function () {
@@ -269,6 +278,8 @@ function initGameState() {
   }
 
   state.postBroadphase = function ( body1, body2 ) {
+
+    if ( state.resultScreen ) return true;
 
     if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false && body1.gameObject.constructor.name !== 'GhostGus' ) {
       body2.sprite.owner.collect();
