@@ -2,13 +2,9 @@ const eventEmitter = window.eventEmitter;
 
 window.app.controller( 'HomeCtrl', function( $scope, $timeout ) {
 
-  window.playlist = [
-    '56b9f85f77e4e2ad0ceb5497',
-    '56b9f9a877e4e2ad0ceb5511',
-    '56ba23fd77e4e2ad0ceb5561',
-    '56ba257f77e4e2ad0ceb55b7',
-    '56ba288477e4e2ad0ceb5644'
-  ]
+  window.playlist = window.location.port !== "" ?
+  ['56b9f85f77e4e2ad0ceb5497','56b9f9a877e4e2ad0ceb5511','56ba23fd77e4e2ad0ceb5561','56ba257f77e4e2ad0ceb55b7','56ba288477e4e2ad0ceb5644'] :
+  ['56ba97d469faa103000fbce7','56ba9923e5eb9303001146b8','56ba9af5e5eb930300114708','56ba9c0ee5eb93030011477a','56ba9dc3e5eb930300114805'];
 
   var tipText = [
     ["Use the LEFT and RIGHT arrow keys to walk left and right",
