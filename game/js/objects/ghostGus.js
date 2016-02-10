@@ -53,7 +53,7 @@ class GhostGus extends Gus {
 
   correctCourse() {
     if (this.isScrewed) return;
-    console.log(this.currentCourseCorrectionRecord);
+
     if (this.currentCourseCorrectionRecord) {
       this.sprite.body.x = this.currentCourseCorrectionRecord.x;
       this.sprite.body.y = this.currentCourseCorrectionRecord.y;
@@ -82,6 +82,7 @@ class GhostGus extends Gus {
     }
 
   destroy() {
+    console.log('GHOST GUS IS BANISHED')
     this.marker.girdersPlaced.forEach( ( girder ) => { girder.sprite.destroy() });
     this.marker.sprite.destroy();
 
@@ -94,7 +95,6 @@ class GhostGus extends Gus {
     if (this.isScrewed) return;
 
     if (this.currentInputRecord) {
-      console.log(this.currentInputRecord)
 
       if (this.isRecordExpired() && this.currentInputRecord.hasBeenExecuted) {
         this.currentInputRecord = this.inputRecords.pop();
@@ -107,7 +107,6 @@ class GhostGus extends Gus {
           this.walk('left');
         } else if (action === 2) {
           this.walk('right');
-          console.log('walkin right')
         } else if (action === 3) {
           this.marker.placeGirder();
         } else if (action === 4) {

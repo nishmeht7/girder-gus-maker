@@ -11,7 +11,7 @@ const COLLISION_GROUPS = require( "../consts/collisionGroups" );
 const EPSILON = require( "../consts" ).EPSILON;
 const TAU = require( "../consts" ).TAU;
 
-const FRAMES_PER_COURSE_CORRECTION = 3;
+const FRAMES_PER_COURSE_CORRECTION = 1;
 
 class RecordingGus extends Gus {
   constructor(x, y) {
@@ -52,7 +52,7 @@ class RecordingGus extends Gus {
   }
 
   recordCourseCorrection() {
-    if (this.recordsFinalized) return;
+    if (this.recordsFinalized || this.isDead) return;
     this.courseCorrectionRecords.push({
       x: this.sprite.x,
       y: this.sprite.y,
@@ -60,8 +60,8 @@ class RecordingGus extends Gus {
     })
   }
 
-  recordInput() {
-    if (this.recordsFinalized) return;
+  recordInput(win) {
+    if (this.recordsFinalized || this.isDead) return;
 
     const input = [];
     const spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -72,7 +72,7 @@ class RecordingGus extends Gus {
     if (game.cursors.left.isDown) input.push(1);
     if (game.cursors.right.isDown) input.push(2);
     if (spacebar.isDown) input.push(3);
-    if (r.isDown) input.push(4);
+    if (r.isDown || win) input.push(4);
     if (!input.length) input.push(0);
     if (!_.isEqual(this.currentRecord.input, input)){
       this.inputRecords.push({

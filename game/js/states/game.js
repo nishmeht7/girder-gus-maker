@@ -137,9 +137,12 @@ function initGameState() {
     ParticleBurst.update();
 
     if ( game.toolsRemaining === 0 ) {
-      //if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel(); gameEndingEmitted = false; }, 15000 );
 
-      if ( game.recordingMode ) gus.finalizeRecords();
+      if ( game.recordingMode && !gus.isDead ) {
+        debugger;
+        gus.recordInput( 'win' );
+        gus.finalizeRecords();
+      }
 
       gus.isDead = true;
 
@@ -164,11 +167,6 @@ function initGameState() {
           state.restartLevel();
         } );
         state.resultScreen.draw();
-
-        ///////////////////////////////////
-        // game.ghostMode = false;
-        // if (ghostGus) ghostGus.destroy();
-        ///////////////////////////////////
 
         game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( state.restartLevel, this, 0 );
         game.input.keyboard.addKey( Phaser.KeyCode.SPACEBAR ).onDown.add( state.goToNextLevel, this, 0 );
@@ -221,11 +219,11 @@ function initGameState() {
     }
 
     gus.sprite.position = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
-    //gus.sprite.body.clearCollision();
     gus.sprite.visible = false;
 
     game.toolsToCollect.forEach( function( tool ) { tool.reset() });
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
+    marker.girdersPlaced = [];
     BreakBrickBlock.reset();
 
     game.camera.scale.x = 1;
@@ -235,14 +233,18 @@ function initGameState() {
     game.dolly.targetPos = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
     game.dolly.targetAng = 0;
 
-    (function checkRestart() { setTimeout( function() {
-      if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) return checkRestart();
+    (function checkRestart() {
+    restartTimeout = setTimeout( function() {
+      if ( restartTimeout === undefined ) return;
+      if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) {
+              return checkRestart();
+           }
 
       // ghost logic
       if ( game.recordingMode ) {
 
         // hacky solution. On win -> 'R', checkRestart gets called twice. Dunno why. David?
-        if ( !inputRecords || gus.timeSinceSpawn() > 500 ) {
+        if ( !inputRecords || gus.courseCorrectionRecords.length > 100 ) {
           inputRecords = gus.inputRecords;
           courseCorrectionRecords = gus.courseCorrectionRecords;
         }
@@ -257,8 +259,8 @@ function initGameState() {
 
         // this is ridiculous (and only applies to Win -> 'R'). Restart fn for whatever reason gets called twice, resulting in loss of inputRecords's first record. This forces movement in whatever initial direction Gus goes in since the first record is always the player not doing anything for however long. TEMPORARY SOLUTION: send in copy of array to avoid mutation of shared array.
         ghostGus.setInputRecords( inputRecords.slice() );
-        ghostGus.setCourseCorrectionRecords( courseCorrectionRecords );
-        ghostGus.respawn();
+        ghostGus.setCourseCorrectionRecords( courseCorrectionRecords.slice() );
+        // ghostGus.respawn();
 
         GhostBreakBrickBlock.reset();
       }
@@ -271,9 +273,10 @@ function initGameState() {
 
       // game logic
       restartTimeout = undefined;
+      state.resultScreen = undefined;
       levelStarted = game.time.now;
       gameEndingEmitted = false;
-    }, 100 )})();
+    }, 1 )})();
   }
 
   state.goToNextLevel = function () {
@@ -301,7 +304,8 @@ function initGameState() {
   // BUG WHERE REC GUS & GHOST GUS & TOOL ALL COLLIDE
   state.postBroadphase = function ( body1, body2 ) {
 
-    if ( !body1.sprite || !body2.sprite ) return true;
+    if ( !body1.sprite || !body2.sprite ) return true; // to stop destroyed ghost sprite from interfering
+    if ( state.resultScreen ) return true;
 
     if ( body1.sprite.name !== "Ghost Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false ) {
       body2.sprite.owner.collect();
