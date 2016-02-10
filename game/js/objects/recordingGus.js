@@ -34,6 +34,7 @@ class RecordingGus extends Gus {
 	}
 
 	recordCourseCorrection() {
+		//when gus is rotating, he is not moving, if he is not moving, replayed gus can't be out of sync
 		if(!this.rotating) {
 			this.courseCorrectionRecords.push({
 				x: this.sprite.x,
@@ -47,17 +48,67 @@ class RecordingGus extends Gus {
 	compressRecord() {
 		this.compressed = [];
 		var ccr = this.courseCorrectionRecords;
+		var lastFallingFrame = 0;
 		for(var i = 0; i < ccr.length-1; i++) {
-			if(ccr[i+1].x > ccr[i].x) {
-				//moving right
+			if(ccr[i+1].x > ccr[i].x && ccr[i+1].y == ccr[i+1].y) {
+				//moving right and not falling
 				var j = i+1;
-				//for(j = i+1; j < ccr.length && ccr[j].x > ccr[j-1].x; j++) {};
-				while(j < ccr.length && ccr[j-1].x < ccr[j++].x) {};
+				while(j < ccr.length && ccr[j-1].x < ccr[j++].x && ccr[i+1].y == ccr[i+1].y) {};
 				this.compressed.push({
 					start: ccr[i],
 					end: ccr[j]
 				});
-				i=j+1;
+				i=j;
+			}
+			else if(ccr[i+1].x < ccr[i].x && ccr[i+1].y == ccr[i+1].y) {
+				//moving left and not falling
+				var j = i+1;
+				while(j < ccr.length && ccr[j-1].x > ccr[j++].x && ccr[i+1].y == ccr[i+1].y) {};
+				this.compressed.push({
+					start: ccr[i],
+					end: ccr[j]
+				});
+				i=j;
+			}
+			else if(ccr[i+1].y < ccr[i].y && ccr[i+1].x == ccr[i+1].x) {
+				//moving down and not falling
+				var j = i+1;
+				while(j < ccr.length && ccr[j-1].y > ccr[j++].y && ccr[i+1].x == ccr[i+1].x) {};
+				this.compressed.push({
+					start: ccr[i],
+					end: ccr[j]
+				});
+				i=j;
+			}
+			else if(ccr[i+1].y > ccr[i].y && ccr[i+1].x == ccr[i+1].x) {
+				//moving up and not falling
+				var j = i+1;
+				while(j < ccr.length && ccr[j-1].y < ccr[j++].y && ccr[i+1].x == ccr[i+1].x) {};
+				this.compressed.push({
+					start: ccr[i],
+					end: ccr[j]
+				});
+				i=j;
+			}
+			else if(ccr[i+1].y == ccr[i].y && ccr[i+1].x == ccr[i+1].x) {
+				//stationary
+				var j = i+1;
+				while(j < ccr.length && ccr[j-1].y == ccr[j++].y && ccr[i+1].x == ccr[i+1].x) {};
+				this.compressed.push({
+					start: ccr[i],
+					end: ccr[j]
+				});
+				i=j;
+			}
+			else {
+				//gus is falling
+				if(i - lastFallingFrame >= 10) {
+					this.compressed.push({
+						start: ccr[i],
+						end: ccr[i]
+					});
+					lastFallingFrame = i;
+				}
 			}
 		}
 	}
