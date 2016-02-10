@@ -185,7 +185,7 @@ gulp.task('buildCSS', function() {
 // --------------------------------------------------------------
 
 gulp.task('buildCSSProduction', function() {
-  return gulp.src('./browser/scss/main.scss')
+  return gulp.src('./browser/sass/main.sass')
     .pipe(sass())
     .pipe(rename('style.css'))
     .pipe(minifyCSS())
@@ -193,10 +193,15 @@ gulp.task('buildCSSProduction', function() {
 });
 
 gulp.task('buildJSProduction', function() {
-  return gulp.src(['./browser/js/app.js', './browser/js/**/*.js'])
-    .pipe(concat('main.js'))
-    .pipe(babel())
-    .pipe(ngAnnotate())
+
+  var bundler = browserify();
+
+  bundler.add('./browser/js/app.js');
+  bundler.transform(babelify);
+
+  return bundler.bundle()
+    .pipe(source('main.js'))
+    .pipe(plumber())
     .pipe(uglify())
     .pipe(gulp.dest('./public'));
 });
@@ -208,7 +213,8 @@ gulp.task('buildProduction', ['buildCSSProduction', 'buildJSProduction']);
 
 gulp.task('build', function() {
   if (process.env.NODE_ENV === 'production') {
-    runSeq(['buildJSProduction', 'buildCSSProduction']);
+    // runSeq(['buildJSProduction', 'buildCSSProduction']);
+    runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets', 'buildLevelCreatorJS']);
   } else {
     runSeq(['buildBrowserJS', 'buildGameJS', 'buildCSS', 'copyAssets', 'buildLevelCreatorJS']);
   }
