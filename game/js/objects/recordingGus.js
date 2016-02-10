@@ -12,6 +12,7 @@ const EPSILON = require( "../consts" ).EPSILON;
 const TAU = require( "../consts" ).TAU;
 
 const FRAMES_PER_COURSE_CORRECTION = 1;
+const FREQUENCY_OF_COURSE_CORRECTION = 8; //this simply specifies how frequently a record gets decompressed, more is smoother, yustynn will adapt course correction to find the most recent correction and apply it
 
 class RecordingGus extends Gus {
 	constructor(x, y) {
@@ -113,11 +114,33 @@ class RecordingGus extends Gus {
 		}
 	}
 
+	decompressRecord() {
+		var comp = this.compressed;
+		this.decomp = [];
+		comp.forEach((pair) => {
+			if(pair.start.time === pair.end.time) this.decomp.push(pair.start);
+			else {
+				var xRange = pair.end.x - pair.start.x;
+				var yRange = pair.end.y - pair.start.y;
+				var frames = Math.ceil((pair.end.time - pair.start.time) / FREQUENCY_OF_COURSE_CORRECTION); 
+				for(var i = 0; i <= frames; i++) {
+					this.decomp.push({
+						f: true,
+						time: pair.start.time + i * FREQUENCY_OF_COURSE_CORRECTION,
+						x: pair.start.x + (i / frames) * xRange,
+						y: pair.start.y + (i / frames) * yRange
+					});
+				}
+			}
+		});
+		return this.decomp;
+	}
 
 	respawn() {
 		super.respawn();
 		this.compressRecord();
 		console.log(this.compressed);
+		console.table(this.decompressRecord());
 	}
 
 	recordInput() {
