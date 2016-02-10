@@ -69,12 +69,29 @@ schema.methods.setStars = function() {
 //
 schema.methods.followUser = function(userId) {
     var self = this;
+    if(self._id === userId) {
+        var err = new Error();
+        err.status = 400;
+        throw err;
+    }
     return this.model('User').findById(userId)
         .then(function(user) {
             // throw error if no user has userId
-            if(user === null) throw new Error('User #'+userId+' not found');
+            if(user === null) {
+                var err = new Error('User #'+userId+' not found');
+                throw err;
+            }
             // throw error if user is already following userId
-            if(self.following.indexOf(user._id) !== -1) throw new Error('Already following user #'+user._id);
+            if(self.following.indexOf(user._id) !== -1) {
+                err = new Error('Already following user #'+user._id);
+                err.status = 400;
+                throw err;
+            }
+            if(user._id.equals(self._id)) {
+                err = new Error('Can\'t follow self');
+                err.status = 400;
+                throw err;
+            }
 
             self.following.push(user._id);
             self.totalFollowing = self.following.length;
@@ -177,11 +194,17 @@ schema.methods.likeLevel = function(levelId) {
                 err = new Error( "Cannot like level: Level has already been liked" );
                 err.status = 400;
                 throw err;
-            } else {
-                self.likedLevels.push(levelId);
-                self.totalLikedLevels = self.likedLevels.length;
-                return Promise.all([self.save(),level]);
             }
+            if(level.creator.equals(self._id)) {
+                err = new Error("Cannot like own level");
+                err.status = 400;
+                console.log(err);
+                throw err;
+            }
+
+            self.likedLevels.push(levelId);
+            self.totalLikedLevels = self.likedLevels.length;
+            return Promise.all([self.save(),level]);
         })
         .then(function(data) {
             var user = data[0];

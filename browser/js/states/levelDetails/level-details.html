@@ -9,11 +9,11 @@
     <p><span class="label">Total Stars:</span> {{ level.starCount }}</p>
     <p><span class="label">Date Created:</span> {{ level.dateCreated | date }}</p>
   </div>
-  <div class="controls">
-    <a class="btn btn-star" href="#" ng-show="!liked && !pending" ng-click="starLevel()"><span class="glyphicon glyphicon-star"></span> Star</a>
-    <a class="btn btn-disabled" ng-show="!liked && pending"><span class="glyphicon glyphicon-time"></span> Starring</a>
-    <a class="btn btn-star" href="#" ng-show="liked && !pending" ng-click="unstarLevel()"><span class="glyphicon glyphicon-star-empty"></span> Unstar</a>
-    <a class="btn btn-disabled" ng-show="liked && pending"><span class="glyphicon glyphicon-time"></span> Unstarring</a>
+  <div class="controls" ng-if="user!==null&&user._id!==creator._id">
+    <a class="btn btn-star-hollow" href="#" ng-show="!liked && !pending" ng-click="starLevel()"><span class="glyphicon glyphicon-star-empty"></span> STAR</a>
+    <a class="btn btn-disabled" ng-show="!liked && pending"><span class="glyphicon glyphicon-time"></span> STAR</a>
+    <a class="btn btn-star" href="#" ng-show="liked && !pending" ng-click="unstarLevel()"><span class="glyphicon glyphicon-star"></span> STARRED</a>
+    <a class="btn btn-disabled" ng-show="liked && pending"><span class="glyphicon glyphicon-time"></span> STARRED</a>
     <a class="btn btn-create" ng-click='edit()'>New From Level</a>
   </div>
 </div>

@@ -19,32 +19,74 @@ app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialF
     console.log('data',data);
     $scope.user = user;
     $scope.pending = false;
+    var optimistic = false;
+    var optimisticCache;
+    var optimisticTimer;
 
-    $scope.starLevel = function() {
-        if(user !== null) {
-            $scope.pending = true;
-            SocialFactory.levelLiker(data._id,'likeLevel')
-                .then(function(res) {
-                    console.log(res);
+    var serverStarToggle = function(action) {
+        var levelStars = $scope.level.starCount;
+        var creatorStars = $scope.creator.totalStars;
+        SocialFactory.levelLiker(data._id, action)
+            .then(function(res) {
+                if(optimisticCache !== undefined && action !== optimisticCache) {
+                    var cacheAction = optimisticCache;
+                    optimisticCache = undefined;
+                    serverStarToggle(cacheAction);
+                } else {
+                    clearTimeout(optimisticTimer);
+                    optimistic = false;
+                    optimisticCache = undefined;
                     $scope.level.starCount = res.level.starCount;
                     $scope.creator.totalStars = res.creator.totalStars;
-                    $scope.liked = res.user.likedLevels.indexOf(data._id) !== -1;
+                    $scope.user.likedLevels = res.user.likedLevels;
+                    $scope.liked = $scope.user.likedLevels.indexOf(data._id) !== -1;
                     $scope.pending = false;
-                });
+                }
+            })
+            .then(null,function(err) {
+                clearTimeout(optimisticTimer);
+                optimistic = false;
+                optimisticCache = undefined;
+                $scope.level.starCount = levelStars;
+                $scope.creator.totalStars = creatorStars;
+                $scope.liked = $scope.user.likedLevels.indexOf(data._id) !== -1;
+                $scope.pending = false;
+            });
+    }
+
+    $scope.starLevel = function() {
+        $scope.pending = true;
+        optimisticTimer = setTimeout(function() {
+            $scope.level.starCount++;
+            $scope.creator.totalStars++;
+            $scope.liked = true;
+            $scope.pending = false;
+            optimistic = true;
+            $scope.$digest();
+        }, 200);
+
+        if(optimistic) {
+            optimisticCache = 'likeLevel';
+        } else {
+            serverStarToggle('likeLevel');
         }
     }
 
     $scope.unstarLevel = function() {
-        if(user !== null) {
-            $scope.pending = true;
-            SocialFactory.levelLiker(data._id,'unlikeLevel')
-                .then(function(res) {
-                    console.log(res);
-                    $scope.level.starCount = res.level.starCount;
-                    $scope.creator.totalStars = res.creator.totalStars;
-                    $scope.liked = res.user.likedLevels.indexOf(data._id) !== -1;
-                    $scope.pending = false;
-                });
+        $scope.pending = true;
+        optimisticTimer = setTimeout(function() {
+            $scope.level.starCount--;
+            $scope.creator.totalStars--;
+            $scope.liked = false;
+            $scope.pending = false;
+            optimistic = true;
+            $scope.$digest();
+        }, 200);
+
+        if(optimistic) {
+            optimisticCache = 'unlikeLevel';
+        } else {
+            serverStarToggle('unlikeLevel');
         }
     }
 
