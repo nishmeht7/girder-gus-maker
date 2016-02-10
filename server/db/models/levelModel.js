@@ -58,7 +58,9 @@ const schema = new mongoose.Schema({
   map: map,
   dateCreated: {
     type: Date,
-    default: Date.now
+    default: function() {
+      return Date.now()
+    }
   },
   published: {
 	 type: Boolean,
