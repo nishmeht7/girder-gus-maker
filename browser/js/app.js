@@ -47,6 +47,10 @@ window.app.run(function($rootScope, AuthService, $state) {
             //window.game = null;
         }
 
+        if ( window.playlist ) {
+            window.playlist = undefined;
+        }
+
         // remove events from our emitter
         eventEmitter.removeAllListeners( 'what level to play' )
                     .removeAllListeners( 'play this level' );
