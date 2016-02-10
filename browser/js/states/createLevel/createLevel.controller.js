@@ -113,7 +113,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 		CreateLevelFactory.submitLevel(data, draftSaveObj.levelTitle, draftSaveObj.girdersAllowed, draftSaveObj.skyColor, draftSaveObj.shouldPublish, draftSaveObj.levelId).then(function(data) {
 				$scope.error = false;
 				$scope.success = true;
-				if(shouldPublish) {
+				if(draftSaveObj.shouldPublish) {
 					$state.go('levels.details', {levelId: data._id});
 				}
 				console.log(data);
