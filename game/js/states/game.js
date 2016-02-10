@@ -142,8 +142,6 @@ function initGameState() {
     ParticleBurst.update();
 
     if ( game.toolsRemaining === 0 ) {
-      //if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel(); gameEndingEmitted = false; }, 15000 );
-
       gus.isDead = true;
 
       gus.sprite.body.velocity.x = 0;
@@ -211,8 +209,6 @@ function initGameState() {
 
   state.restartLevel = function () {
 
-    if ( !gus.isDead || gus.sprite.visible === false ) return;
-
     if ( this.resultScreen ) {
       this.resultScreen.texture.visible = false;
       game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.remove( state.restartLevel, this );
@@ -220,11 +216,11 @@ function initGameState() {
     }
 
     gus.sprite.position = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
-    //gus.sprite.body.clearCollision();
     gus.sprite.visible = false;
 
     game.toolsToCollect.forEach( function( tool ) { tool.reset() });
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
+    marker.girdersPlaced = [];
     BreakBrickBlock.reset();
 
     game.camera.scale.x = 1;
