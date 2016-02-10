@@ -2,11 +2,13 @@ import chalk from 'chalk';
 import Promise from 'bluebird';
 import s3 from 's3';
 
+var env = require('../env');
+
 const client = s3.createClient({
   s3Options: {
-    accessKeyId: process.env.S3.ACCESS_KEY_ID,
-    secretAccessKey: process.env.S3.SECRET_ACCESS_KEY
-  },
+    accessKeyId: env.S3.ACCESS_KEY_ID,
+    secretAccessKey: env.S3.SECRET_ACCESS_KEY
+  }
 });
 
 function uploadMapThumb(imagePath, levelId) {
