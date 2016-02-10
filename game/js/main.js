@@ -9,7 +9,7 @@ function startGame( phaser ) {
 	window.game = new phaser.Game( WIDTH, HEIGHT, Phaser.AUTO, 'game-container', undefined, undefined, false );
 
   //game.ghostMode = process.env.GHOST_MODE;
-  game.ghostMode = false;
+  game.ghostMode = true;
   //no process.env variables in the browser, nice try yustynn
   game.recordingMode = process.env.RECORDING_MODE;
 
