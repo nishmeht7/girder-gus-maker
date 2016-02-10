@@ -129,6 +129,8 @@ BreakBrickBlock.update = function () {
 
 }
 
+BreakBrickBlock.bricks = function() { return breakingBlocks; };
+
 BreakBrickBlock.reset = function () {
 
   breakingBlocks.forEach( function ( block ) {

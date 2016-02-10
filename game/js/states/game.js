@@ -40,6 +40,9 @@ function initGameState() {
     game.toolsToCollect = undefined;
     generator.parseObjects();
 
+
+    // if ( !game.ghostMode ) GhostBreakBrickBlock.hideAll();
+
     if ( game.toolsToCollect !== undefined ) {
       game.toolsRemaining = game.toolsToCollect.length;
     } else {
@@ -226,6 +229,9 @@ function initGameState() {
     marker.girdersPlaced = [];
     BreakBrickBlock.reset();
 
+    GhostBreakBrickBlock.reset();
+    GhostBreakBrickBlock.showAll();
+
     game.camera.scale.x = 1;
     game.camera.scale.y = 1;
 
@@ -261,8 +267,6 @@ function initGameState() {
         ghostGus.setInputRecords( inputRecords.slice() );
         ghostGus.setCourseCorrectionRecords( courseCorrectionRecords.slice() );
         // ghostGus.respawn();
-
-        GhostBreakBrickBlock.reset();
       }
 
       // gus logic
