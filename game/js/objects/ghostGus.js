@@ -33,7 +33,7 @@ class GhostGus extends Gus {
     this.courseCorrectionRecords = courseCorrectionRecords;
 
     if (this.courseCorrectionRecords.length) {
-      this.currentCourseCorrectionRecord = this.courseCorrectionRecords.pop()
+      this.currentCourseCorrectionRecord = this.courseCorrectionRecords.pop();
     }
   }
 
@@ -44,6 +44,9 @@ class GhostGus extends Gus {
       if (this.inputRecords.length) {
         this.currentInputRecord = this.inputRecords.pop();
         this.currentInputRecord.hasBeenExecuted = false;
+
+        // hacky fix for edge case where 'win'/doom() gets added into the first input record
+        this.currentInputRecord.input = this.currentInputRecord.input.filter((n) => n !== 4)
       }
 
       this.inputRecordsSet = true;

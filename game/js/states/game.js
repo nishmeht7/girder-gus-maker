@@ -139,7 +139,6 @@ function initGameState() {
     if ( game.toolsRemaining === 0 ) {
 
       if ( game.recordingMode && !gus.isDead ) {
-        debugger;
         gus.recordInput( 'win' );
         gus.finalizeRecords();
       }
@@ -212,6 +211,7 @@ function initGameState() {
   }
 
   state.restartLevel = function () {
+    console.log('RESTARTING!')
     if ( this.resultScreen ) {
       this.resultScreen.texture.visible = false;
       game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.remove( state.restartLevel, this );
@@ -244,7 +244,7 @@ function initGameState() {
       if ( game.recordingMode ) {
 
         // hacky solution. On win -> 'R', checkRestart gets called twice. Dunno why. David?
-        if ( !inputRecords || gus.courseCorrectionRecords.length > 100 ) {
+        if ( !inputRecords || gus.timeSinceSpawn() > 1000 ) {
           inputRecords = gus.inputRecords;
           courseCorrectionRecords = gus.courseCorrectionRecords;
         }
