@@ -25,6 +25,7 @@ class RecordingGus extends Gus {
 		this.framesSinceCourseCorrectionRecord = 0;
 
 		this.currentRecord = { input: [0] };
+		this.compressed = [];
 
 	}
 
@@ -37,10 +38,36 @@ class RecordingGus extends Gus {
 			this.courseCorrectionRecords.push({
 				x: this.sprite.x,
 				y: this.sprite.y,
-				f: this.isTouching('down');
+				f: this.isTouching('down'),
 			time: this.getTime()
 			})
 		}
+	}
+
+	compressRecord() {
+		this.compressed = [];
+		var ccr = this.courseCorrectionRecords;
+		for(var i = 0; i < ccr.length-1; i++) {
+			if(ccr[i+1].x > ccr[i].x) {
+				//moving right
+				var j = i+1;
+				//for(j = i+1; j < ccr.length && ccr[j].x > ccr[j-1].x; j++) {};
+				while(j < ccr.length && ccr[j-1].x < ccr[j++].x) {};
+				this.compressed.push({
+					start: ccr[i],
+					end: ccr[j]
+				});
+				i=j+1;
+			}
+		}
+	}
+
+
+	respawn() {
+		super.respawn();
+		console.log(this.courseCorrectionRecords.reverse().slice(0,100));
+		this.compressRecord();
+		console.log(this.compressed);
 	}
 
 	recordInput() {

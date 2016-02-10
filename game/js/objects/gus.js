@@ -101,8 +101,6 @@ Gus.prototype.respawn = function() {
     fadeOut: true
   });
 
-	console.log(this.courseCorrectionRecords.slice(0, 100));
-
 }
 
 Gus.prototype.doom = function() {
