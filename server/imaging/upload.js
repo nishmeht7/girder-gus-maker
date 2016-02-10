@@ -2,13 +2,12 @@ import chalk from 'chalk';
 import Promise from 'bluebird';
 import s3 from 's3';
 
-
-import SECRETS from '../../secrets'
+var env = require('../env');
 
 const client = s3.createClient({
   s3Options: {
-    accessKeyId: SECRETS.S3.accessKeyId,
-    secretAccessKey: SECRETS.S3.secretAccessKey
+    accessKeyId: env.S3.ACCESS_KEY_ID,
+    secretAccessKey: env.S3.SECRET_ACCESS_KEY
   },
 });
 
