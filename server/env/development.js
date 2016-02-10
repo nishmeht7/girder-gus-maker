@@ -1,3 +1,5 @@
+var secrets = require("../../secrets");
+
 module.exports = {
     "DATABASE_URI": "mongodb://localhost:27017/girder-gus",
     "SESSION_SECRET": "Optimus Prime is my real mum",
@@ -15,5 +17,9 @@ module.exports = {
         'clientID': '617960550221-felsd9smo40r9eff914o7fnkse3j2g77.apps.googleusercontent.com',
         'clientSecret': 'NCxf4IyOYksC93LFKh9CbRhD',
         'callbackURL': 'http://127.0.0.1:1337/auth/google/callback'
+    },
+    "S3": {
+        'ACCESS_KEY_ID': secrets.S3.accessKeyId,
+        'SECRET_ACCESS_KEY': secrets.S3.secretAccessKey
     }
 };
