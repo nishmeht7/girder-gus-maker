@@ -8,7 +8,7 @@ const client = s3.createClient({
   s3Options: {
     accessKeyId: env.S3.ACCESS_KEY_ID,
     secretAccessKey: env.S3.SECRET_ACCESS_KEY
-  },
+  }
 });
 
 function uploadMapThumb(imagePath, levelId) {
