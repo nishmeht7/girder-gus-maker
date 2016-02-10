@@ -50,9 +50,9 @@ function initLoadState() {
 
 				// construct our HTTP request
 				var req = http.request({
-					hostname: "localhost",  // change this to our actual hostname
-					path: "/api/levels/" + id + "/map",
-					port: 1337
+					hostname: window.location.hostname,  // change this to our actual hostname
+          path: "/api/levels/" + id + "/map",
+          port: window.location.port || 1337
 				}, function( res ) {
 					// get data from the response
 					res.setEncoding( "utf8" );
