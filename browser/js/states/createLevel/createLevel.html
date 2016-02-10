@@ -41,6 +41,6 @@
 		<a class='btn' ng-show="!testing" ng-click='testTesting()'>Test Level</button>
 		<a class='btn' ng-show="testing" ng-click='testTesting()'>Edit Level</button>
 		<a class='btn btn-create' ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor, false)'>Save Draft</button>
-		<a class='btn btn-create' ng-show="beaten" ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor)'>Submit Level</button>
+		<a class='btn btn-create' ng-show="beaten && readyToSave" ng-click='submitBeatenLevel(beatenLevel, levelTitle, girdersAllowed, skyColor)'>Submit Level</button>
 	</div>
 </div>

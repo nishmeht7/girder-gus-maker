@@ -12,6 +12,8 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 	$scope.error = false;
 	var levelId = $stateParams.levelId;
 	var sentId = false;
+	$scope.readyToSave = true;
+
 
 	$scope.toolArr = {
 		'Eraser' : {
@@ -115,15 +117,18 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 					$state.go('levels.details', {levelId: data._id});
 				}
 				console.log(data);
+				$scope.readyToSave = true;
 			}).then(null, function(err) {
 				$scope.error = true;
 				$scope.success = false;
 				console.error(err);
+				$scope.readyToSave = true;
 			});
 	});
 
 
 	$scope.submitBeatenLevel = function(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish) {
+		$scope.readyToSave = false;
 		//shouldPublish indicates if the level is being saved permenantly or simply for future editing
 		if(typeof shouldPublish !== 'boolean') shouldPublish = true;
 		shouldPublish = shouldPublish || false;
@@ -135,6 +140,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 			console.log('something is missing');
 			console.log(levelArrayBeaten);
 			console.log(levelTitle);
+			$scope.readyToSave = true;
 			return;
 		}
 		if(!girdersAllowed) girdersAllowed = 0;
@@ -150,10 +156,12 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 					$state.go('levels.details', {levelId: data._id});
 				}
 				console.log(data);
+				$scope.readyToSave = true;
 			}).then(null, function(err) {
 				$scope.error = true;
 				$scope.success = false;
 				console.error(err);
+				$scope.readyToSave = true;
 			});
 		} else {
 			console.log('going to submit after getting level creator result');
