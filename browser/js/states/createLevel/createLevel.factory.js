@@ -10,7 +10,7 @@ skyColor: skyColor
 			var level = {
 				title: title,
 map: map,
-published: isPublished
+published: isPublished || false
 			}
 			if(!id || isPublished) return $http.post('/api/levels/', level).then(res => res.data); 
 			else return $http.put('/api/levels/'+id, level).then(res => res.data);
