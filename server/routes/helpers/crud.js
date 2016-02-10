@@ -87,7 +87,7 @@ const getLevelsByType = (userPromise, levelType, page) => {
         var count = user.likedLevels.length;
         user = user.populate({
           path: 'likedLevels',
-          select: 'title creator datedCreated starCount',
+          select: 'title creator dateCreated starCount',
           populate: {
             path: 'creator',
             select: 'name'
