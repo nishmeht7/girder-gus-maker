@@ -1,4 +1,5 @@
-var secrets = require("../../secrets");
+var s3 = require("../../secrets");
+console.dir( s3 );
 
 module.exports = {
     "DATABASE_URI": "mongodb://localhost:27017/girder-gus",
@@ -19,7 +20,7 @@ module.exports = {
         'callbackURL': 'http://127.0.0.1:1337/auth/google/callback'
     },
     "S3": {
-        'ACCESS_KEY_ID': secrets.S3.accessKeyId,
-        'SECRET_ACCESS_KEY': secrets.S3.secretAccessKey
+        'ACCESS_KEY_ID': s3.ACCESS_KEY_ID,
+        'SECRET_ACCESS_KEY': s3.SECRET_ACCESS_KEY
     }
 };
