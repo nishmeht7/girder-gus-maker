@@ -139,6 +139,8 @@ function initGameState() {
     if ( game.toolsRemaining === 0 ) {
       //if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel(); gameEndingEmitted = false; }, 15000 );
 
+      if ( game.recordingMode ) gus.finalizeRecords();
+
       gus.isDead = true;
 
       gus.sprite.body.velocity.x = 0;
@@ -236,15 +238,14 @@ function initGameState() {
     (function checkRestart() { setTimeout( function() {
       if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) return checkRestart();
 
-      if ( gameEndingEmitted ) {
-
-      }
-
       // ghost logic
       if ( game.recordingMode ) {
 
-        inputRecords = gus.inputRecords;
-        courseCorrectionRecords = gus.courseCorrectionRecords;
+        // hacky solution. On win -> 'R', checkRestart gets called twice. Dunno why. David?
+        if ( !inputRecords || gus.timeSinceSpawn() > 500 ) {
+          inputRecords = gus.inputRecords;
+          courseCorrectionRecords = gus.courseCorrectionRecords;
+        }
 
         game.ghostMode = true;
         if ( ghostGus && !ghostGus.isDestroyed ) ghostGus.destroy(); // destroys ghost girders too
@@ -253,7 +254,9 @@ function initGameState() {
         ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y );
 
         ghostGus.girders = generator.getStartingGirders();
-        ghostGus.setInputRecords( inputRecords );
+
+        // this is ridiculous (and only applies to Win -> 'R'). Restart fn for whatever reason gets called twice, resulting in loss of inputRecords's first record. This forces movement in whatever initial direction Gus goes in since the first record is always the player not doing anything for however long. TEMPORARY SOLUTION: send in copy of array to avoid mutation of shared array.
+        ghostGus.setInputRecords( inputRecords.slice() );
         ghostGus.setCourseCorrectionRecords( courseCorrectionRecords );
         ghostGus.respawn();
 

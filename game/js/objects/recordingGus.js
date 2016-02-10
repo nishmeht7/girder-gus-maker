@@ -11,7 +11,7 @@ const COLLISION_GROUPS = require( "../consts/collisionGroups" );
 const EPSILON = require( "../consts" ).EPSILON;
 const TAU = require( "../consts" ).TAU;
 
-const FRAMES_PER_COURSE_CORRECTION = 10;
+const FRAMES_PER_COURSE_CORRECTION = 3;
 
 class RecordingGus extends Gus {
   constructor(x, y) {
@@ -28,6 +28,15 @@ class RecordingGus extends Gus {
 
   }
 
+  finalizeRecords() {
+    if (!this.recordsFinalized) {
+      this.inputRecords = this.inputRecords.reverse();
+      this.courseCorrectionRecords = this.courseCorrectionRecords.reverse();
+
+      this.recordsFinalized = true;
+    }
+  }
+
   getCourseCorrectionRecords() {
     return this.courseCorrectionRecords;
   }
@@ -41,6 +50,7 @@ class RecordingGus extends Gus {
   }
 
   recordCourseCorrection() {
+    if (this.recordsFinalized) return;
     this.courseCorrectionRecords.push({
       x: this.sprite.x,
       y: this.sprite.y,
@@ -49,6 +59,8 @@ class RecordingGus extends Gus {
   }
 
   recordInput() {
+    if (this.recordsFinalized) return;
+
     const input = [];
     const spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
@@ -73,8 +85,7 @@ class RecordingGus extends Gus {
   }
 
   kill() {
-    this.inputRecords = this.inputRecords.reverse();
-    this.courseCorrectionRecords = this.courseCorrectionRecords.reverse();
+    this.finalizeRecords();
 
     console.log(JSON.stringify(this.inputRecords) + '\n\n' + JSON.stringify(this.courseCorrectionRecords))
 
@@ -106,6 +117,7 @@ class RecordingGus extends Gus {
     this.inputRecords = [];
     this.courseCorrectionRecords = [];
     this.framesSinceCourseCorrectionRecord = 0;
+    this.recordsFinalized = false;
   }
 
   update() {
