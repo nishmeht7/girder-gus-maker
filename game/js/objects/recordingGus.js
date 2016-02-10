@@ -57,7 +57,7 @@ class RecordingGus extends Gus {
 				while(j < ccr.length && ccr[j-1].x < ccr[j].x && ccr[i+1].y == ccr[i+1].y && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
-					end: ccr[j]
+					end: ccr[j-1]
 				});
 				i=j;
 			}
@@ -67,7 +67,7 @@ class RecordingGus extends Gus {
 				while(j < ccr.length && ccr[j-1].x > ccr[j].x && ccr[i+1].y == ccr[i+1].y && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
-					end: ccr[j]
+					end: ccr[j-1]
 				});
 				i=j;
 			}
@@ -77,7 +77,7 @@ class RecordingGus extends Gus {
 				while(j < ccr.length && ccr[j-1].y > ccr[j].y && ccr[i+1].x == ccr[i+1].x && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
-					end: ccr[j]
+					end: ccr[j-1]
 				});
 				i=j;
 			}
@@ -87,7 +87,7 @@ class RecordingGus extends Gus {
 				while(j < ccr.length && ccr[j-1].y < ccr[j].y && ccr[i+1].x == ccr[i+1].x && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
-					end: ccr[j]
+					end: ccr[j-1]
 				});
 				i=j;
 			}
@@ -97,7 +97,7 @@ class RecordingGus extends Gus {
 				while(j < ccr.length && ccr[j-1].y == ccr[j].y && ccr[i+1].x == ccr[i+1].x && ccr[j++].f) {};
 				this.compressed.push({
 					start: ccr[i],
-					end: ccr[j]
+					end: ccr[j-1]
 				});
 				i=j;
 			}
