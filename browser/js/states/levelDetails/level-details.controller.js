@@ -24,6 +24,8 @@ app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialF
     var optimisticTimer;
 
     var serverStarToggle = function(action) {
+        var levelStars = $scope.level.starCount;
+        var creatorStars = $scope.creator.totalStars;
         SocialFactory.levelLiker(data._id, action)
             .then(function(res) {
                 if(optimisticCache !== undefined && action !== optimisticCache) {
@@ -36,12 +38,19 @@ app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialF
                     optimisticCache = undefined;
                     $scope.level.starCount = res.level.starCount;
                     $scope.creator.totalStars = res.creator.totalStars;
-                    $scope.liked = res.user.likedLevels.indexOf(data._id) !== -1;
+                    $scope.user.likedLevels = res.user.likedLevels;
+                    $scope.liked = $scope.user.likedLevels.indexOf(data._id) !== -1;
                     $scope.pending = false;
                 }
             })
             .then(null,function(err) {
-                console.log(err);
+                clearTimeout(optimisticTimer);
+                optimistic = false;
+                optimisticCache = undefined;
+                $scope.level.starCount = levelStars;
+                $scope.creator.totalStars = creatorStars;
+                $scope.liked = $scope.user.likedLevels.indexOf(data._id) !== -1;
+                $scope.pending = false;
             });
     }
 

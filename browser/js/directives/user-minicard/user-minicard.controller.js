@@ -11,20 +11,30 @@ app.controller('UserMinicardCtrl', function($scope, SocialFactory) {
     var optimisticTimer;
 
     var serverFollowToggle = function(action) {
-        SocialFactory.userFollower($scope.creator._id, action)
+        var followerCount = $scope.creator.totalFollowers;
+        return SocialFactory.userFollower($scope.creator._id, action)
             .then(function(res) {
                 if(optimisticCache !== undefined && action !== optimisticCache) {
                     var cacheAction = optimisticCache;
                     optimisticCache = undefined;
-                    serverFollowToggle(cacheAction);
+                    return serverFollowToggle(cacheAction);
                 } else {
                     clearTimeout(optimisticTimer);
                     optimistic = false;
                     optimisticCache = undefined;
                     $scope.creator.totalFollowers = res.creator.totalFollowers;
-                    $scope.followed = res.user.following.indexOf($scope.creator._id) !== -1;
+                    $scope.user.following = res.user.following;
+                    $scope.followed = $scope.user.following.indexOf($scope.creator._id) !== -1;
                     $scope.pending = false;
                 }
+            })
+            .then(null,function(err) {
+                clearTimeout(optimisticTimer);
+                optimistic = false;
+                $scope.creator.totalFollowers = followerCount;
+                optimisticCache = undefined;
+                $scope.followed = $scope.user.following.indexOf($scope.creator._id) !== -1;
+                $scope.pending = false;
             });
     }
 
