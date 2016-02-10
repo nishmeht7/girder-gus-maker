@@ -2,7 +2,7 @@ var s3 = require("../../secrets");
 console.dir( s3 );
 
 module.exports = {
-    "DATABASE_URI": "mongodb://localhost:27017/girder-gus",
+    "DATABASE_URI": "mongodb://gus:gusIsGreat@ds051655.mongolab.com:51655/ggmng",
     "SESSION_SECRET": "Optimus Prime is my real mum",
     "TWITTER": {
         "consumerKey": "INSERT_TWITTER_CONSUMER_KEY_HERE",

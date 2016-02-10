@@ -4,9 +4,12 @@ const path = require('path');
 const chalk = require('chalk');
 
 var mongoose = require('mongoose');
+
+
+const DATABASE_URI = require(path.join(__dirname, '../env')).DATABASE_URI;
+
 var oldMongoose = false;
-var db = mongoose.connect('mongodb://gus:gusIsGreat@ds051655.mongolab.com:51655/ggmng');
-//var db = mongoose.connect('mongodb://gus:gus@ds055535.mongolab.com:55535/girder-gus');
+var db = mongoose.connect(DATABASE_URI);
 if ( db.connection !== undefined ) {
   db = db.connection;
   oldMongoose = true;
