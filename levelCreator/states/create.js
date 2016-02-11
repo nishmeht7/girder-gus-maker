@@ -299,8 +299,10 @@ function initCreateState() {
 		}
 
 		function move(xDiff, yDiff) {
-			const clickPoint = new Phaser.Point(game.camera.width / 2 - xDiff, game.camera.height / 2 - yDiff);
-			game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
+			const clickPoint = new Phaser.Point( xDiff, yDiff );
+			//game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
+                        game.dolly.targetPos.x -= clickPoint.x * game.time.physicsElapsed;
+                        game.dolly.targetPos.y -= clickPoint.y * game.time.physicsElapsed;
 		}
 
 		function rotate(dir) {
@@ -311,16 +313,20 @@ function initCreateState() {
 			}
 		}
 
-		const moveAmount = 64;
+		const moveAmount = 128;
 
 		var vec;
 		if ( arrowCursors.isDown() ) {
 			vec = arrowCursors.getVector();
-			move( vec.x * moveAmount, vec.y * moveAmount );
+			//move( vec.x * moveAmount, vec.y * moveAmount );
 		} else if ( wasdCursors.isDown() ) {
 			vec = wasdCursors.getVector();
-			move( vec.x * moveAmount, vec.y * moveAmount );
+			//move( vec.x * moveAmount, vec.y * moveAmount );
 		}
+
+                if ( vec !== undefined ) {
+                  move( vec.x * moveAmount, vec.y * moveAmount );
+                }
 
 		if (rotateCounterKey.isDown) rotate(1);
 		if (routateClockwiseKey.isDown) rotate(-1);
