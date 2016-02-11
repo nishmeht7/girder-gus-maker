@@ -17,6 +17,12 @@ app.factory('LevelsFactory', function($http) {
                 .then(function(res) {
                     return res.data;
                 });
+        },
+        delete: function(levelId) {
+            return $http.delete('api/levels/'+levelId)
+                .then(function(res) {
+                    return res.data;
+                });
         }
     }
 })
