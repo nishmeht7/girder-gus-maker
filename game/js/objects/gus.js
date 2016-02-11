@@ -72,6 +72,7 @@ Gus.prototype.setCollision = function() {
 }
 
 Gus.prototype.respawn = function() {
+  console.log(this.sprite.name + ' Respawned!')
 
   this.rotation = 0;
   this.prevRotation = 0;

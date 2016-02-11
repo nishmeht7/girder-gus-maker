@@ -80,12 +80,10 @@ BreakBrickBlock.prototype.setCollisions = function () {
 }
 
 BreakBrickBlock.prototype.startCollapsing = function ( target ) {
-  var targetConstructorName = target.sprite.body.gameObject.constructor.name;
-
-  if ( targetConstructorName !== 'GhostGus' ) {
+  // can be Gus || Recording Gus
+  if ( target.sprite.name !== 'Ghost Gus' ) {
     this.countCollapseTime = this.countCollapseTime || game.time.physicsElapsedMS;
   }
-
 }
 
 BreakBrickBlock.prototype.update = function () {
@@ -130,6 +128,8 @@ BreakBrickBlock.update = function () {
   });
 
 }
+
+BreakBrickBlock.bricks = function() { return breakingBlocks; };
 
 BreakBrickBlock.reset = function () {
 
