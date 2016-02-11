@@ -23,8 +23,6 @@ function initLoadState() {
 
     game.load.image('Select', '/assets/images/selectedBlockOutline.png');
 
-    game.load.spritesheet('Gus', '/assets/images/gus.png', 32, 32);
-
     console.log( "Done loading" );
 
   }
@@ -42,7 +40,7 @@ function initLoadState() {
 
     console.log( "Starting world..." );
     game.world.setBounds( -400, -300, 800, 600 ); // fullscreen???
-    game.physics.p2.setBoundsToWorld();
+    //game.physics.p2.setBoundsToWorld();
     var gus = game.add.sprite( -16, -16, "Gus" );
     gus.animations.add('dance', [3,4,6,7], 5, true);
     var loadText = game.add.text( 0, 32, "Loading assets...", { font: "12pt \"Arial\", sans-serif", fill: "white" })
