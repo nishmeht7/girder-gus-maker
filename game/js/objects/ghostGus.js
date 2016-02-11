@@ -94,6 +94,11 @@ class GhostGus extends Gus {
     this.isDestroyed = true;
   }
 
+  finishRotation() {
+    if (this.isDestroyed) return;
+    super.finishRotation();
+  }
+
   evaluateInputRecord() {
     if (this.isScrewed) return;
 
@@ -160,9 +165,14 @@ class GhostGus extends Gus {
   update() {
     if (this.isDestroyed) return;
 
+    this.evaluateInputRecord();
+
+    if (this.isDestroyed) return;
+
+
+
     if (Math.abs(Math.cos(this.rotation)) > EPSILON) this.sprite.body.velocity.x = 0;
     else this.sprite.body.velocity.y = 0;
-    this.evaluateInputRecord();
 
 
     // check to see if we're rotating
