@@ -66,6 +66,16 @@ class GhostGus extends Gus {
       this.currentCourseCorrectionRecord = this.courseCorrectionRecords.pop();
     }
     else {
+      var respawnBurst = new ParticleBurst( this.sprite.x, this.sprite.y, "GusHead", {
+        lifetime: 3000,
+        count: 14,
+        scaleMin: 0.2,
+        scaleMax: 1.0,
+        rotMin: 0,
+        rotMax: 360,
+        speed: 100,
+        fadeOut: true
+      });
       this.destroy();
     }
   }
@@ -120,16 +130,6 @@ class GhostGus extends Gus {
         } else if (action === 4) {
 
           this.isScrewed = true;
-          var respawnBurst = new ParticleBurst( this.sprite.x, this.sprite.y, "GusHead", {
-            lifetime: 3000,
-            count: 14,
-            scaleMin: 0.2,
-            scaleMax: 1.0,
-            rotMin: 0,
-            rotMax: 360,
-            speed: 100,
-            fadeOut: true
-          });
 
           this.doom();
         } else {
