@@ -72,6 +72,7 @@ Gus.prototype.setCollision = function() {
 }
 
 Gus.prototype.respawn = function() {
+  console.log(this.sprite.name + ' Respawned!')
 
   this.rotation = 0;
   this.prevRotation = 0;
@@ -105,7 +106,7 @@ Gus.prototype.respawn = function() {
 
 Gus.prototype.doom = function() {
 
-  if ( this.isDoomed || this.isDead || this.rotating ) return;
+  if ( !this.canRotate || this.isDoomed || this.isDead || this.rotating ) return;
 
   this.isDoomed = true;
 

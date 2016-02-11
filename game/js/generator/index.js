@@ -62,7 +62,7 @@ LevelGenerator.prototype.parseObjects = function() {
     }
 
     // account for ghost mode
-    if ( tilemap[objDef.t] === 'BreakBrickBlock' && game.ghostMode ) {
+    if ( tilemap[objDef.t] === 'BreakBrickBlock' && game.recordingMode ) {
       var ghostBlock = new GhostBreakBrickBlock( objDef.x, objDef.y );
       levelObjects.push( ghostBlock );
 

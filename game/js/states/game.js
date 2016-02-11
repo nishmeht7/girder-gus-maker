@@ -3,13 +3,16 @@ var GirderMarker = require( "../objects/girderMarker" );
 var LevelGenerator = require( "../generator" );
 var ParticleBurst = require( "../particles/burst" );
 var BreakBrickBlock = require( "../objects" ).BreakBrickBlock;
+var GhostBreakBrickBlock = require( "../objects" ).GhostBreakBrickBlock;
 var ResultScreen = require( "../scenes/resultScreen" );
+var GhostGus = require( '../objects/ghostGus' );
 
 function initGameState() {
 
   var state = {};
 
-  var gus, ghostGus, marker, generator, restartTimeout, hudCounters, levelStarted, startingGirderCount;
+  var gus, ghostGus, marker, generator, restartTimeout, hudCounters, levelStarted, startingGirderCount,
+    courseCorrectionRecords, inputRecords;
 
   var fpsCounter;
   var gameEndingEmitted= false;
@@ -34,8 +37,10 @@ function initGameState() {
 
     // generate the rest of the fucking level
     console.log( "Generating level from level data..." );
-    game.toolsToCollect = [];
+    game.toolsToCollect = undefined;
     generator.parseObjects();
+
+    if ( !game.ghostMode ) GhostBreakBrickBlock.hideAll();
 
     if ( game.toolsToCollect !== undefined ) {
       game.toolsRemaining = game.toolsToCollect.length;
@@ -56,17 +61,6 @@ function initGameState() {
     startingGirderCount = gus.girders;
     marker = new GirderMarker();
     marker.setMaster( gus );
-
-    // create ghost if ghostMode
-    if ( game.ghostMode ) {
-      console.log( 'Creating Ghost Gus...' )
-
-      var GhostGus = require('../objects/ghostGus');
-
-      ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y )
-      ghostGus.girders = generator.getStartingGirders();
-    }
-
     game.dolly = new Dolly( game.camera );
     game.dolly.lockTo( gus.sprite );
 
@@ -77,7 +71,10 @@ function initGameState() {
     game.cursors = game.input.keyboard.createCursorKeys();
     marker.setPlaceGirderButton( game.input.keyboard.addKey( Phaser.KeyCode.SPACEBAR ) );
     game.freeLookKey = game.input.keyboard.addKey( Phaser.KeyCode.SHIFT );
-    game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( function() { gus.doom() }, this, 0 );
+    game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( function() {
+      if ( ghostGus && !ghostGus.isDestroyed ) ghostGus.destroy();
+      gus.doom();
+     }, this, 0 );
 
     // make hud icons
     fpsCounter = game.add.text( 0, 0, "60 FPS", { font: "9pt mono" });
@@ -131,7 +128,7 @@ function initGameState() {
 
     // update actors
     gus.update();
-    if (game.ghostMode) ghostGus.update();
+    if ( ghostGus && !ghostGus.isDestroyed ) ghostGus.update();
     marker.update();
     game.toolsToCollect.forEach( function( tool ) { tool.update() });
 
@@ -142,7 +139,11 @@ function initGameState() {
     ParticleBurst.update();
 
     if ( game.toolsRemaining === 0 ) {
-      //if ( restartTimeout === undefined ) restartTimeout = setTimeout( function() { state.restartLevel(); gameEndingEmitted = false; }, 15000 );
+
+      if ( game.recordingMode && !gus.isDead ) {
+        gus.recordInput( 'win' );
+        gus.finalizeRecords();
+      }
 
       gus.isDead = true;
 
@@ -163,7 +164,9 @@ function initGameState() {
         gameEndingEmitted = true;
         eventEmitter.emit('game ended', [(startingGirderCount - gus.girders), (game.time.now - levelStarted)]);
 
-        state.resultScreen = new ResultScreen( startingGirderCount - gus.girders, game.time.now - levelStarted, function() { state.restartLevel(); } );
+        state.resultScreen = new ResultScreen( startingGirderCount - gus.girders, game.time.now - levelStarted, function() {
+          state.restartLevel();
+        } );
         state.resultScreen.draw();
 
         game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.add( state.restartLevel, this, 0 );
@@ -210,7 +213,7 @@ function initGameState() {
   }
 
   state.restartLevel = function () {
-
+    console.log('RESTARTING!')
     if ( this.resultScreen ) {
       this.resultScreen.texture.visible = false;
       game.input.keyboard.addKey( Phaser.KeyCode.R ).onDown.remove( state.restartLevel, this );
@@ -218,12 +221,15 @@ function initGameState() {
     }
 
     gus.sprite.position = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
-    //gus.sprite.body.clearCollision();
     gus.sprite.visible = false;
 
     game.toolsToCollect.forEach( function( tool ) { tool.reset() });
     marker.girdersPlaced.forEach( function( girder ) { girder.sprite.destroy() });
+    marker.girdersPlaced = [];
     BreakBrickBlock.reset();
+
+    GhostBreakBrickBlock.reset();
+    GhostBreakBrickBlock.showAll();
 
     game.camera.scale.x = 1;
     game.camera.scale.y = 1;
@@ -232,18 +238,50 @@ function initGameState() {
     game.dolly.targetPos = new Phaser.Point( game.gusStartPos.x, game.gusStartPos.y );
     game.dolly.targetAng = 0;
 
-    (function checkRestart() { setTimeout( function() {
-      if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) return checkRestart();
+    (function checkRestart() {
+    restartTimeout = setTimeout( function() {
+      if ( restartTimeout === undefined ) return;
+      if ( game.dolly.targetPos.distance( game.dolly.position ) > 100 ) {
+              return checkRestart();
+           }
 
+      // ghost logic
+      if ( game.recordingMode ) {
+
+        // hacky solution. On win -> 'R', checkRestart gets called twice. Dunno why. David?
+        if ( !inputRecords || gus.timeSinceSpawn() > 1000 ) {
+          inputRecords = gus.inputRecords;
+          courseCorrectionRecords = gus.compressed;
+        }
+
+        game.ghostMode = true;
+        if ( ghostGus && !ghostGus.isDestroyed ) ghostGus.destroy(); // destroys ghost girders too
+
+
+        ghostGus = new GhostGus( game.gusStartPos.x, game.gusStartPos.y );
+
+        ghostGus.girders = generator.getStartingGirders();
+
+        // this is ridiculous (and only applies to Win -> 'R'). Restart fn for whatever reason gets called twice, resulting in loss of inputRecords's first record. This forces movement in whatever initial direction Gus goes in since the first record is always the player not doing anything for however long. TEMPORARY SOLUTION: send in copy of array to avoid mutation of shared array.
+        ghostGus.setInputRecords( inputRecords.slice() );
+        ghostGus.setCourseCorrectionRecords( courseCorrectionRecords.slice() );
+
+        ghostGus.decompressRecord();
+        // ghostGus.respawn();
+      }
+
+      // gus logic
       gus.respawn();
       gus.rotationSpeed = 0;
       game.dolly.lockTo( gus.sprite );
       gus.girders = generator.getStartingGirders();
 
+      // game logic
       restartTimeout = undefined;
+      state.resultScreen = undefined;
       levelStarted = game.time.now;
       gameEndingEmitted = false;
-    }, 100 )})();
+    }, 1 )})();
   }
 
   state.goToNextLevel = function () {
@@ -260,6 +298,8 @@ function initGameState() {
     game.camera.displayObject.position = game.dolly.position;
     game.camera.displayObject.rotation = game.dolly.rotation;
 
+    this.resultScreen = undefined;
+
     //game.world.destroy();
     game.state.clearCurrentState();
     game.stage.setBackgroundColor( "#000" );
@@ -268,13 +308,16 @@ function initGameState() {
 
   }
 
+  // BUG WHERE REC GUS & GHOST GUS & TOOL ALL COLLIDE
   state.postBroadphase = function ( body1, body2 ) {
 
-    if ( body1.sprite.name === "Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false && body1.gameObject.constructor.name !== 'GhostGus' ) {
-      body2.sprite.owner.collect();
+    if ( !body1.sprite || !body2.sprite ) return true; // to stop destroyed ghost sprite from interfering
+
+    if ( body1.sprite.name !== "Ghost Gus" && body2.sprite.name === "Tool" && body1.fixedRotation && gus.isDead === false ) {
+      if ( body1.sprite.position.distance( body2.sprite.position ) < 32 ) body2.sprite.owner.collect();
       return false;
-    } else if ( body1.sprite.name === "Tool" && body2.sprite.name === "Gus" && body2.fixedRotation && gus.isDead === false && body2.gameObject.constructor.name !== 'GhostGus' ) {
-      body1.sprite.owner.collect();
+    } else if ( body1.sprite.name === "Tool" && body2.sprite.name !== "Ghost Gus" && body2.fixedRotation && gus.isDead === false ) {
+      if ( body1.sprite.position.distance( body2.sprite.position ) < 32 )body1.sprite.owner.collect();
       return false;
     }
 

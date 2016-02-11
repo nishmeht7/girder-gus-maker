@@ -15,33 +15,45 @@ const FRAMES_PER_COURSE_CORRECTION = 1;
 const FREQUENCY_OF_COURSE_CORRECTION = 8; //this simply specifies how frequently a record gets decompressed, more is smoother, yustynn will adapt course correction to find the most recent correction and apply it
 
 class RecordingGus extends Gus {
-	constructor(x, y) {
-		super(x, y);
+  constructor(x, y) {
+    super(x, y);
 
-		this.startTime = game.time.now;
+    this.sprite.name = 'Recording Gus';
 
-		this.inputRecords = [];
+    this.spawnTime = game.time.now;
 
-		this.courseCorrectionRecords = [];
-		this.framesSinceCourseCorrectionRecord = 0;
+    this.inputRecords = [];
 
-		this.currentRecord = { input: [0] };
-		this.compressed = [];
+    this.courseCorrectionRecords = [];
+    this.framesSinceCourseCorrectionRecord = 0;
 
-	}
+    this.currentRecord = { input: [0] };
 
-	getTime() {
-		return game.time.now - this.startTime;
-	}
+  }
 
-	recordCourseCorrection() {
+  finalizeRecords() {
+    if (!this.recordsFinalized) {
+      this.inputRecords = this.inputRecords.reverse();
+      this.courseCorrectionRecords = this.courseCorrectionRecords.reverse();
+
+
+  		this.compressRecord();
+  		console.log(this.compressed);
+  		console.table(this.decompressRecord());
+
+      this.recordsFinalized = true;
+    }
+  }
+
+  recordCourseCorrection() {
 		//when gus is rotating, he is not moving, if he is not moving, replayed gus can't be out of sync
 		if(!this.rotating) {
 			this.courseCorrectionRecords.push({
 				x: this.sprite.x,
 				y: this.sprite.y,
 				f: this.isTouching('down'),
-			time: this.getTime()
+        r: this.rotation,
+			  time: this.getTime()
 			})
 		}
 	}
@@ -122,7 +134,7 @@ class RecordingGus extends Gus {
 			else {
 				var xRange = pair.end.x - pair.start.x;
 				var yRange = pair.end.y - pair.start.y;
-				var frames = Math.ceil((pair.end.time - pair.start.time) / FREQUENCY_OF_COURSE_CORRECTION); 
+				var frames = Math.ceil((pair.end.time - pair.start.time) / FREQUENCY_OF_COURSE_CORRECTION);
 				for(var i = 0; i <= frames; i++) {
 					this.decomp.push({
 						f: true,
@@ -136,123 +148,143 @@ class RecordingGus extends Gus {
 		return this.decomp;
 	}
 
-	respawn() {
-		super.respawn();
-		this.compressRecord();
-		console.log(this.compressed);
-		console.table(this.decompressRecord());
-	}
+  getTime() {
+    return game.time.now - this.spawnTime;
+  }
 
-	recordInput() {
-		const input = [];
-		const spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  timeSinceSpawn() {
+    return game.time.now - this.spawnTime;
+  }
 
-		// not sure what's supposed to happen if both are held down,
-		// but I'm defaulting to the 'right' action
-		if (game.cursors.left.isDown) input.push(1);
-		if (game.cursors.right.isDown) input.push(2);
-		if (spacebar.isDown) input.push(3);
-		if (!input.length) input.push(0);
-		if (!_.isEqual(this.currentRecord.input, input)){
-			this.inputRecords.push({
-				input: this.currentRecord.input,
-				endTime: this.getTime()
-			});
-			this.currentRecord.input = input;
-		}
+  recordInput(win) {
+    if (this.recordsFinalized || this.isDead) return;
 
-	}
+    const input = [];
+    const spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    const r = game.input.keyboard.addKey(Phaser.Keyboard.R);
 
-	kill() {
-		this.inputRecords = this.inputRecords.reverse();
-		this.courseCorrectionRecords = this.courseCorrectionRecords.reverse();
+    // not sure what's supposed to happen if both are held down,
+    // but I'm defaulting to the 'right' action
+    if (game.cursors.left.isDown) input.push(1);
+    if (game.cursors.right.isDown) input.push(2);
+    if (spacebar.isDown) input.push(3);
+    if (r.isDown || win) input.push(4);
+    if (!input.length) input.push(0);
+    if (!_.isEqual(this.currentRecord.input, input)){
+      this.inputRecords.push({
+        input: this.currentRecord.input,
+        endTime: this.timeSinceSpawn()
+      });
+      this.currentRecord.input = input;
+    }
 
-		const recordNode = document.getElementById('arr');
-		if (recordNode) recordNode.textContent = JSON.stringify(this.inputRecords) + '\n\n' + JSON.stringify(this.courseCorrectionRecords);
+  }
 
-		new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "GusHead", {
-			lifetime: 5000,
-			count: 14,
-			scaleMin: 0.4,
-			scaleMax: 1.0,
-			speed: 100,
-			fadeOut: true
-		});
+  resetSpawnTime() {
+    this.spawnTime = game.time.now;
+  }
 
-		this.sprite.visible = false;
-		this.isDead = true;
+  kill() {
+    this.finalizeRecords();
 
-		this.sprite.body.velocity.x = 0;
-		this.sprite.body.velocity.y = 0;
+    // for development
+    const recordNode = document.getElementById('arr');
+    if (recordNode) recordNode.textContent = JSON.stringify(this.inputRecords) + '\n\n' + JSON.stringify(this.courseCorrectionRecords);
 
-	}
+    new ParticleBurst( this.sprite.position.x, this.sprite.position.y, "GusHead", {
+      lifetime: 5000,
+      count: 14,
+      scaleMin: 0.4,
+      scaleMax: 1.0,
+      speed: 100,
+      fadeOut: true
+    });
 
-	update() {
-		this.recordInput();
+    this.sprite.visible = false;
+    this.isDead = true;
 
-		if (this.framesSinceCourseCorrectionRecord === FRAMES_PER_COURSE_CORRECTION) {
-			this.recordCourseCorrection();
-			this.framesSinceCourseCorrectionRecord = 0;
-		} else {
-			this.framesSinceCourseCorrectionRecord++;
-		}
+    this.sprite.body.velocity.x = 0;
+    this.sprite.body.velocity.y = 0;
 
-		// clear horizontal movement
-		if (Math.abs(Math.cos(this.rotation)) > EPSILON) this.sprite.body.velocity.x = 0;
-		else this.sprite.body.velocity.y = 0;
+  }
 
-		// check to see if we're rotating
-		if (this.rotating) {
+  respawn() {
+    super.respawn()
 
-			// stop all movement
-			this.stop();
-			this.sprite.body.velocity.y = 0;
-			this.sprite.body.velocity.x = 0;
+    this.resetSpawnTime();
+    this.inputRecords = [];
+    this.courseCorrectionRecords = [];
+    this.framesSinceCourseCorrectionRecord = 0;
+    this.recordsFinalized = false;
+  }
 
-			// create a rotate tween
-			if (this.rotateTween === undefined) {
-				this.rotateTween = game.add.tween(this.sprite).to({
-					rotation: this.targetRotation
-				}, 300, Phaser.Easing.Default, true)
-				.onComplete.add(function() {
-					this.rotation = this.targetRotation % (TAU); // keep angle within 0-2pi
-					this.finishRotation();
-				}, this);
-			}
+  update() {
+    this.recordInput();
+    this.recordCourseCorrection();
 
-		} else if (!this.isDead) {
+    if (this.framesSinceCourseCorrectionRecord === FRAMES_PER_COURSE_CORRECTION) {
+      // this.recordCourseCorrection();
+      this.framesSinceCourseCorrectionRecord = 0;
+    } else {
+      this.framesSinceCourseCorrectionRecord++;
+    }
 
-			// do gravity
-			this.applyGravity();
+    // clear horizontal movement
+    if (Math.abs(Math.cos(this.rotation)) > EPSILON) this.sprite.body.velocity.x = 0;
+    else this.sprite.body.velocity.y = 0;
 
-			if (this.rotationSensor.needsCollisionData) {
-				this.setCollision();
-				this.rotationSensor.needsCollisionData = false;
-			}
+    // check to see if we're rotating
+    if (this.rotating) {
 
-			// check for input
-			if (game.cursors.left.isDown) {
-				this.walk("left");
-			} else if (game.cursors.right.isDown) {
-				this.walk("right");
-			} else {
-				this.stop();
-			}
+      // stop all movement
+      this.stop();
+      this.sprite.body.velocity.y = 0;
+      this.sprite.body.velocity.x = 0;
 
-			if (!this.isTouching("down")) {
-				this.fallTime += game.time.physicsElapsedMS;
+      // create a rotate tween
+      if (this.rotateTween === undefined) {
+        this.rotateTween = game.add.tween(this.sprite).to({
+            rotation: this.targetRotation
+          }, 300, Phaser.Easing.Default, true)
+          .onComplete.add(function() {
+            this.rotation = this.targetRotation % (TAU); // keep angle within 0-2pi
+            this.finishRotation();
+          }, this);
+      }
 
-				if (this.fallTime > this.killTime) {
-					this.kill();
-				}
+    } else if (!this.isDead) {
 
-			} else {
-				this.fallTime = 0;
-			}
+      // do gravity
+      this.applyGravity();
 
-		}
+      if (this.rotationSensor.needsCollisionData) {
+        this.setCollision();
+        this.rotationSensor.needsCollisionData = false;
+      }
 
-	}
+      // check for input
+      if (game.cursors.left.isDown) {
+        this.walk("left");
+      } else if (game.cursors.right.isDown) {
+        this.walk("right");
+      } else {
+        this.stop();
+      }
+
+      if (!this.isTouching("down")) {
+        this.fallTime += game.time.physicsElapsedMS;
+
+        if (this.fallTime > this.killTime) {
+          this.kill();
+        }
+
+      } else {
+        this.fallTime = 0;
+      }
+
+    }
+
+  }
 }
 
 module.exports = RecordingGus;

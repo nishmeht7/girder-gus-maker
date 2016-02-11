@@ -63,6 +63,7 @@ const getLevelsByType = (userPromise, levelType, page) => {
     levelPromise = userPromise
       .then(user => {
         if(!user) return next();
+        if(user.likedLevels.length === 0) return [[],0];
         var following = user.following.map(function(creator) {
           return { creator: creator };
         });
@@ -87,7 +88,7 @@ const getLevelsByType = (userPromise, levelType, page) => {
         var count = user.likedLevels.length;
         user = user.populate({
           path: 'likedLevels',
-          select: 'title creator datedCreated starCount',
+          select: 'title creator dateCreated starCount',
           populate: {
             path: 'creator',
             select: 'name'
@@ -337,7 +338,8 @@ export const getUserProfileAndSend = () => (req, res, next) => {
       user = user.populate({ path: 'followers', select: 'name', options: { limit: 5 }})
         .populate({ path: 'following', select: 'name', options: { limit: 5 }})
         .execPopulate();
-        return Promise.all([user, created, following, liked]);
+        
+      return Promise.all([user, created, following, liked]);
     })
     .spread((user, created, following, liked) => {
       res.json({
