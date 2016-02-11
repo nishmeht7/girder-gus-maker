@@ -25,7 +25,6 @@ class GhostBreakBrickBlock extends BreakBrickBlock {
   startCollapsing(target) {
 
     if ( target.sprite.name === 'Ghost Gus' ) {
-      console.log('do collapse')
       this.countCollapseTime = this.countCollapseTime || game.time.physicsElapsedMS;
     }
   }

@@ -40,8 +40,7 @@ function initGameState() {
     game.toolsToCollect = undefined;
     generator.parseObjects();
 
-
-    // if ( !game.ghostMode ) GhostBreakBrickBlock.hideAll();
+    if ( !game.ghostMode ) GhostBreakBrickBlock.hideAll();
 
     if ( game.toolsToCollect !== undefined ) {
       game.toolsRemaining = game.toolsToCollect.length;

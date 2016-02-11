@@ -91,8 +91,6 @@ class RecordingGus extends Gus {
   kill() {
     this.finalizeRecords();
 
-    console.log(JSON.stringify(this.inputRecords) + '\n\n' + JSON.stringify(this.courseCorrectionRecords))
-
     // for development
     const recordNode = document.getElementById('arr');
     if (recordNode) recordNode.textContent = JSON.stringify(this.inputRecords) + '\n\n' + JSON.stringify(this.courseCorrectionRecords);
