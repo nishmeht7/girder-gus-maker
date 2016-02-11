@@ -25,6 +25,7 @@ function initBootState() {
     for( var attempts = 0; !game.physics.p2; attempts++ ) {
 
       if ( attempts >= 10 ) {
+        loadText.text = "An error occurred. Please reload the page.";
         throw new Error( "Starting physics engine failed after 10 retries" );
       }
 
