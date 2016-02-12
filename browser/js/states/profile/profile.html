@@ -24,6 +24,27 @@
           </ul>
         </nav>
     </div>
+    <div class="profile-levels-list" id="draft-levels">
+        <h4 id="created-levels">Drafts You're Working On</h4>
+        <div class="levels-list">
+            <div class="row" ng-repeat="levelRow in draftLevels">
+                <level-thumbnail ng-repeat="level in levelRow" level="level" edit="true"></level-thumbnail>
+            </div>
+        </div>
+        <nav ng-show="pages.draftLevels.length > 1">
+          <ul class="pagination">
+            <li ng-class="{disabled: currentPage.draftLevels === 1}">
+                <a ng-click="loadDraftPages(currentPage.draftLevels-1)">« Prev</a>
+            </li>
+            <li ng-repeat="page in pages.draftLevels" ng-class="{active: page === currentPage.draftLevels}">
+                <a ng-class="{disabled: page === currentPage.draftLevels}" ng-click="loadDraftPages(page)">{{ page }}</a>
+            </li>
+            <li ng-class="{disabled: currentPage.draftLevels === pages.draftLevels.length}">
+              <a ng-click="loadDraftPages(currentPage.draftLevels+1)">Next »</a>
+            </li>
+          </ul>
+        </nav>
+    </div>
     <div class="profile-levels-list" id="following-levels">
         <h4>Levels By Creators You're Following</h4>
         <div class="levels-list">

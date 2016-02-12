@@ -1,6 +1,7 @@
 app.factory('CreateLevelFactory', function ($http) {
 	var factory = {};
 	factory.submitLevel = function(objArr, title, girderCount, skyColor, isPublished, id) {
+		console.log('id',id,'isPublished',isPublished);
 		try { 
 			var map = {
 				startGirders: girderCount,
