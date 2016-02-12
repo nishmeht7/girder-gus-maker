@@ -172,8 +172,9 @@ schema.methods.addLevel = function(levelId) {
 
 // removes levelId from user's createdLevels array
 schema.methods.removeLevel = function(levelId) {
+
     this.createdLevels = this.createdLevels.filter(function(level) {
-        return level !== levelId;
+        return !level.equals(levelId);
     });
     this.totalCreatedLevels = this.createdLevels.length;
 
@@ -198,7 +199,6 @@ schema.methods.likeLevel = function(levelId) {
             if(level.creator.equals(self._id)) {
                 err = new Error("Cannot like own level");
                 err.status = 400;
-                console.log(err);
                 throw err;
             }
 

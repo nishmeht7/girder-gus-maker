@@ -2,11 +2,13 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const path = require('path');
+const Promise = require('bluebird');
 
 const convert = require('../../imaging/convert');
 const mapToCanvas = require('../../imaging/mapToCanvas');
-const uploadMapThumb = require('../../imaging/upload')
-const removeLocalMapThumb = require('../../imaging/delete')
+const uploadMapThumb = require('../../imaging/upload');
+const removeLocalMapThumb = require('../../imaging/delete');
+const deleteServerThumb = require('../../imaging/deleteServerThumb');
 
 // Calculate number of tiles for data validation
 var TILE_MAP = require( "../../../game/js/consts/tilemap" );
@@ -172,18 +174,46 @@ schema.post('save', function(doc, next) {
 
 });
 
-// hook to remove deleted level from creator's level list and
-//   set users's new total star count
+// post-remove hook to delete level from creator's
+//    createdLevels list and update creator's star count
 schema.post('remove', function(doc) {
+  // remove level from creator's list
   User.findById(doc.creator)
     .then(function(user) {
-      // remove level from creator's list
       return user.removeLevel(doc._id);
     })
-    // set user's total star count
+    // set creator's total star count
     .then(function(user) {
       return user.setStars();
     })
+    .then(null,function(err) {
+      console.error(err);
+    });
+});
+
+// find all users who have liked deleted level and remove
+//    level from their likedLevels array
+schema.post('remove', function(doc) {
+  User.find({ likedLevels: doc._id })
+    .then(function(users) {
+      var usersPromises = users.map(function(user) {
+        user.likedLevels = user.likedLevels.filter(function(level) {
+          return !doc._id.equals(level);
+        });
+
+        return user.save()
+      })
+
+      return Promise.all(usersPromises);
+    })
+    .then(null, function(err) {
+      console.error(err);
+    });
+});
+
+// delete thumbnail from S3
+schema.post('remove', function(doc) {
+    deleteServerThumb(doc._id);
 });
 
 schema.virtual('screenshot').get(function() {

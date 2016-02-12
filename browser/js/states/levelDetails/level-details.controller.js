@@ -16,7 +16,7 @@ app.controller('LevelDetailsCtrl', function ($scope, $state, data, user, SocialF
             } else return false;
         })();
     }
-    console.log('data',data);
+
     $scope.user = user;
     $scope.pending = false;
     var optimistic = false;
