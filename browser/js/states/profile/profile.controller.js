@@ -1,5 +1,6 @@
 app.controller('ProfileCtrl', function($scope, profile, UsersFactory) {
     var rowSize = 4;
+    console.log(profile);
     var makeRows = function(levels) {
         return levels.reduce( function( levelMap, level ) {
             if ( levelMap[ levelMap.length - 1 ].length < rowSize ) {
@@ -22,17 +23,20 @@ app.controller('ProfileCtrl', function($scope, profile, UsersFactory) {
     $scope.pages = {
         createdLevels: makePages(profile.createdLevels.pages),
         followingLevels: makePages(profile.followingLevels.pages),
-        likedLevels: makePages(profile.likedLevels.pages)
+        likedLevels: makePages(profile.likedLevels.pages),
+        draftLevels: makePages(profile.draftLevels.pages)
     };
     $scope.currentPage = {
         createdLevels: 1,
         followingLevels: 1,
-        likedLevels: 1
+        likedLevels: 1,
+        draftLevels: 1
     };
 
     $scope.createdLevels = makeRows(profile.createdLevels.levels);
     $scope.followingLevels = makeRows(profile.followingLevels.levels);
     $scope.likedLevels = makeRows(profile.likedLevels.levels);
+    $scope.draftLevels = makeRows(profile.draftLevels.levels);
 
     $scope.loadCreatedPages = function(page) {
         UsersFactory.fetchProfileLevels('created', page)
@@ -56,6 +60,13 @@ app.controller('ProfileCtrl', function($scope, profile, UsersFactory) {
                 $scope.likedLevels = makeRows(data.levels);
                 $scope.currentPage.likedLevels = page;
                 $scope.pages.likedLevels = makePages(data.pages);
+            })
+    };
+    $scope.loadDraftPages = function(page) {
+        UsersFactory.fetchProfileLevels('drafts', page)
+            .then(function(data) {
+                $scope.draftLevels = makeRows(data.levels);
+                $scope.currentPage.draftLevels = page;
             })
     };
 
