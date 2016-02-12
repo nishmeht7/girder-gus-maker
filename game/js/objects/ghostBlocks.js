@@ -9,6 +9,7 @@ class GhostBreakBrickBlock extends BreakBrickBlock {
     super(x, y, false); // false argument calls BreakBrickBlock constructor without it setting collisions
 
     this.isGhost = true;
+    this.sprite.object = this;
 
     this.sprite.alpha = 0.5;
 
@@ -47,6 +48,8 @@ class GhostGirder extends Block {
     super(x, y, "GhostGirder"); // Block constructor does not set collisions
 
     this.sprite.alpha = 0.5;
+    this.isGhost = true;
+    this.sprite.object = this;
 
     // set collisions
     this.sprite.body.setCollisionGroup( COLLISION_GROUPS.GHOST_BLOCK_ROTATE );
