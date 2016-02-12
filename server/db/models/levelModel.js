@@ -107,6 +107,13 @@ schema.methods.setStars = function() {
 // note whether level is new before saving
 schema.pre('save', function(next) {
   this.wasNew = this.isNew;
+  this.shouldSaveScreenshot = !this.published || this.isNew;
+  next();
+});
+
+schema.pre('update', function(next) {
+  console.log("pre update");
+  console.log(this);
   next();
 });
 
@@ -144,7 +151,7 @@ schema.post('save', function(doc, next) {
 // post-save hook to save a screenshot of the level
 schema.post('save', function(doc, next) {
 
-  if ( !doc.wasNew ) {
+  if ( !doc.shouldSaveScreenshot ) {
     console.log( "Updating already existing map, skipping screenshot" );
     return next();
   }
@@ -154,6 +161,11 @@ schema.post('save', function(doc, next) {
     if ( objDef.t === 1 ) return objDef;
     return gus;
   }, undefined );
+
+  if ( gusDef === undefined ) {
+    console.log( "Could not find gusDef in saved level, skipping screenshot" );
+    return next();
+  }
 
   // now let's start making beautiful pictures
   var outPath = path.join( __dirname, "../../../public/" ) + doc._id + ".png";
