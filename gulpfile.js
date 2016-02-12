@@ -18,6 +18,7 @@ var eslint = require('gulp-eslint');
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
 var notify = require('gulp-notify');
+var mocha = require('gulp-mocha');
 
 // Development tasks
 // --------------------------------------------------------------
@@ -117,7 +118,13 @@ gulp.task('lintServerJS', function() {
 //     .pipe(gulp.dest('./public'));
 // });
 
-gulp.task('buildGameJS', ['lintGameJS','copyAssets'], function() {
+gulp.task('testGameJS', ['lintGameJS'], function() {
+  return gulp.src('./test/game/*.js', {
+    read: false
+  }).pipe(mocha({ reporter: 'spec', bail: true }))
+});
+
+gulp.task('buildGameJS', ['lintGameJS','copyAssets','testGameJS'], function() {
   var bundler = browserify();
 
   bundler.add('./game/js/main.js');
