@@ -332,6 +332,13 @@ function initCreateState() {
 		if (rotateCounterKey.isDown) rotate(1);
 		if (routateClockwiseKey.isDown) rotate(-1);
 
+		if( !arrowCursors.isDown() && !wasdCursors.isDown() && game.dolly.targetPos) {
+			//user is not moving the camera and there is a target position, apply brakes
+			game.dolly.targetPos.x = game.dolly.targetPos.x - (game.dolly.targetPos.x - game.dolly.position.x) / 20;
+			game.dolly.targetPos.y = game.dolly.targetPos.y - (game.dolly.targetPos.y - game.dolly.position.y) / 20;
+		}
+			
+
 		game.dolly.update();
 	}
 
