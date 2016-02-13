@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import Promise from 'bluebird';
 import s3 from 's3';
 
-var env = require('../env');
+const env = require('../env');
 
 const client = s3.createClient({
   s3Options: {
