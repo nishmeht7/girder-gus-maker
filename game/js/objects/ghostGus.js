@@ -35,26 +35,44 @@ class GhostGus extends Gus {
     const comp = this.courseCorrectionRecords;
     this.decomp = [];
 
-    comp.forEach((pair) => {
-      if (pair.start.time === pair.end.time) this.decomp.push(pair.start);
-      else {
-        let xRange = pair.end.x - pair.start.x;
-        let yRange = pair.end.y - pair.start.y;
-        let frames = Math.ceil((pair.end.time - pair.start.time) / FREQUENCY_OF_COURSE_CORRECTION);
-        for (let i = 0; i <= frames; i++) {
-          this.decomp.push({
-            f: true,
-            time: pair.start.time + i * FREQUENCY_OF_COURSE_CORRECTION,
-            x: pair.start.x + (i / frames) * xRange,
-            y: pair.start.y + (i / frames) * yRange,
-            r: pair.start.r
-          });
-        }
-      }
-    });
+	comp.forEach((pair, indx) => {
+		if (pair.start.time === pair.end.time) {
+			if(comp[indx-1]) {
+				//this record comes after a previous record, interpolate from previous record to here
+				let xRange = pair.start.x - comp[indx-1].end.x;
+				let yRange = pair.start.y - comp[indx-1].end.x;
+				let frames = Math.ceil((comp[indx-1].end.x; - pair.start.time) / FREQUENCY_OF_COURSE_CORRECTION);
+				for (let i = 0; i <= frames; i++) {
+					this.decomp.push({
+						f: true,
+						time: pair.start.time + i * FREQUENCY_OF_COURSE_CORRECTION,
+						x: pair.start.time + (i / frames) * xRange,
+						y: pair.start.time + (i / frames) * yRange,
+						r: pair.start.r
+					});
+				}
+			} else {
+				this.decomp.push(pair.start);
+			}
+		}
+		else {
+			let xRange = pair.end.x - pair.start.x;
+			let yRange = pair.end.y - pair.start.y;
+			let frames = Math.ceil((pair.end.time - pair.start.time) / FREQUENCY_OF_COURSE_CORRECTION);
+			for (let i = 0; i <= frames; i++) {
+				this.decomp.push({
+					f: true,
+					time: pair.start.time + i * FREQUENCY_OF_COURSE_CORRECTION,
+					x: pair.start.x + (i / frames) * xRange,
+					y: pair.start.y + (i / frames) * yRange,
+					r: pair.start.r
+				});
+			}
+		}
+	});
 
-    this.decomp = this.decomp.reverse();
-    console.log(this.courseCorrectionRecords);
+	this.decomp = this.decomp.reverse();
+	console.log(this.courseCorrectionRecords);
     console.table(this.decomp)
   }
 
@@ -82,6 +100,7 @@ class GhostGus extends Gus {
   correctCourse() {
 
     if (this.isScrewed) return;
+	if (this.rotating) return;
 
     const courseCorrection = this.getClosestCourseCorrection();
 
