@@ -313,7 +313,7 @@ function initCreateState() {
 			}
 		}
 
-		const moveAmount = 128;
+		const moveAmount = 512;
 
 		var vec;
 		if ( arrowCursors.isDown() ) {
