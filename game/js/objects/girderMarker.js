@@ -76,6 +76,10 @@ GirderMarker.prototype.masterPos = function () {
   return masterPos;
 }
 
+function noGhosts( box ) {
+  return !( box.parent.sprite.object && box.parent.sprite.object.isGhost );
+}
+
 GirderMarker.prototype.getTargetPos = function () {
 
   var playerSensor = this.ghost ? COLLISION_GROUPS.GHOST_PLAYER_SENSOR : COLLISION_GROUPS.PLAYER_SENSOR;
@@ -92,7 +96,7 @@ GirderMarker.prototype.getTargetPos = function () {
   var front = posFactory.front();
   front.isBottom = false;
 
-  var frontTarget = game.physics.p2.hitTest( front );
+  var frontTarget = game.physics.p2.hitTest( front ).filter( noGhosts );
 
   if ( frontTarget.length ) {
     if ( frontTarget.length > 1 || frontTarget[0].parent.sprite.key !== 'GhostGirder' ) {
@@ -101,7 +105,7 @@ GirderMarker.prototype.getTargetPos = function () {
   }
 
   // test to see if there's anything in the way of this girder
-  var hitBoxes = game.physics.p2.hitTest( bottom );
+  var hitBoxes = game.physics.p2.hitTest( bottom ).filter( noGhosts );
   if ( hitBoxes.length ) {
 
     // there is! is it an unplaceable object?
@@ -119,11 +123,13 @@ GirderMarker.prototype.getTargetPos = function () {
     var hitBelow = []
     if ( this.master.facingRight ) hitBelow = game.physics.p2.hitTest( this.masterPos().left().bottom() );
     else hitBelow = game.physics.p2.hitTest( this.masterPos().right().bottom() );
+    hitBelow = hitBelow.filter( noGhosts );
 
     if ( hitBelow.length ) {
 
       // Gus is standing on something, check to see if we can place on it
       var standingOnUnplaceable = false;
+      console.log( hitBelow );
       hitBelow.forEach( function( box ) {
         if ( box.parent.collidesWith.indexOf( playerSensor ) === -1 ) standingOnUnplaceable = true;
       });
