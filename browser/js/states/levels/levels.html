@@ -5,16 +5,16 @@
             <level-thumbnail ng-repeat="level in levelRow" level="level"></level-thumbnail>
         </div>
     </div>
-    <nav ng-show="pages.length > 1">
+    <nav ng-show="pages.length > 1" class="text-center">
       <ul class="pagination">
         <li ng-class="{disabled: currentPage === 1}">
-            <a ng-click="toPage(currentPage-1)">« Prev</a>
+            <a ng-click="toPage(currentPage-1)"><h3>« Prev</h3></a>
         </li>
         <li ng-repeat="page in pages" ng-class="{active: page === currentPage}">
-            <a ng-class="{disabled: page === currentPage}" ng-click="toPage(page)">{{ page }}</a>
+            <a ng-class="{disabled: page === currentPage}" ng-click="toPage(page)"><h3>{{ page }}</h3></a>
         </li>
         <li ng-class="{disabled: currentPage === pages.length}">
-          <a ng-click="toPage(currentPage+1)">Next »</a>
+          <a ng-click="toPage(currentPage+1)"><h3>Next »</h3></a>
         </li>
       </ul>
     </nav>

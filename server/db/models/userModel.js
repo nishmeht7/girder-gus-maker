@@ -44,6 +44,14 @@ var schema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    // drafts: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Level'
+    // }],
+    totalDrafts: {
+        type: Number,
+        default: 0
+    },
     totalStars: {
         type: Number,
         default: 0
@@ -161,23 +169,49 @@ schema.methods.removeFollower = function(userId) {
     return this.save();
 }
 
+schema.methods.setLevelCounts = function() {
+    return this.populate({
+            path: 'createdLevels',
+            select: 'published'
+        })
+        .execPopulate()
+        .then(function(user) {
+            var createdLevels = user.createdLevels.filter(function(level) {
+                return level.published;
+            });
+            var drafts = user.createdLevels.filter(function(level) {
+                return !level.published;
+            });
+            user.totalCreatedLevels = createdLevels.length;
+            user.totalDrafts = drafts.length;
+            return user.save();
+        });
+}
+
 // adds levelId to user's createdLevels array
 schema.methods.addLevel = function(levelId) {
     if(this.createdLevels.indexOf(levelId) === -1){
         this.createdLevels.push(levelId);
-        this.totalCreatedLevels = this.createdLevels.length;
-        return this.save();
+        
+        return this.save()
+            .then(function(user) {
+                return user.setLevelCounts();
+            });
     }
 };
 
 // removes levelId from user's createdLevels array
 schema.methods.removeLevel = function(levelId) {
+
     this.createdLevels = this.createdLevels.filter(function(level) {
-        return level !== levelId;
+        return !level.equals(levelId);
     });
     this.totalCreatedLevels = this.createdLevels.length;
 
-    return this.save();
+    return this.save()
+        .then(function(user) {
+            return user.setLevelCounts();
+        });
 };
 
 schema.methods.likeLevel = function(levelId) {
@@ -198,7 +232,6 @@ schema.methods.likeLevel = function(levelId) {
             if(level.creator.equals(self._id)) {
                 err = new Error("Cannot like own level");
                 err.status = 400;
-                console.log(err);
                 throw err;
             }
 

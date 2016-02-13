@@ -1,14 +1,17 @@
-var COLLISION_GROUPS = require( "../consts/collisionGroups" );
-var EPSILON = require( "../consts" ).EPSILON;
-var TAU = require( "../consts" ).TAU;
+var COLLISION_GROUPS = require( "../../consts/collisionGroups" );
+var EPSILON = require( "../../consts" ).EPSILON;
+var TAU = require( "../../consts" ).TAU;
 
-var ParticleBurst = require( "../particles/burst" );
+var GusMath = require( "./math" );
+var ParticleBurst = require( "../../particles/burst" );
 
 var game = window.game;
 
 function Gus(x, y) {
 
     if ( game === undefined ) game = window.game;
+
+    this.math = new GusMath( this );
 
     this.speed = 250;         // walk speed
     this.gravity = 1000;      // gravity speed
@@ -54,16 +57,6 @@ function Gus(x, y) {
 
 }
 
-function saneVec( vec ) {
-  var x = Math.abs( vec[0] ) < EPSILON ? 0 : vec[0];
-  var y = Math.abs( vec[1] ) < EPSILON ? 0 : vec[1];
-  return p2.vec2.fromValues( x, y );
-}
-
-function dot( vec1, vec2 ) {
-  return (vec1[0] * vec2[0]) + (vec1[1] * vec2[1]);
-}
-
 Gus.prototype.setCollision = function() {
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SOLID );
   this.sprite.body.setCollisionGroup( COLLISION_GROUPS.PLAYER_SENSOR, this.rotationSensor );
@@ -106,15 +99,15 @@ Gus.prototype.respawn = function() {
 
 Gus.prototype.doom = function() {
 
-  if ( !this.canRotate || this.isDoomed || this.isDead || this.rotating ) return;
+  if ( this.isDoomed || this.isDead || this.rotating ) return;
 
   this.isDoomed = true;
 
   this.sprite.body.clearCollision();
   this.sprite.body.fixedRotation = false;
 
-  this.sprite.body.velocity.x = Math.sin( this.rotation ) * 250;
-  this.sprite.body.velocity.y = Math.cos( this.rotation ) * -250;
+  this.sprite.body.velocity.x = this.math.sin() * 250;
+  this.sprite.body.velocity.y = this.math.cos() * -250;
 
   this.sprite.body.angularVelocity = 30;
 
@@ -137,15 +130,14 @@ Gus.prototype.touchesWall = function( gus, other, sensor, shape, contact ) {
 
   if ( !this.canRotate ) return;
   if ( sensor !== this.rotationSensor ) {
-    var isHorizontal = Math.abs( Math.cos( this.rotation ) ) > EPSILON;
-    if ( isHorizontal && Math.abs( this.sprite.body.velocity.y ) > 1 ) this.sprite.position.x -= this.sprite.body.velocity.x;
+    if ( this.math.isHorizontal() && Math.abs( this.sprite.body.velocity.y ) > 1 ) this.sprite.position.x -= this.sprite.body.velocity.x;
     else if ( Math.abs( this.sprite.body.velocity.x ) > 1 ) this.sprite.position.y -= this.sprite.body.velocity.y;
 
     return;
   };
 
-  var leftVec = p2.vec2.fromValues( -Math.cos( this.rotation ), -Math.sin( this.rotation ) );
-  var d = dot( saneVec( leftVec ), saneVec( contact[0].normalA ) );
+  var leftVec = p2.vec2.fromValues( -this.math.cos(), -this.math.sin() );
+  var d = this.math.dot( this.math.svec( leftVec ), this.math.svec( contact[0].normalA ) );
   if ( contact[0].bodyB === gus.data ) d *= -1;
 
   if ( d > 1 - EPSILON ) this.rotate( "left" );
@@ -163,13 +155,16 @@ Gus.prototype.checkForRotation = function( side ) {
 
 }
 
+var dirVecMap = {
+  left: function( gus ) { return p2.vec2.fromValues( -gus.math.cos(), -gus.math.sin() ) },
+  right: function( gus ) { return p2.vec2.fromValues( gus.math.cos(), gus.math.sin() ) },
+  down: function( gus ) { return p2.vec2.fromValues( -gus.math.sin(), gus.math.cos() ) },
+  up: function( gus ) { return p2.vec2.fromValues( gus.math.sin(), -gus.math.cos() ) }
+}
+
 Gus.prototype.isTouching = function( side ) {
   // get the vector to check
-  var dirVec = null;
-  if ( side === "left" ) dirVec = p2.vec2.fromValues( -Math.cos( this.rotation ), -Math.sin( this.rotation ) );
-  if ( side === "right" ) dirVec = p2.vec2.fromValues( Math.cos( this.rotation ), Math.sin( this.rotation ) );
-  if ( side === "down" ) dirVec = p2.vec2.fromValues( -Math.sin( this.rotation ), Math.cos( this.rotation ) );
-  if ( side === "up" ) dirVec = p2.vec2.fromValues( Math.sin( this.rotation ), -Math.cos( this.rotation ) );
+  var dirVec = dirVecMap[ side ]( this );
 
   // loop throuhg all contacts
   for ( var i = 0; i < game.physics.p2.world.narrowphase.contactEquations.length; ++i ) {
@@ -179,7 +174,7 @@ Gus.prototype.isTouching = function( side ) {
     if ( contact.bodyA === this.sprite.body.data || contact.bodyB === this.sprite.body.data ) {
 
       // if the dot of the normal is 1, the player is perpendicular to the collision
-      var d = dot( saneVec( dirVec ), saneVec( contact.normalA ) );
+      var d = this.math.dot( this.math.svec( dirVec ), this.math.svec( contact.normalA ) );
       if ( contact.bodyA === this.sprite.body.data ) d *= -1;
       if ( d > 1 - EPSILON && contact.bodyA !== null && contact.bodyB !== null ) {
         return true;
@@ -220,8 +215,8 @@ Gus.prototype.finishRotation = function() {
   else if ( this.targetRotation >= TAU ) this.targetRotation %= TAU;
 
   // set gravity relative to our new axis
-  this.sprite.body.gravity.y = Math.floor( Math.cos( this.rotation ) * this.gravity );
-  this.sprite.body.gravity.x = Math.floor( Math.sin( this.rotation ) * -this.gravity );
+  this.sprite.body.gravity.y = Math.floor( this.math.cos() * this.gravity );
+  this.sprite.body.gravity.x = Math.floor( this.math.sin() * -this.gravity );
 
   // change rotation
   this.sprite.rotation = this.rotation;
@@ -236,8 +231,8 @@ Gus.prototype.finishRotation = function() {
 
 Gus.prototype.applyGravity = function() {
 
-  this.sprite.body.velocity.x += Math.floor( Math.sin( this.rotation ) * ( -this.gravity * game.time.physicsElapsed ) );
-  this.sprite.body.velocity.y += Math.floor( Math.cos( this.rotation ) * ( this.gravity * game.time.physicsElapsed ) );
+  this.sprite.body.velocity.x += Math.floor( this.math.sin() * ( -this.gravity * game.time.physicsElapsed ) );
+  this.sprite.body.velocity.y += Math.floor( this.math.cos() * ( this.gravity * game.time.physicsElapsed ) );
 
 }
 
@@ -260,12 +255,10 @@ Gus.prototype.walk = function( dir ) {
   }
 
   // see if we're walking horizontally or vertically
-  var cosine = Math.cos( this.rotation );
-  if ( Math.abs( cosine ) > EPSILON ) {
-    this.sprite.body.velocity.x = cosine * intendedVelocity;
+  if ( this.math.isHorizontal() ) {
+    this.sprite.body.velocity.x = this.math.cos() * intendedVelocity;
   } else {
-    var sine = Math.sin( this.rotation );
-    this.sprite.body.velocity.y = sine * intendedVelocity;
+    this.sprite.body.velocity.y = this.math.sin() * intendedVelocity;
   }
 
   // play animations
@@ -275,7 +268,6 @@ Gus.prototype.walk = function( dir ) {
     this.sprite.body.clearCollision();
     this.rotationSensor.needsCollisionData = true;
   }
-  //this.checkForRotation( dir );
 
 }
 
@@ -297,7 +289,7 @@ Gus.prototype.stop = function() {
 Gus.prototype.update = function() {
 
   // clear horizontal movement
-  if ( Math.abs( Math.cos( this.rotation ) ) > EPSILON ) this.sprite.body.velocity.x = 0;
+  if ( this.math.isHorizontal() ) this.sprite.body.velocity.x = 0;
   else this.sprite.body.velocity.y = 0;
 
   // check to see if we're rotating
