@@ -299,9 +299,10 @@ function initCreateState() {
 		}
 
 		function move(xDiff, yDiff) {
-			const clickPoint = new Phaser.Point( xDiff, yDiff );
+			const clickPoint = new Phaser.Point( (xDiff * Math.cos(game.dolly.rotation) + -1 * yDiff * Math.sin(game.dolly.rotation) ) , 
+					 (yDiff * Math.cos(game.dolly.rotation) + xDiff * Math.sin(game.dolly.rotation)) );
 			//game.dolly.targetPos = game.dolly.screenspaceToWorldspace( clickPoint );
-                        game.dolly.targetPos.x -= clickPoint.x * game.time.physicsElapsed;
+                        game.dolly.targetPos.x -= clickPoint.x * game.time.physicsElapsed; 
                         game.dolly.targetPos.y -= clickPoint.y * game.time.physicsElapsed;
 		}
 
