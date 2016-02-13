@@ -8,7 +8,7 @@ app.config(function($stateProvider) {
                 return UsersFactory.fetchAll({
                     sort: 'totalStars',
                     by: 'desc',
-                    limit: 25
+                    limit: 10
                 })
                 .then(function(data) {
                     return data.results;
@@ -18,7 +18,7 @@ app.config(function($stateProvider) {
                 return UsersFactory.fetchAll({
                     sort: 'totalFollowers',
                     by: 'desc',
-                    limit: 25
+                    limit: 10
                 })
                 .then(function(data) {
                     return data.results;
@@ -28,7 +28,7 @@ app.config(function($stateProvider) {
                 return UsersFactory.fetchAll({
                     sort: 'totalCreatedLevels',
                     by: 'desc',
-                    limit: 25
+                    limit: 10
                 })
                 .then(function(data) {
                     return data.results;
