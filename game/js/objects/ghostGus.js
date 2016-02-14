@@ -73,6 +73,7 @@ class GhostGus extends Gus {
 				});
 			}
 		}
+		this.stat = this.decomp.length;
 	});
 
 	this.decomp = this.decomp.reverse();
@@ -104,11 +105,14 @@ class GhostGus extends Gus {
   correctCourse() {
 
     if (this.isScrewed) return;
-	if (this.rotating) return;
 
     const courseCorrection = this.getClosestCourseCorrection();
 
-    if (!courseCorrection) return;
+    if (!courseCorrection) {
+		console.log(this.stat);
+		console.log(this.decomp);
+		return;
+	}
 
     if (this.isScrewed) return;
 
