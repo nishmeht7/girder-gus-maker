@@ -38,7 +38,7 @@ class GhostGus extends Gus {
 	comp.forEach((pair, indx) => {
 		if (pair.start.time === pair.end.time) {
 			console.log('decompressing a falling record');
-			if(comp[indx-1].end.time) {
+			if(comp[indx-1]) {
 				console.log('doing fancy math');
 				//this record comes after a previous record, interpolate from previous record to here
 				let xRange = pair.start.x - comp[indx-1].end.x;
@@ -114,7 +114,8 @@ class GhostGus extends Gus {
 
     this.sprite.body.x = courseCorrection.x;
     this.sprite.body.y = courseCorrection.y;
-    this.rotation = courseCorrection.r;
+    this.sprite.rotation = courseCorrection.r;
+	
 
     if (!courseCorrection) {
       var respawnBurst = new ParticleBurst(this.sprite.x, this.sprite.y, "GusHead", {
@@ -215,7 +216,7 @@ class GhostGus extends Gus {
 	}
 
 	try {
-		return (currentRecord.time - this.getTime() <= 10) ? currentRecord : null;
+		return (currentRecord.time - this.getTime() <= 90) ? currentRecord : null;
 	} catch(e) {
 		console.error(e);
 		return null;

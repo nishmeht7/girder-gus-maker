@@ -47,7 +47,8 @@ class RecordingGus extends Gus {
 
   recordCourseCorrection() {
 		//when gus is rotating, he is not moving, if he is not moving, replayed gus can't be out of sync
-		if(!this.rotating) {
+		if(true) {
+			//!this.rotating
 			this.courseCorrectionRecords.push({
 				x: this.sprite.x,
 				y: this.sprite.y,
