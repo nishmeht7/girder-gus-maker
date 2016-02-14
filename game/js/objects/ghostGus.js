@@ -37,21 +37,25 @@ class GhostGus extends Gus {
 
 	comp.forEach((pair, indx) => {
 		if (pair.start.time === pair.end.time) {
-			if(comp[indx-1]) {
+			console.log('decompressing a falling record');
+			if(comp[indx-1].end.time) {
+				console.log('doing fancy math');
 				//this record comes after a previous record, interpolate from previous record to here
 				let xRange = pair.start.x - comp[indx-1].end.x;
-				let yRange = pair.start.y - comp[indx-1].end.x;
-				let frames = Math.ceil((comp[indx-1].end.x; - pair.start.time) / FREQUENCY_OF_COURSE_CORRECTION);
+				let yRange = pair.start.y - comp[indx-1].end.y;
+				let frames = Math.ceil((pair.start.time - comp[indx-1].end.time) / FREQUENCY_OF_COURSE_CORRECTION);
 				for (let i = 0; i <= frames; i++) {
+					console.log('adding a frame: ', i);
 					this.decomp.push({
-						f: true,
-						time: pair.start.time + i * FREQUENCY_OF_COURSE_CORRECTION,
-						x: pair.start.time + (i / frames) * xRange,
-						y: pair.start.time + (i / frames) * yRange,
+						f: false,
+						time: comp[indx-1].end.time + i * FREQUENCY_OF_COURSE_CORRECTION,
+						x: comp[indx-1].end.x + (i / frames) * xRange,
+						y: comp[indx-1].end.y + (i / frames) * yRange,
 						r: pair.start.r
 					});
 				}
 			} else {
+				console.log('falling without a previous record');
 				this.decomp.push(pair.start);
 			}
 		}
@@ -196,14 +200,26 @@ class GhostGus extends Gus {
 
   getClosestCourseCorrection() {
     const ccr = this.decomp;
+	if(ccr.length < 1) return null;
 
     let currentRecord = ccr[ccr.length - 1];
 
-    while (currentRecord.time <= this.getTime()) {
-      currentRecord = ccr.pop();
-    }
+	try {
+		while (currentRecord.time <= this.getTime()) {
+			currentRecord = ccr.pop();
+		}
+	} catch (e) {
+		console.log(ccr);
+		console.log(e);
+		console.log('\n\n\n\nThere was an error\n\n\n\n');
+	}
 
-    return (currentRecord.time - this.getTime() <= 10) ? currentRecord : null;
+	try {
+		return (currentRecord.time - this.getTime() <= 10) ? currentRecord : null;
+	} catch(e) {
+		console.error(e);
+		return null;
+	}
 
   }
 
