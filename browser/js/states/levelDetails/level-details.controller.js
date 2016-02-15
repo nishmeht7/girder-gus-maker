@@ -103,8 +103,7 @@ app.controller('LevelDetailsCtrl', function($scope, $state, data, user, SocialFa
     eventEmitter.emit('play this level', whatToPlay);
   });
 
-  eventEmitter.on('submit win play data', (playData) => {
-    console.log('Recieved event. Playdata as follows: ', playData);
+  eventEmitter.only('submit win play data', (playData) => {
     if (!$scope.user) {
       return console.log('User not logged in. Stats will not be saved.');
     }
