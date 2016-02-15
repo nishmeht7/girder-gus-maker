@@ -105,7 +105,7 @@ app.controller('LevelDetailsCtrl', function($scope, $state, data, user, SocialFa
 
   eventEmitter.only('submit win play data', (playData) => {
     if (!$scope.user) {
-      return console.log('User not logged in. Stats will not be saved.');
+      return console.log('Player not logged in. Stats will not be saved.');
     }
 
     playData.level = $scope.level._id;

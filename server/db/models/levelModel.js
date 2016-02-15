@@ -229,7 +229,7 @@ schema.post('save', (doc, next) => {
     data: [{
       id: null,
       girdersPlaced: null,
-      playerName: null,
+      playerName: '',
       timeToComplete: null
     }],
     id: doc._id,

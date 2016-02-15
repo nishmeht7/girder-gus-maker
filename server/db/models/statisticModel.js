@@ -8,7 +8,6 @@ const Level = mongoose.model( 'Level' );
 const User = mongoose.model( 'User' );
 
 const schema = new mongoose.Schema( {
-  datasetId: String,
   level: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Level',
@@ -57,7 +56,8 @@ schema.post( 'save', ( doc, next ) => {
     return User.findById( doc.player );
   } )
   .then( ( player ) => {
-    postData.playerName = player.name;
+    postData.data[0].playerName = player.name;
+
     return post( url, postData );
   } )
   .then( ( res ) => {
