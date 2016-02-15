@@ -23,6 +23,7 @@ module.exports = {
         'SECRET_ACCESS_KEY': secrets.S3.SECRET_ACCESS_KEY
     },
     "DEMOGRAPHY": {
-      'ACCESS_KEY': secrets.DEMOGRAPHY.ACCESS_KEY
+      'ACCESS_KEY': secrets.DEMOGRAPHY.ACCESS_KEY,
+      'API_URL': secrets.DEMOGRAPHY.API_URL
     }
 };

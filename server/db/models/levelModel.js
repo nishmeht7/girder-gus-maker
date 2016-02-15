@@ -17,8 +17,14 @@ const removeLocalMapThumb = require('../../imaging/delete');
 const TILE_MAP = require("../../../game/js/consts/tilemap");
 const uploadMapThumb = require('../../imaging/upload');
 
+const post = require('../../helpers/promisifiedPost'); // only has post and put
+
 // Calculate number of tiles for data validation
 const numTiles = Object.keys(TILE_MAP).length;
+
+/*
+ * SCHEMA DEFINITION
+ */
 
 // part of level schema
 const map = {
@@ -77,10 +83,9 @@ const schema = new mongoose.Schema({
   starCount: {
     type: Number,
     default: 0
-  }
+  },
+  datasetId: String
 });
-//difficulty was mentioned, but not part of MVP imo
-
 
 /*
  * SCREENSHOT LOGIC
@@ -216,6 +221,27 @@ schema.post('remove', function(doc) {
  * DEMOGRAPHY INTEGRATION LOGIC
  */
 
+// tell demography about newly-published levels
+schema.post('save', (doc, next) => {
+  if (!doc.published || doc.datasetId) return next();
+
+  const data = {
+    id: doc._id,
+    title: doc.title,
+    token: env.DEMOGRAPHY.ACCESS_KEY
+  };
+
+  post(env.DEMOGRAPHY.API_URL, data)
+    .then((res) => {
+      console.log("Saved to demography!");
+      doc.datasetId = res.datasetId;
+      return doc.save();
+    })
+    .then(() => {
+      console.log('Updated with demography id');
+      next()
+    }, next);
+});
 
 /*
  * MISCELLENOUS
