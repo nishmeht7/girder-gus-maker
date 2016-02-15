@@ -226,6 +226,12 @@ schema.post('save', (doc, next) => {
   if (!doc.published || doc.datasetId) return next();
 
   const data = {
+    data: [{
+      id: null,
+      girdersPlaced: null,
+      playerName: null,
+      timeToComplete: null
+    }],
     id: doc._id,
     title: doc.title,
     token: env.DEMOGRAPHY.ACCESS_KEY

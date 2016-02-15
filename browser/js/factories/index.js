@@ -1,1 +1,2 @@
-require('./social.js');
+require('./social');
+require('./statistics');
