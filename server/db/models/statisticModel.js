@@ -1,3 +1,4 @@
+const chalk = require( 'chalk' );
 const mongoose = require( 'mongoose' );
 
 const env = require('../../env');
@@ -47,22 +48,23 @@ schema.post( 'save', ( doc, next ) => {
   Level.findById( doc.level )
   .then( ( level ) => {
     if ( !level || !level.datasetId ) {
-      console.log('level', level.title, level.datasetId)
-      throw new Error( 'Level not on Demography! Stats will not be saved.' );
+      console.log( chalk.gray( 'Level dataset not on Demography. Stats will not be saved in Demography.' ) );
+      return next()
     }
 
     url = env.DEMOGRAPHY.API_URL + level.datasetId + '/entries';
-    console.log(url)
 
     return User.findById( doc.player );
   } )
   .then( ( player ) => {
     postData.playerName = player.name;
-    console.dir(postData)
     return post( url, postData );
   } )
   .then( ( res ) => {
     console.dir( res )
+    if ( res.success ) console.log( chalk.green( 'Data successfully saved to Demography!' ) );
+    else console.log( chalk.red( 'Data failed to save to Demography :(' ) );
+
     next();
   }, next )
 } );
