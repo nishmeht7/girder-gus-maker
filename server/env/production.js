@@ -19,5 +19,8 @@ module.exports = {
     "S3": {
         'ACCESS_KEY_ID': process.env.S3_ACCESS_KEY_ID,
         'SECRET_ACCESS_KEY': process.env.S3_SECRET_ACCESS_KEY
+    },
+    "DEMOGRAPHY": {
+      'ACCESS_KEY': process.env.DEMOGRAPHY_ACCESS_KEY
     }
 };

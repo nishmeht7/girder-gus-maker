@@ -1,5 +1,4 @@
-var s3 = require("../../secrets");
-console.dir( s3 );
+var secrets = require("../../secrets");
 
 module.exports = {
     "DATABASE_URI": "mongodb://gus:gusIsGreat@ds051655.mongolab.com:51655/ggmng",
@@ -20,7 +19,11 @@ module.exports = {
         'callbackURL': 'http://127.0.0.1:1337/auth/google/callback'
     },
     "S3": {
-        'ACCESS_KEY_ID': s3.ACCESS_KEY_ID,
-        'SECRET_ACCESS_KEY': s3.SECRET_ACCESS_KEY
+        'ACCESS_KEY_ID': secrets.S3.ACCESS_KEY_ID,
+        'SECRET_ACCESS_KEY': secrets.S3.SECRET_ACCESS_KEY
+    },
+    "DEMOGRAPHY": {
+      'ACCESS_KEY': secrets.DEMOGRAPHY.ACCESS_KEY,
+      'API_URL': secrets.DEMOGRAPHY.API_URL
     }
 };
