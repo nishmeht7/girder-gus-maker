@@ -233,6 +233,7 @@ schema.post('save', (doc, next) => {
       timeToComplete: null
     }],
     id: doc._id,
+    isPublic: true,
     title: doc.title,
     token: env.DEMOGRAPHY.ACCESS_KEY
   };
