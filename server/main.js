@@ -17,6 +17,8 @@ const port = process.env.PORT || 1337;
 
 require('./configure')(app);
 
+app.use(require('prerender-node'));
+
 app.use('/api', require('./routes'))
 
 app.get('/*', function (req, res) {
