@@ -41,6 +41,7 @@
     "eslint": "^1.10.3",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
+    "font-awesome": "^4.5.0",
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
     "gulp-browserify": "^0.5.1",
