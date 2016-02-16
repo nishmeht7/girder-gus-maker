@@ -4,10 +4,15 @@ app.controller('LevelDetailsCtrl', function($scope, $state, data, user, SocialFa
   if (data) {
     $scope.level = {
       _id: data._id,
+      datasetId: data.datasetId,
+      dashboardId: data.dashboardId,
       dateCreated: data.dateCreated,
       starCount: data.starCount,
       title: data.title
     };
+
+    $scope.statisticsLink = "http://www.dashjs.io/users/56bfb9ae4f12900300fd0f04/datasets/" + $scope.level.datasetId + "/dashboards/" + $scope.level.dashboardId;
+
     $scope.creator = data.creator;
     $scope.liked = (function() {
       if (user !== null) {

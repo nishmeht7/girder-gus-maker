@@ -84,7 +84,9 @@ const schema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  datasetId: String
+  datasetId: String,
+  dashboardId: String,
+  initialWin: {}
 });
 
 /*
@@ -224,16 +226,14 @@ schema.post('remove', function(doc) {
 // tell demography about newly-published levels
 schema.post('save', (doc, next) => {
   if (!doc.published || doc.datasetId) return next();
+  console.log('here')
+  console.dir(doc.initialWin);
 
   const data = {
-    data: [{
-      id: null,
-      girdersPlaced: null,
-      playerName: '',
-      timeToComplete: null
-    }],
+    data: [doc.initialWin],
     id: doc._id,
     isPublic: true,
+    templateDashboard: '56c397f2deddba0300c60a72',
     title: doc.title,
     token: env.DEMOGRAPHY.ACCESS_KEY
   };
@@ -242,6 +242,7 @@ schema.post('save', (doc, next) => {
     .then((res) => {
       console.log("Saved to demography!");
       doc.datasetId = res.datasetId;
+      doc.dashboardId = res.dashboardId;
       return doc.save();
     })
     .then(() => {

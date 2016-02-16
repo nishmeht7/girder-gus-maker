@@ -98,11 +98,20 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 	eventEmitter.only('I need both the maps!', function() {
 		if(!levelId || sentId) {
 			eventEmitter.emit('found maps!', ['levelArr', unparsedLevelArr, parsedLevelArr]);
-		} else { 
+		} else {
 			sentId = true;
 			eventEmitter.emit('found maps!', ['levelId', levelId]);
 		}
 	});
+
+  eventEmitter.only('submit win play data', (playData) => {
+    if (!$scope.user) {
+      return console.log('Player not logged in. Stats will not be saved.');
+    }
+    playData.playerName = $scope.user.name;
+    playData._id = -1;
+    $scope.playData = playData;
+  })
 
 	$scope.getScreenshot = function() {
 		eventEmitter.emit('request screenshot');
@@ -149,7 +158,7 @@ app.controller('CreateLevelCtrl', function($scope, CreateLevelFactory, $state, $
 		console.log($scope.testing);
 		if($scope.testing) {
 			console.log('submit based on scope variable');
-		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish, levelId).then(function(data) {
+		CreateLevelFactory.submitLevel(levelArrayBeaten, levelTitle, girdersAllowed, skyColor, shouldPublish, levelId, $scope.playData).then(function(data) {
 				$scope.error = false;
 				$scope.success = true;
 				if(shouldPublish) {
