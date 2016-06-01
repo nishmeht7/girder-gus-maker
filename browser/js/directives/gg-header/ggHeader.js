@@ -25,7 +25,7 @@ app.directive('ggHeader', ($rootScope, AuthService, AUTH_EVENTS, $state) => {
 			  if($rootScope.user) $state.go(targetState);
 			  else $rootScope.promptUser = true;
 		  } else {
-        $state.go(targetState);
+        $state.go(targetState, {title: undefined}, {reload: true});
       }
 	  }
 
