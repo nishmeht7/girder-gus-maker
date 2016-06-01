@@ -20,11 +20,11 @@
 
   <div id="featured" class="row">
     <h1 class="text-center">Featured Levels</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nec orci sem. Ut vitae mollis elit. Sed imperdiet est ac libero ultricies volutpat. Aliquam pretium nisi ante, non facilisis justo pretium nec. Nam ullamcorper, sapien eu porttitor hendrerit, odio est congue quam, vel suscipit ipsum sapien non urna. Donec dapibus, odio quis tristique blandit, ipsum neque sagittis lectus, ac laoreet justo mauris laoreet risus. Sed molestie vitae sem vel rutrum. Morbi id luctus nulla. Nunc bibendum tellus in nisi interdum ultrices. Suspendisse potenti. Mauris tincidunt turpis sit amet dolor rhoncus maximus.</p>
-
-    <p>Nullam tempor ipsum mattis, egestas libero a, dapibus ante. Sed vehicula justo sit amet odio scelerisque viverra. Nullam porta consectetur iaculis. Donec at elit id diam posuere malesuada. Fusce vitae risus massa. Integer laoreet, sapien ac sollicitudin sagittis, dolor nunc blandit felis, a interdum mi mi vel tellus. Praesent semper elit iaculis diam consequat malesuada. Donec convallis, mauris aliquam rutrum faucibus, odio augue lobortis massa, at faucibus enim lectus nec diam. Fusce libero odio, efficitur id blandit sit amet, consectetur a lectus. Praesent sit amet lectus aliquam, dictum sem nec, posuere enim. In dignissim vitae nisi molestie interdum. Sed id accumsan urna. Vestibulum ac volutpat nibh.</p>
-
-    <p>Quisque et arcu auctor, imperdiet nisl tincidunt, congue magna. Nullam vehicula euismod ligula, non finibus odio dictum vitae. Maecenas ornare vitae felis id vehicula. Maecenas quis vulputate ipsum. Curabitur non pellentesque diam. Aenean eget porta ligula. Etiam ipsum enim, iaculis et arcu non, auctor aliquam quam. Nunc metus felis, porta eu diam in, ornare blandit dui. Quisque ullamcorper vehicula hendrerit. Morbi quis ligula eget eros imperdiet sagittis a at massa. Nullam vitae elit vitae mauris pretium placerat a id ante. In hac habitasse platea dictumst. Sed lobortis, lectus eu faucibus luctus, dolor nulla porttitor sapien, ac molestie ipsum purus a metus.</p>
+        <div class="levels-list">
+            <div class="row" ng-repeat="levelRow in featuredLevels">
+                <level-thumbnail ng-repeat="level in levelRow" level="level"></level-thumbnail>
+            </div>
+        </div>
   </div>
 
   <div id="whois" class="row">
