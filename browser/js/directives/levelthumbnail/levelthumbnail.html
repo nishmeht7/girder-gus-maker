@@ -6,7 +6,7 @@
                 <h5 ng-if=!edit class="star-count"><span class="glyphicon glyphicon-star"></span> {{ level.starCount }}</h5>
                 <a ng-if=edit class="btn btn-delete" ng-click="deleteLevel()"><span class="glyphicon glyphicon-remove"></span> DELETE</a>
                 <h5>{{ level.title }}</a></h5>
-                <h6 ng-if=!edit>Created by {{ level.creator.name }}</h6>
+			<h6 ng-if=!edit>Created by <a ng-href='levels?creator={{level.creator.name}}'>{{ level.creator.name }}</a></h6>
                 <h6>on {{ level.dateCreated | date: longDate }}</h6>
             </div>
         </a>

@@ -9,5 +9,5 @@
       <a class="btn btn-follow" href="#" ng-show="followed && !pending" ng-click="unfollowCreator()"><span class="glyphicon glyphicon-user"></span> Following</a>
       <a class="btn btn-disabled" ng-show="followed && pending"><span class="glyphicon glyphicon-time"></span> Following</a>
     </div>
-  <div class="more-by" ng-if="user._id!==creator._id"><a href="#">More by this builder</a></more-by>
+	<div class="more-by" ng-if="user._id!==creator._id"><a ng-href='/levels?creator={{creator.name}}'>More by this builder</a></more-by>
 </div>

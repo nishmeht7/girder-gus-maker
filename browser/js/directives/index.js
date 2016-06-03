@@ -7,3 +7,5 @@ require('./level-creator');
 require('./user-minicard')
 require('./leaderboard');
 require('./share');
+require('./reload-warning');
+require('./editor-description');

@@ -1,6 +1,47 @@
 const eventEmitter = window.eventEmitter;
 
-window.app.controller( 'HomeCtrl', function( $scope, $timeout ) {
+window.app.controller( 'HomeCtrl', function( LevelsFactory, $scope, $timeout, $window ) {
+	
+	var numPages;
+	$scope.featuredLevels = [];
+	LevelsFactory.fetchAll().then((res) => {
+		numPages = res.pages;
+		const rowSize = 4;
+		const subSet = new Set();
+		while (subSet.size < 4) {
+			subSet.add(Math.floor(Math.random() * 20));
+		}
+		var makeRows = function(levels) {
+			return levels.reduce( function( levelMap, level ) {
+				if ( levelMap[ levelMap.length - 1 ].length < rowSize ) {
+					levelMap[ levelMap.length - 1 ].push( level );
+				} else {
+					levelMap.push( [level] );
+				}
+				return levelMap;
+			}, [[]] );
+		};
+		$scope.featuredLevels = makeRows(Array.from(subSet).map((num) => {
+			return res.results[num];
+		}));
+	});
+	$scope.playRandom = function() {
+		if(numPages === undefined) {
+			LevelsFactory.fetchAll().then((res) => {
+				numPages = res.pages;
+				goRandom();
+			})
+		} else {
+			goRandom();
+		}
+	}
+	const goRandom = function() {
+		const pageChoice = ""+Math.floor(Math.random() * numPages);
+		LevelsFactory.fetchAll({page: pageChoice}).then((res) => {
+			const idChoice = res.results[Math.floor(Math.random() * res.results.length)]._id;
+			$window.location.href = '/levels/'+idChoice;
+		});
+	}
 
   window.playlist = window.location.port !== "" ?
   ['56b9f85f77e4e2ad0ceb5497','56b9f9a877e4e2ad0ceb5511','56ba23fd77e4e2ad0ceb5561','56ba257f77e4e2ad0ceb55b7','56ba288477e4e2ad0ceb5644'] :
