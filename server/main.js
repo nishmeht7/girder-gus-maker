@@ -19,6 +19,12 @@ require('./configure')(app);
 
 app.use(require('prerender-node'));
 
+//app.get('/phaser/dist/phaser.min.js', express.static(path.normalize('../node_modules/phaser/dist/p2.min.js')));
+app.get('/phaser/dist/phaser.min.js', function(req, res, next) {
+	console.log('i can\'t even');
+	res.sendFile(path.normalize(__dirname + './../node_modules/phaser/build/phaser.min.js'));
+});
+
 app.use('/api', require('./routes'))
 
 app.get('/*', function (req, res) {
