@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --watch server -e js,html server/start.js",
-    "postinstall": "gulp build"
+    "postinstall": "gulp build",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -71,14 +73,15 @@
     "phaser": "^2.5.0",
     "phaser-debug": "^1.1.8",
     "pixi": "^0.3.1",
-    "prerender-node": "^2.2.0",
+    "prerender-node": "^3.0.0",
     "request": "^2.69.0",
     "run-sequence": "^1.1.5",
     "s3": "^4.4.0",
     "serve-favicon": "^2.3.0",
     "slick-carousel": "^1.5.9",
     "util": "^0.10.3",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "snyk": "^1.83.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -87,5 +90,6 @@
     "karma-chai": "^0.1.0",
     "karma-mocha": "^0.2.1",
     "morgan": "^1.6.1"
-  }
+  },
+  "snyk": true
 }
