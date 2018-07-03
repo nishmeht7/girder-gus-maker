@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --watch server -e js,html server/start.js",
-    "postinstall": "gulp build"
+    "postinstall": "gulp build",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -24,8 +26,8 @@
     "angular-mocks": "^1.4.9",
     "angular-ui-router": "^0.2.17",
     "angularslick": "^0.2.2",
-    "babel": "^5.0.12",
-    "babel-eslint": "^4.1.6",
+    "babel": "^6.0.0",
+    "babel-eslint": "^5.0.0",
     "babelify": "^7.2.0",
     "bluebird": "^3.1.5",
     "body-parser": "^1.14.2",
@@ -38,16 +40,16 @@
     "connect-mongo": "^1.1.0",
     "cookie-parser": "^1.4.1",
     "escope": "3.3.0",
-    "eslint": "^1.10.3",
+    "eslint": "^2.1.0",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "font-awesome": "^4.5.0",
     "gulp": "^3.8.11",
-    "gulp-babel": "^5.1.0",
+    "gulp-babel": "^6.0.0",
     "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.5.2",
-    "gulp-eslint": "^0.14.0",
-    "gulp-istanbul": "^0.9.0",
+    "gulp-eslint": "^2.0.0",
+    "gulp-istanbul": "^0.10.4",
     "gulp-livereload": "^3.7.0",
     "gulp-minify-css": "^0.4.6",
     "gulp-mocha": "^2.2.0",
@@ -78,7 +80,8 @@
     "serve-favicon": "^2.3.0",
     "slick-carousel": "^1.5.9",
     "util": "^0.10.3",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "snyk": "^1.88.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -87,5 +90,6 @@
     "karma-chai": "^0.1.0",
     "karma-mocha": "^0.2.1",
     "morgan": "^1.6.1"
-  }
+  },
+  "snyk": true
 }

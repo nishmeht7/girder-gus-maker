@@ -1,0 +1,15 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.12.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:http-signature:20150122':
+    - phaser-debug > node-lessify > less > request > http-signature:
+        patched: '2018-07-03T04:49:48.885Z'
+  'npm:lodash:20180130':
+    - babel > babel-core > babel-plugin-proto-to-assign > lodash:
+        patched: '2018-07-03T04:49:48.885Z'
+    - babel-eslint > babel-core > babel-plugin-proto-to-assign > lodash:
+        patched: '2018-07-03T04:49:48.885Z'
+    - gulp-babel > babel-core > babel-plugin-proto-to-assign > lodash:
+        patched: '2018-07-03T04:49:48.885Z'
