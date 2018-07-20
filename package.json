@@ -71,7 +71,7 @@
     "phaser": "^2.5.0",
     "phaser-debug": "^1.1.8",
     "pixi": "^0.3.1",
-    "prerender-node": "^2.2.0",
+    "prerender-node": "^3.0.0",
     "request": "^2.69.0",
     "run-sequence": "^1.1.5",
     "s3": "^4.4.0",
