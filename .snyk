@@ -1,0 +1,53 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.3
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:debug:20170905':
+    - gulp-livereload > mini-lr > body-parser > debug:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:hawk:20160119':
+    - phaser-debug > node-lessify > less > request > hawk:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:http-signature:20150122':
+    - phaser-debug > node-lessify > less > request > http-signature:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:lodash:20180130':
+    - babel > babel-core > babel-plugin-proto-to-assign > lodash:
+        patched: '2019-04-15T23:02:53.409Z'
+    - babel-eslint > babel-core > babel-plugin-proto-to-assign > lodash:
+        patched: '2019-04-15T23:02:53.409Z'
+    - gulp-babel > babel-core > babel-plugin-proto-to-assign > lodash:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:mime:20170907':
+    - s3 > mime:
+        patched: '2019-04-15T23:02:53.409Z'
+    - phaser-debug > node-lessify > less > mime:
+        patched: '2019-04-15T23:02:53.409Z'
+    - phaser-debug > node-lessify > less > request > form-data > mime:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:minimatch:20160620':
+    - gulp > vinyl-fs > glob-stream > minimatch:
+        patched: '2019-04-15T23:02:53.409Z'
+    - gulp > vinyl-fs > glob-watcher > gaze > globule > minimatch:
+        patched: '2019-04-15T23:02:53.409Z'
+    - gulp > vinyl-fs > glob-watcher > gaze > globule > glob > minimatch:
+        patched: '2019-04-15T23:02:53.409Z'
+    - gulp-browserify > browserify > glob > minimatch:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:ms:20170412':
+    - gulp-livereload > mini-lr > body-parser > debug > ms:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:request:20160119':
+    - phaser-debug > node-lessify > less > request:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:tunnel-agent:20170305':
+    - phaser-debug > node-lessify > less > request > tunnel-agent:
+        patched: '2019-04-15T23:02:53.409Z'
+  'npm:uglify-js:20151024':
+    - gulp-browserify > browserify > umd > ruglify > uglify-js:
+        patched: '2019-04-15T23:02:53.409Z'
+    - gulp-browserify > browserify > umd > uglify-js:
+        patched: '2019-04-15T23:02:53.409Z'
+    - phaser-debug > handlebars > uglify-js:
+        patched: '2019-04-15T23:02:53.409Z'
