@@ -60,7 +60,7 @@
     "gulp-uglify": "^1.1.0",
     "jquery": "^2.2.0",
     "lodash": "^4.0.1",
-    "mocha": "^2.4.5",
+    "mocha": "^7.1.1",
     "mongoose": "^4.3.7",
     "mongoose-deep-populate": "^2.0.3",
     "nodemon": "^1.8.1",
